@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { getMedicineSuccess } from "../../redux/reducer/medicineSlice";
+
+import { Link } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -10,11 +16,19 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import CloseButton from "react-bootstrap/CloseButton";
 import { FaPlusCircle } from "react-icons/fa";
-import { FaRedoAlt } from "react-icons/fa";
+import { FaRedoAlt, FaEdit } from "react-icons/fa";
 import MedicineModal from "./MedicineModal";
+import Table from "react-bootstrap/Table";
+import Col from "react-bootstrap/Col";
+import medicineProcessor from '../../apis/medicineProcessor'
 
 const Medicine = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [key, setKey] = useState("profile");
+  const meds = useSelector((state) => state.med.medicine);
+
   // const [myTab, setMyTab] = useState([
   //   { value: "home", title: "home", content: "hello wolrd" },
   // ]);
@@ -30,6 +44,19 @@ const Medicine = () => {
   //     },
   //   ]);
   // }
+  // const fetchMed = async () => {
+  //   const response = await axios.get("/medicine").catch((err) => {
+  //     console.log("Err: ", err);
+  //   });
+  //   dispatch(getMedicineSuccess(response.data));
+  // };
+  const loadData = () => {
+    medicineProcessor.getAll()
+  }
+
+  useEffect(() => {
+    loadData()
+  }, []);
 
   return (
     <>
@@ -64,6 +91,8 @@ const Medicine = () => {
         </Container>
       </Navbar>
 
+      {/* thêm 1 thanh search */}
+
       <Tabs
         id="uncontrolled-tab-example"
         className="mb-3"
@@ -76,6 +105,56 @@ const Medicine = () => {
 
         <Tab eventKey="profile" title="Profile">
           LIST OF MEDICINE
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Ảnh</th>
+                <th>Mã thuốc</th>
+                <th>Tên thuốc</th>
+                <th>Cách sử dụng</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>asd</td>
+                <td>qwe</td>
+                <td>zxc</td>
+                <td>
+                  {/* <Row className="mb-3"> */}
+                  <Nav.Link
+                    href="/asdsad"
+                    style={{  display: "inline" }}
+                  >
+                    <FaEdit size={25} />
+                  </Nav.Link>
+                  {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
+                  {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
+                  <Nav.Link
+                    href="/asdsad"
+                    style={{display: "inline" }}
+                  >
+                    <FaEdit size={25} />
+                  </Nav.Link>
+                  {/* </Row> */}
+                </td>
+              </tr>
+              {meds.map((med) => {
+                return (
+                  <tr>
+                    <td>1</td>
+                    <td>
+                      <img src={med.url} />
+                    </td>
+                    <td>{med.medId}</td>
+                    <td>{med.usage}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
         </Tab>
         {/* <Tab eventKey="contact" title="Contact" link>
           qweqweqwewqe
