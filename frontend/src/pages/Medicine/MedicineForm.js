@@ -7,20 +7,11 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { addMed } from "../../apis/medicineProcessor";
 const MedicineForm = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [datee, setDatee] = useState(new Date());
 
-  const [medId, setMedId] = useState("");
-  const [name, setName] = useState("");
-  const [url, setUrl] = useState("");
-  const [quantity, setQuantity] = useState();
-  const [price, setPrice] = useState();
-  const [purchasePrice, setPurchasePrice] = useState();
-  const [unit, setUnit] = useState();
-  const [usage, setUsage] = useState("");
-  const [expireDay, setExpireDay] = useState(new Date());
-
-  const [newMedicine, setNewMedicine] =  useState({
+  const [newMedicine, setNewMedicine] = useState({
     medId: "",
     name: "",
     url: "",
@@ -30,7 +21,7 @@ const MedicineForm = () => {
     unit: -1,
     usage: "",
     expireDay: "",
-  })
+  });
 
   const handleAddMedicine = (e) => {
     e.preventDefault();
@@ -47,7 +38,7 @@ const MedicineForm = () => {
               type="text"
               onChange={(e) => {
                 // setMedId(e.target.value)
-                setNewMedicine({...newMedicine, medId: e.target.value})
+                setNewMedicine({ ...newMedicine, medId: e.target.value });
               }}
             />
           </Form.Group>
@@ -56,19 +47,31 @@ const MedicineForm = () => {
         <Row className="mb-3">
           <Form.Group className="mb-3" as={Col} controlId="formGroupPassword">
             <Form.Label>Tên thuốc</Form.Label>
-            <Form.Control onChange={(e) => setName(e.target.value)} />
+            <Form.Control
+              onChange={(e) => {
+                setNewMedicine({ ...newMedicine, name: e.target.value });
+              }}
+            />
           </Form.Group>
           <Form.Group as={Col}>
             Hình ảnh
-            <Form.Control onChange={(e) => setUrl(e.target.value)} />
-            <img src={url} />
+            <Form.Control
+              onChange={(e) => {
+                setNewMedicine({ ...newMedicine, url: e.target.value });
+              }}
+            />
+            <img src={newMedicine.url} />
             {/* <UploadAndDisplayImage></UploadAndDisplayImage> */}
           </Form.Group>
         </Row>
         <Row className="mb-3">
           <Form.Group className="mb-3" as={Col}>
             <Form.Label>Lượng/SP</Form.Label>
-            <Form.Control onChange={(e) => setQuantity(e.target.value)} />
+            <Form.Control
+              onChange={(e) => {
+                setNewMedicine({ ...newMedicine, quantity: e.target.value });
+              }}
+            />
           </Form.Group>
 
           <Form.Group className="mb-3" as={Col}>
@@ -77,7 +80,9 @@ const MedicineForm = () => {
             <Row className="mb-3">
               <Form.Group className="mb-3" as={Col}>
                 <Form.Control
-                  onChange={(e) => setPrice(e.target.value)}
+                  onChange={(e) => {
+                    setNewMedicine({ ...newMedicine, price: e.target.value });
+                  }}
                   defaultValue="0"
                 />
               </Form.Group>
@@ -90,14 +95,23 @@ const MedicineForm = () => {
         <Row className="mb-3">
           <Form.Group className="mb-3" as={Col}>
             <Form.Label>Đơn vị</Form.Label>
-            <Form.Control onChange={(e) => setUnit(e.target.value)} />
+            <Form.Control
+              onChange={(e) => {
+                setNewMedicine({ ...newMedicine, unit: e.target.value });
+              }}
+            />
           </Form.Group>
           <Form.Group className="mb-3" as={Col}>
             <Form.Label>Giá nhập</Form.Label>
             <Row className="mb-3">
               <Form.Group className="mb-3" as={Col}>
                 <Form.Control
-                  onChange={(e) => setPurchasePrice(e.target.value)}
+                  onChange={(e) => {
+                    setNewMedicine({
+                      ...newMedicine,
+                      purchasePrice: e.target.value,
+                    });
+                  }}
                   defaultValue="0"
                 />
               </Form.Group>
@@ -111,20 +125,23 @@ const MedicineForm = () => {
           <Form.Group className="mb-3" as={Col}>
             <Form.Label>Cách sử dụng</Form.Label>
             <Form.Control
-              onChange={(e) => setUsage(e.target.value)}
+              onChange={(e) => {
+                setNewMedicine({ ...newMedicine, usage: e.target.value });
+              }}
               as="textarea"
               rows={3}
             />
           </Form.Group>
           <Form.Group className="mb-3" as={Col}>
             <Form.Label>Ngày hết hạn</Form.Label>
-            {/* <DatePicker1
-              onChange={(e) => setExpireDay(e.target.value)}
-            ></DatePicker1> */}
-            <DatePicker
-              selected={expireDay}
+          
+            <DatePicker 
+              selected={datee}
               dateFormat="dd/MM/yyyy"
-              onChange={(e) => setExpireDay(e)}
+              onChange={(e) => {
+                // setNewMedicine({ ...newMedicine, expireDay: e });
+                setDatee(e);
+              }}
             ></DatePicker>
           </Form.Group>
         </Row>

@@ -123,7 +123,6 @@ const Medicine = () => {
                 <td>qwe</td>
                 <td>zxc</td>
                 <td>
-                  {/* <Row className="mb-3"> */}
                   <Nav.Link
                     href="/asdsad"
                     style={{  display: "inline" }}
@@ -131,14 +130,12 @@ const Medicine = () => {
                     <FaEdit size={25} />
                   </Nav.Link>
                   {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
-                  {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
                   <Nav.Link
                     href="/asdsad"
                     style={{display: "inline" }}
                   >
                     <FaEdit size={25} />
                   </Nav.Link>
-                  {/* </Row> */}
                 </td>
               </tr>
               {meds.map((med) => {
@@ -150,6 +147,21 @@ const Medicine = () => {
                     </td>
                     <td>{med.medId}</td>
                     <td>{med.usage}</td>
+                    <td>
+                  <Nav.Link
+                    href={`/medicine/${med.medId}`}
+                    style={{  display: "inline" }}
+                  >
+                    <FaEdit size={25} />
+                  </Nav.Link>
+                  {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
+                  <Nav.Link
+                    href="/delete"
+                    style={{display: "inline" }}
+                  >
+                    <FaEdit size={25} />
+                  </Nav.Link>
+                </td>
                   </tr>
                 );
               })}
