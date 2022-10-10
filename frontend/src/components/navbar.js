@@ -39,7 +39,7 @@ const Navbarr = () => {
               <NavDropdown.Item href="/medicine">
                 Đăng ký thuốc
               </NavDropdown.Item>
-              <NavDropdown.Item href="/pathological1">
+              <NavDropdown.Item href="/pathological">
                 Đăng ký thủ thuật
               </NavDropdown.Item>
               <NavDropdown.Divider />

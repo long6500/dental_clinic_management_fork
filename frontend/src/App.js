@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import "./css/App.scss";
 import LoadingComponent from "./components/loadingComponent";
 import UpdateMedicineModal from "./pages/Medicine/UpdateMedicineModal";
-
+import Service from "./pages/Services/Service";
 
 function App() {
   const isLoading = useSelector((state) => state.loading);
@@ -20,7 +20,7 @@ function App() {
           <Route path="/Login" element={<Login />} />
           <Route path="/medicine" element={<Medicine />}></Route>
           <Route path="/medicine/:medId" element={<UpdateMedicineModal />} />
-        
+          <Route path="/pathological" element={<Service />}></Route>
         </Routes>
       </Router>
     </>
