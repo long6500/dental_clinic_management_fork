@@ -34,7 +34,7 @@ const MedicineSchema = new mongoose.Schema({
     },
     expiredDay: {
         type: Date,
-        require: true,
+        // require: true,
     },
     createBy: {
         type: mongoose.Types.ObjectId,

@@ -59,7 +59,7 @@ medProcessor.getAllObj = async () => {
     .catch((err) => {
       console.log("Err: ", err);
     });
-    console.log(response.data);
+    // console.log(response.data);
   return result;
 };
 

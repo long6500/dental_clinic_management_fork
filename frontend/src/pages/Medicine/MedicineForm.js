@@ -12,9 +12,9 @@ const MedicineForm = () => {
   const [datee, setDatee] = useState(new Date());
 
   const [newMedicine, setNewMedicine] = useState({
-    medId: "",
+    _id: "",
     name: "",
-    url: "",
+    imageUrl: "",
     quantity: -1,
     price: -1,
     purchasePrice: -1,
@@ -37,8 +37,8 @@ const MedicineForm = () => {
             <Form.Control
               type="text"
               onChange={(e) => {
-                // setMedId(e.target.value)
-                setNewMedicine({ ...newMedicine, medId: e.target.value });
+                // set_id(e.target.value)
+                setNewMedicine({ ...newMedicine, _id: e.target.value });
               }}
             />
           </Form.Group>
@@ -57,10 +57,10 @@ const MedicineForm = () => {
             Hình ảnh
             <Form.Control
               onChange={(e) => {
-                setNewMedicine({ ...newMedicine, url: e.target.value });
+                setNewMedicine({ ...newMedicine, imageUrl: e.target.value });
               }}
             />
-            <img src={newMedicine.url} />
+            <img src={newMedicine.imageUrl} />
             {/* <UploadAndDisplayImage></UploadAndDisplayImage> */}
           </Form.Group>
         </Row>

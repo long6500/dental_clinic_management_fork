@@ -8,8 +8,8 @@ const medicineSchema = Joi.object({
   purchasePrice: Joi.number().required(),
   unit: Joi.number().required(),
   usage: Joi.string(),
-  expiredDay: Joi.date().required(),
-  status: Joi.boolean().required(),
+  expiredDay: Joi.date(),
+  status: Joi.boolean(),
 });
 
 module.exports = medicineSchema

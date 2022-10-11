@@ -28,7 +28,7 @@ const Medicine = () => {
 
   const [key, setKey] = useState("profile");
   const meds = useSelector((state) => state.med.medicine);
-
+  const [medis,setMedis] = useState([]);
   // const [myTab, setMyTab] = useState([
   //   { value: "home", title: "home", content: "hello wolrd" },
   // ]);
@@ -51,7 +51,8 @@ const Medicine = () => {
   //   dispatch(getMedicineSuccess(response.data));
   // };
   const loadData = () => {
-    medicineProcessor.getAll();
+    setMedis(medicineProcessor.getAllObj());
+    console.log("asd: " + medis);
   };
 
   useEffect(() => {
@@ -106,10 +107,8 @@ const Medicine = () => {
         <Tab eventKey="profile" title="Tất cả">
           <div style={{ marginLeft: "100px", marginRight: "100px" }}>
             <Form>
-              <Form.Group
-                className="mb-3"
-              >
-                <Form.Control  placeholder="Tìm kiếm" />
+              <Form.Group className="mb-3">
+                <Form.Control placeholder="Tìm kiếm" />
               </Form.Group>
             </Form>
 
