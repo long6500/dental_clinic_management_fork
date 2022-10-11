@@ -20,7 +20,7 @@ import { FaRedoAlt, FaEdit } from "react-icons/fa";
 import MedicineModal from "./MedicineModal";
 import Table from "react-bootstrap/Table";
 import Col from "react-bootstrap/Col";
-import medicineProcessor from '../../apis/medicineProcessor'
+import medicineProcessor from "../../apis/medicineProcessor";
 
 const Medicine = () => {
   const navigate = useNavigate();
@@ -51,11 +51,11 @@ const Medicine = () => {
   //   dispatch(getMedicineSuccess(response.data));
   // };
   const loadData = () => {
-    medicineProcessor.getAll()
-  }
+    medicineProcessor.getAll();
+  };
 
   useEffect(() => {
-    loadData()
+    loadData();
   }, []);
 
   return (
@@ -103,70 +103,71 @@ const Medicine = () => {
           asd
         </Tab> */}
 
-        <Tab eventKey="profile" title="Profile">
-          LIST OF MEDICINE
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>STT</th>
-                <th>Ảnh</th>
-                <th>Mã thuốc</th>
-                <th>Tên thuốc</th>
-                <th>Cách sử dụng</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>asd</td>
-                <td>qwe</td>
-                <td>zxc</td>
-                <td>
-                  <Nav.Link
-                    href="/asdsad"
-                    style={{  display: "inline" }}
-                  >
-                    <FaEdit size={25} />
-                  </Nav.Link>
-                  {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
-                  <Nav.Link
-                    href="/asdsad"
-                    style={{display: "inline" }}
-                  >
-                    <FaEdit size={25} />
-                  </Nav.Link>
-                </td>
-              </tr>
-              {meds.map((med) => {
-                return (
-                  <tr>
-                    <td>1</td>
-                    <td>
-                      <img src={med.url} />
-                    </td>
-                    <td>{med.medId}</td>
-                    <td>{med.usage}</td>
-                    <td>
-                  <Nav.Link
-                    href={`/medicine/${med.medId}`}
-                    style={{  display: "inline" }}
-                  >
-                    <FaEdit size={25} />
-                  </Nav.Link>
-                  {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
-                  <Nav.Link
-                    href="/delete"
-                    style={{display: "inline" }}
-                  >
-                    <FaEdit size={25} />
-                  </Nav.Link>
-                </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
+        <Tab eventKey="profile" title="Tất cả">
+          <div style={{ marginLeft: "100px", marginRight: "100px" }}>
+            <Form>
+              <Form.Group
+                className="mb-3"
+              >
+                <Form.Control  placeholder="Tìm kiếm" />
+              </Form.Group>
+            </Form>
+
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Ảnh</th>
+                  <th>Mã thuốc</th>
+                  <th>Tên thuốc</th>
+                  <th>Cách sử dụng</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>asd</td>
+                  <td>qwe</td>
+                  <td>zxc</td>
+                  <td></td>
+                  <td>
+                    <Nav.Link href="/asdsad" style={{ display: "inline" }}>
+                      <FaEdit size={25} />
+                    </Nav.Link>
+                    {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
+                    <Nav.Link href="/asdsad" style={{ display: "inline" }}>
+                      <FaEdit size={25} />
+                    </Nav.Link>
+                  </td>
+                </tr>
+                {meds.map((med) => {
+                  return (
+                    <tr>
+                      <td>1</td>
+                      <td>
+                        <img src={med.url} />
+                      </td>
+                      <td>{med.medId}</td>
+                      <td>{med.usage}</td>
+                      <td>
+                        <Nav.Link
+                          href={`/medicine/${med.medId}`}
+                          style={{ display: "inline" }}
+                        >
+                          <FaEdit size={25} />
+                        </Nav.Link>
+                        {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
+                        <Nav.Link href="/delete" style={{ display: "inline" }}>
+                          <FaEdit size={25} />
+                        </Nav.Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </div>
         </Tab>
         {/* <Tab eventKey="contact" title="Contact" link>
           qweqweqwewqe
