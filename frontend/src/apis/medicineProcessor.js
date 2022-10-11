@@ -34,7 +34,7 @@ medProcessor.addMed = async (medicine, navigate) => {
 medProcessor.getAll = async () => {
   store.dispatch(setLoading());
   const response = await axios
-    .get("/medicine")
+    .get("/api/medicine")
     .then((response) => {
       store.dispatch(getMedicineSuccess(response.data));
     })
@@ -45,19 +45,21 @@ medProcessor.getAll = async () => {
         text: "Vui lòng kiểm tra lại kết nối mạng",
       });
     });
+    console.log(response.data);
   store.dispatch(setNotLoading());
 };
 
 medProcessor.getAllObj = async () => {
   const result = [];
   await axios
-    .get("/medicine")
+    .get("/api/medicine")
     .then((response) => {
       result = response.data;
     })
     .catch((err) => {
       console.log("Err: ", err);
     });
+    console.log(response.data);
   return result;
 };
 
