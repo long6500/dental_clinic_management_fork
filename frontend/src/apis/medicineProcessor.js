@@ -49,18 +49,25 @@ medProcessor.getAll = async () => {
   store.dispatch(setNotLoading());
 };
 
+// medProcessor.getAllObj = async () => {
+//   const result = [];
+//   await axios
+//     .get("/api/medicine")
+//     .then((response) => {
+//       result = response.data;
+//     })
+//     .catch((err) => {
+//       console.log("Err: ", err);
+//     });
+//     // console.log(response.data);
+//   return result;
+// };
+
 medProcessor.getAllObj = async () => {
-  const result = [];
-  await axios
-    .get("/api/medicine")
-    .then((response) => {
-      result = response.data;
-    })
-    .catch((err) => {
-      console.log("Err: ", err);
-    });
+  const result = await axios
+    .get("/api/medicine");
     // console.log(response.data);
-  return result;
+  return result.data.data;
 };
 
 medProcessor.getMedicineDetailObj = async (id) => {

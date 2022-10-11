@@ -29,29 +29,10 @@ const Medicine = () => {
   const [key, setKey] = useState("profile");
   const meds = useSelector((state) => state.med.medicine);
   const [medis,setMedis] = useState([]);
-  // const [myTab, setMyTab] = useState([
-  //   { value: "home", title: "home", content: "hello wolrd" },
-  // ]);
-
-  // function addTab(e) {
-  //   e.preventDefault();
-  //   setMyTab([
-  //     ...myTab,
-  //     {
-  //       value: "home1",
-  //       title: "home1",
-  //       content: "hello wolrd1",
-  //     },
-  //   ]);
-  // }
-  // const fetchMed = async () => {
-  //   const response = await axios.get("/medicine").catch((err) => {
-  //     console.log("Err: ", err);
-  //   });
-  //   dispatch(getMedicineSuccess(response.data));
-  // };
-  const loadData = () => {
-    setMedis(medicineProcessor.getAllObj());
+  
+  const loadData = async () => {
+    setMedis(await medicineProcessor.addMed.getAllObj());
+    console.log( await medicineProcessor.getAllObj());
     console.log("asd: " + medis);
   };
 
