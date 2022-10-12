@@ -7,7 +7,7 @@ const getMedicine = async (req, res, next) => {
 };
 
 const createMedicine = async (req, res) => {
-  const senderUser = req.user;
+  // const senderUser = req.user;
   const {
     name,
     imageUrl,
@@ -18,9 +18,10 @@ const createMedicine = async (req, res) => {
     usage,
     expiredDay,
   } = req.body;
-  console.log(await getNext());
+  // console.log(await getNext());
+  const medID = await getNext();
   const newMedicine = await MedicineModel.create({
-    _id: await getNext(),
+    _id: medID,
     name,
     imageUrl,
     quantity,
@@ -29,7 +30,7 @@ const createMedicine = async (req, res) => {
     unit,
     usage,
     expiredDay,
-    createBy: senderUser._id,
+    // createBy: senderUser._id,
   });
   res.send({ success: 1, data: newMedicine });
 };

@@ -23,9 +23,11 @@ const UploadAndDisplayImage = () => {
         type="file"
         name="myImage"
         onChange={(event) => {
+          console.log(event);
           console.log(event.target.files[0]);
           setSelectedImage(event.target.files[0]);
         }}
+        accept="image/png, image/gif, image/jpeg"
       />
     </>
   );

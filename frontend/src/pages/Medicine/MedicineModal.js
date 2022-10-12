@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FaPlusCircle } from "react-icons/fa";
@@ -10,6 +10,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import UploadAndDisplayImage from "../../components/uploadImage";
 
 const MedicineModal = () => {
   const [show, setShow] = useState(false);
@@ -20,7 +21,6 @@ const MedicineModal = () => {
   const navigate = useNavigate();
 
   const [newMedicine, setNewMedicine] = useState({
-    _id: "",
     name: "",
     imageUrl: "",
     quantity: -1,
@@ -28,14 +28,24 @@ const MedicineModal = () => {
     purchasePrice: -1,
     unit: -1,
     usage: "",
-    expireDay: new Date(),
+    expiredDay: new Date().toLocaleDateString('en-US'),
   });
 
   const handleAddMedicine = (e) => {
     e.preventDefault();
     console.log("handleAddMedicine");
-    console.log("date: "+ newMedicine.expireDay);
-    const response = addMed(newMedicine, navigate);
+    console.log("date: " + newMedicine.expiredDay);
+   addMed(newMedicine, navigate);
+    setNewMedicine({
+      name: "",
+      imageUrl: "",
+      quantity: -1,
+      price: -1,
+      purchasePrice: -1,
+      unit: -1,
+      usage: "",
+      expiredDay: new Date().toLocaleDateString('en-US'),
+    });
   };
 
   return (
@@ -48,7 +58,7 @@ const MedicineModal = () => {
         <FaPlusCircle></FaPlusCircle> Thêm thuốc
       </Button>
 
-      <Modal size="lg" show={show} onHide={handleClose} backdrop="static">
+      <Modal size="lg" show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Thông tin thuốc</Modal.Title>
         </Modal.Header>
@@ -77,6 +87,7 @@ const MedicineModal = () => {
                 >
                   <Form.Label>Tên thuốc</Form.Label>
                   <Form.Control
+                    value={newMedicine.name}
                     onChange={(e) => {
                       setNewMedicine({ ...newMedicine, name: e.target.value });
                     }}
@@ -85,6 +96,7 @@ const MedicineModal = () => {
                 <Form.Group as={Col}>
                   Hình ảnh
                   <Form.Control
+                    value={newMedicine.imageUrl }
                     onChange={(e) => {
                       setNewMedicine({
                         ...newMedicine,
@@ -93,13 +105,15 @@ const MedicineModal = () => {
                     }}
                   />
                   <img src={newMedicine.imageUrl} />
-                  {/* <UploadAndDisplayImage></UploadAndDisplayImage> */}
+                  {/* <UploadAndDisplayImage/> */}
                 </Form.Group>
               </Row>
               <Row className="mb-3">
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label>Lượng/SP</Form.Label>
                   <Form.Control
+                  type
+                    value={newMedicine.quantity}
                     onChange={(e) => {
                       setNewMedicine({
                         ...newMedicine,
@@ -115,13 +129,14 @@ const MedicineModal = () => {
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
+                        value={newMedicine.price}
                         onChange={(e) => {
                           setNewMedicine({
                             ...newMedicine,
                             price: e.target.value,
                           });
                         }}
-                        defaultValue="0"
+                        placeholder="0"
                       />
                     </Form.Group>
                   </Row>
@@ -131,6 +146,7 @@ const MedicineModal = () => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label>Đơn vị</Form.Label>
                   <Form.Control
+                    value={newMedicine.unit}
                     onChange={(e) => {
                       setNewMedicine({ ...newMedicine, unit: e.target.value });
                     }}
@@ -141,13 +157,14 @@ const MedicineModal = () => {
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
+                        value={newMedicine.purchasePrice}
                         onChange={(e) => {
                           setNewMedicine({
                             ...newMedicine,
                             purchasePrice: e.target.value,
                           });
                         }}
-                        defaultValue="0"
+                        placeholder="0"
                       />
                     </Form.Group>
                   </Row>
@@ -157,6 +174,7 @@ const MedicineModal = () => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label>Cách sử dụng</Form.Label>
                   <Form.Control
+                    value={newMedicine.usage}
                     onChange={(e) => {
                       setNewMedicine({ ...newMedicine, usage: e.target.value });
                     }}
@@ -168,14 +186,18 @@ const MedicineModal = () => {
                   <Form.Label>Ngày hết hạn</Form.Label>
 
                   <DatePicker
-                    selected={newMedicine.expireDay}
-                    dateFormat="dd/MM/yyyy"
-                    // onChange={(e) => {
-                    //   const d = new Date(e).toLocaleDateString("en-US");
-                    //   setNewMedicine({ ...newMedicine, expireDay: e });
-                    //   console.log("Ngay:" + d);
-                    //   console.log("Ngay uu:" + newMedicine.expireDay);
-                    // }}
+                    selected={
+                      newMedicine.expiredDay === ""
+                        ? new Date()
+                        : new Date(newMedicine.expiredDay)
+                    }
+                    dateFormat="MM/dd/yyyy"
+                    onChange={(e) => {
+                      setNewMedicine({
+                        ...newMedicine,
+                        expiredDay: new Date(e).toLocaleDateString("en-US"),
+                      });
+                    }}
                   ></DatePicker>
                 </Form.Group>
               </Row>

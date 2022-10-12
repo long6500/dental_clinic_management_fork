@@ -25,6 +25,7 @@ medProcessor.addMed = async (medicine, navigate) => {
   try {
     const res = await axios.post("/api/medicine/", medicine);
     store.dispatch(addMedicine(res.data));
+    console.log(res.data);
     navigate("/medicine");
   } catch (error) {
     console.log(error);
@@ -36,7 +37,7 @@ medProcessor.getAll = async () => {
   const response = await axios
     .get("/api/medicine")
     .then((response) => {
-      store.dispatch(getMedicineSuccess(response.data));
+      store.dispatch(getMedicineSuccess(response.data.data));
     })
     .catch((err) => {
       Swal.fire({
@@ -45,7 +46,7 @@ medProcessor.getAll = async () => {
         text: "Vui lòng kiểm tra lại kết nối mạng",
       });
     });
-    console.log(response.data);
+    // console.log(response.data);
   store.dispatch(setNotLoading());
 };
 
@@ -63,12 +64,12 @@ medProcessor.getAll = async () => {
 //   return result;
 // };
 
-medProcessor.getAllObj = async () => {
-  const result = await axios
-    .get("/api/medicine");
-    // console.log(response.data);
-  return result.data.data;
-};
+// medProcessor.getAllObj = async () => {
+//   const result = await axios
+//     .get("/api/medicine");
+//     // console.log(response.data);
+//   return result.data.data;
+// };
 
 medProcessor.getMedicineDetailObj = async (id) => {
   const medDetail = {

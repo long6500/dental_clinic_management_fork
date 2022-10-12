@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { getMedicineSuccess } from "../../redux/reducer/medicineSlice";
 
 import { Link } from "react-router-dom";
@@ -28,12 +27,13 @@ const Medicine = () => {
 
   const [key, setKey] = useState("profile");
   const meds = useSelector((state) => state.med.medicine);
-  const [medis,setMedis] = useState([]);
-  
+  // const [medis, setMedis] = useState([]);
+
   const loadData = async () => {
-    setMedis(await medicineProcessor.addMed.getAllObj());
-    console.log( await medicineProcessor.getAllObj());
-    console.log("asd: " + medis);
+    // setMedis((arr) => [...arr, ...medicineProcessor.addMed.getAllObj()]);
+    // console.log(await medicineProcessor.getAllObj());
+    medicineProcessor.getAll();
+    // console.log("asd: " + medis);
   };
 
   useEffect(() => {
@@ -116,9 +116,9 @@ const Medicine = () => {
                       <FaEdit size={25} />
                     </Nav.Link>
                     {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
-                    <Nav.Link href="/asdsad" style={{ display: "inline" }}>
+                    {/* <Nav.Link href="/asdsad" style={{ display: "inline" }}>
                       <FaEdit size={25} />
-                    </Nav.Link>
+                    </Nav.Link> */}
                   </td>
                 </tr>
                 {meds.map((med) => {
@@ -126,9 +126,11 @@ const Medicine = () => {
                     <tr>
                       <td>1</td>
                       <td>
-                        <img src={med.url} />
+                        {/* <img src={med.url} /> */}
+                        {med.imageUrl}
                       </td>
-                      <td>{med.medId}</td>
+                      <td>{med._id}</td>
+                      <td>{med.name}</td>
                       <td>{med.usage}</td>
                       <td>
                         <Nav.Link
@@ -138,9 +140,9 @@ const Medicine = () => {
                           <FaEdit size={25} />
                         </Nav.Link>
                         {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
-                        <Nav.Link href="/delete" style={{ display: "inline" }}>
+                        {/* <Nav.Link href="/delete" style={{ display: "inline" }}>
                           <FaEdit size={25} />
-                        </Nav.Link>
+                        </Nav.Link> */}
                       </td>
                     </tr>
                   );
