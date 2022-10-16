@@ -50,7 +50,7 @@ const updateMedicine = async (req, res) => {
     status,
   } = req.body;
 
-  const existMedicine = await MedicineModel.findOne({ _id: medicineId });
+  const existMedicine = await MedicineModel.findOne({ '_id': medicineId });
   if (!existMedicine) {
     throw new HTTPError(400, "Not found medicine");
   }
@@ -67,7 +67,7 @@ const updateMedicine = async (req, res) => {
       usage,
       expiredDay,
       status,
-      modifyBy: senderUser._id,
+      // modifyBy: senderUser._id,
     },
     { new: true }
   );
