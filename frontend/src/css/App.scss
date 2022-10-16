@@ -16,3 +16,21 @@
     background-color: rgba(0,0,0, 0.4);
     z-index: 1;
 }
+
+.image-container {
+    position: relative;
+    margin-top: 10px;
+}
+
+#image-close {
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#image-close:hover {
+    color: #e74c3c;
+    height: 35px;
+    width: 35px;
+}

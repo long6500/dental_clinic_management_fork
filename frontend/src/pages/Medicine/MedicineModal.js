@@ -34,13 +34,12 @@ const MedicineModal = (prop) => {
       usage: "",
       expiredDay: new Date().toLocaleDateString("en-US"),
     },
+    enableReinitialize: true,
     validationSchema: Yup.object({
       name: Yup.string()
         .required("Required")
         .min(4, "Must be 4 characters or more"),
-      imageUrl: Yup.string()
-        .required("Required")
-        .min(8, "Must be 8 characters or more"),
+      // imageUrl: Yup.required("Required"),
       quantity: Yup.number().required("Required").positive(),
       price: Yup.number().required("Required").positive(),
       purchasePrice: Yup.number().required("Required").positive(),
@@ -48,17 +47,28 @@ const MedicineModal = (prop) => {
       usage: Yup.string().required("Required"),
     }),
     onSubmit: (values) => {
-      console.log(values);
+      console.log(values.imageUrl[0]);
       new Promise((resolve) => {
-        resolve()
-      }).then(() => {
-        addMed(values, navigate);
-        handleClose()
-      }).then(() => {
-        setTimeout(() => {
-          loadData()
-        }, 100)
+        resolve(values);
       })
+        .then((values) => {
+          let formData = new FormData()
+          formData.append('name', values.name)
+          formData.append('imageUrl', values.imageUrl[0])
+          formData.append('quantity', values.quantity)
+          formData.append('price', values.price)
+          formData.append('purchasePrice', values.purchasePrice)
+          formData.append('unit', values.unit)
+          formData.append('usage', values.usage)
+          formData.append('expiredDay', values.expiredDay)
+          addMed(formData, navigate);
+          handleClose();
+        })
+        .then(() => {
+          setTimeout(() => {
+            loadData();
+          }, 100);
+        });
     },
   });
 
@@ -115,9 +125,10 @@ const MedicineModal = (prop) => {
                   as={Col}
                   controlId="formGroupPassword"
                 >
-                  <Form.Label>Tên thuốc</Form.Label>
+                  <Form.Label column sm={12}>Tên thuốc</Form.Label>
                   <Form.Control
-                    defaultValue={formik.values.name}
+                    id="name"
+                    value={formik.values.name}
                     // onChange={(e) => {
                     //   // setNewMedicine({ ...newMedicine, name: e.target.value });
                     //   formik.handleChange();
@@ -131,42 +142,28 @@ const MedicineModal = (prop) => {
                   )}
                 </Form.Group>
                 <Form.Group as={Col}>
-                  Hình ảnh
-                  <Form.Control
-                    defaultValue={formik.values.imageUrl}
-                    // onChange={(e) => {
-                    //   // setNewMedicine({
-                    //   //   ...newMedicine,
-                    //   //   imageUrl: e.target.value,
-                    //   // });
-                    //   formik.handleChange();
-                    // }}
-                    onChange={formik.handleChange}
-                  />
+                <Form.Label column sm={12}>Email</Form.Label>
+                <UploadAndDisplayImage 
+                value={formik.values.imageUrl ? formik.values.imageUrl : []} 
+                onChange={(value) => {
+                  if(value && value.length > 0) {
+                    formik.values.imageUrl = value
+                  }
+                }}
+                />
                   {formik.errors.imageUrl && (
                     <p className="errorMsg"> {formik.errors.imageUrl} </p>
                   )}
-                  {/* <img src={newMedicine.imageUrl} /> */}
-                  {/* <UploadAndDisplayImage/> */}
                 </Form.Group>
               </Row>
               <Row className="mb-3">
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Lượng/SP</Form.Label>
+                  <Form.Label column sm={12}>Lượng/SP</Form.Label>
                   <Form.Control
+                    id="quantity"
                     type="number"
                     placeholder="0"
-                    // value={
-                    //   newMedicine.quantity === -1 ? 0 : newMedicine.quantity
-                    // }
-                    defaultValue={formik.values.quantity}
-                    // onChange={(e) => {
-                    //   // setNewMedicine({
-                    //   //   ...newMedicine,
-                    //   //   quantity: e.target.value,
-                    //   // });
-                    //   formik.handleChange();
-                    // }}
+                    value={formik.values.quantity}
                     onChange={formik.handleChange}
                   />
                   {formik.errors.quantity && (
@@ -175,23 +172,15 @@ const MedicineModal = (prop) => {
                 </Form.Group>
 
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Giá bán</Form.Label>
+                  <Form.Label column sm={12}>Giá bán</Form.Label>
 
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
+                        id="price"
                         type="number"
-                        // value={newMedicine.price === -1 ? 0 : newMedicine.price}
-                        defaultValue={formik.values.price}
-                        // onChange={(e) => {
-                        //   // setNewMedicine({
-                        //   //   ...newMedicine,
-                        //   //   price: e.target.value,
-                        //   // });
-                        //   formik.handleChange();
-                        // }}
+                        value={formik.values.price}
                         onChange={formik.handleChange}
-                        // placeholder="0"
                       />
                       {formik.errors.price && (
                         <p className="errorMsg"> {formik.errors.price} </p>
@@ -202,16 +191,12 @@ const MedicineModal = (prop) => {
               </Row>
               <Row className="mb-3">
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Đơn vị</Form.Label>
+                  <Form.Label column sm={12}>Đơn vị</Form.Label>
                   <Form.Control
+                    id="unit"
                     type="number"
                     placeholder="0"
-                    // value={newMedicine.unit === -1 ? 0 : newMedicine.unit}
-                    defaultValue={formik.values.unit}
-                    // onChange={(e) => {
-                    //   // setNewMedicine({ ...newMedicine, unit: e.target.value });
-                    //   formik.handleChange();
-                    // }}
+                    value={formik.values.unit}
                     onChange={formik.handleChange}
                   />
                   {formik.errors.unit && (
@@ -219,24 +204,13 @@ const MedicineModal = (prop) => {
                   )}
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Giá nhập</Form.Label>
+                  <Form.Label column sm={12}>Giá nhập</Form.Label>
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
+                        id="purchasePrice"
                         type="number"
-                        // value={
-                        //   newMedicine.purchasePrice === -1
-                        //     ? 0
-                        //     : newMedicine.purchasePrice
-                        // }
-                        defaultValue={formik.values.purchasePrice}
-                        // onChange={(e) => {
-                        //   // setNewMedicine({
-                        //   //   ...newMedicine,
-                        //   //   purchasePrice: e.target.value,
-                        //   // });
-                        //   formik.handleChange();
-                        // }}
+                        value={formik.values.purchasePrice}
                         onChange={formik.handleChange}
                         placeholder="0"
                       />
@@ -251,14 +225,10 @@ const MedicineModal = (prop) => {
               </Row>
               <Row className="mb-3">
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Cách sử dụng</Form.Label>
+                  <Form.Label column sm={12}>Cách sử dụng</Form.Label>
                   <Form.Control
-                    // value={newMedicine.usage}
-                    defaultValue={formik.values.usage}
-                    // onChange={(e) => {
-                    //   // setNewMedicine({ ...newMedicine, usage: e.target.value });
-                    //   formik.handleChange();
-                    // }}
+                    id="usage"
+                    value={formik.values.usage}
                     onChange={formik.handleChange}
                     as="textarea"
                     rows={3}
@@ -268,7 +238,7 @@ const MedicineModal = (prop) => {
                   )}
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Ngày hết hạn</Form.Label>
+                  <Form.Label column sm={12}>Ngày hết hạn</Form.Label>
 
                   <DatePicker
                     selected={
@@ -277,13 +247,6 @@ const MedicineModal = (prop) => {
                         : new Date(formik.values.expiredDay)
                     }
                     dateFormat="MM/dd/yyyy"
-                    // onChange={(e) => {
-                    //   // setNewMedicine({
-                    //   //   ...newMedicine,
-                    //   //   expiredDay: new Date(e).toLocaleDateString("en-US"),
-                    //   // });
-                    //   formik.handleChange();
-                    // }}
                     onChange={formik.handleChange}
                   ></DatePicker>
                 </Form.Group>
@@ -294,14 +257,6 @@ const MedicineModal = (prop) => {
             </Form>
           </>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Hủy bỏ
-          </Button>
-          <Button  type="submit" variant="primary">
-            Lưu lại
-          </Button>
-        </Modal.Footer>
       </Modal>
     </>
   );

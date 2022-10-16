@@ -67,7 +67,7 @@ const updateMedicine = async (req, res) => {
       usage,
       expiredDay,
       status,
-      // modifyBy: senderUser._id,
+      modifyBy: senderUser._id,
     },
     { new: true }
   );

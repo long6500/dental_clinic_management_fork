@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 const medProcessor = {};
 
 export const addMed = async (medicine, navigate) => {
+  console.log(medicine);
   try {
     const res = await axios.post("/api/medicine/", medicine);
     store.dispatch(addMedicine(res.data));
