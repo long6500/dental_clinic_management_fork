@@ -10,9 +10,12 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import UploadAndDisplayImage from "../../components/uploadImage";
 
-const MedicineModal = () => {
+const MedicineModal = (prop) => {
+  const { loadData } = prop;
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -20,32 +23,82 @@ const MedicineModal = () => {
 
   const navigate = useNavigate();
 
-  const [newMedicine, setNewMedicine] = useState({
-    name: "",
-    imageUrl: "",
-    quantity: -1,
-    price: -1,
-    purchasePrice: -1,
-    unit: -1,
-    usage: "",
-    expiredDay: new Date().toLocaleDateString('en-US'),
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      imageUrl: "",
+      quantity: 0,
+      price: 0,
+      purchasePrice: 0,
+      unit: 0,
+      usage: "",
+      expiredDay: new Date().toLocaleDateString("en-US"),
+    },
+    enableReinitialize: true,
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .required("Required")
+        .min(4, "Must be 4 characters or more"),
+      // imageUrl: Yup.required("Required"),
+      quantity: Yup.number().required("Required").positive(),
+      price: Yup.number().required("Required").positive(),
+      purchasePrice: Yup.number().required("Required").positive(),
+      unit: Yup.number().required("Required").positive(),
+      usage: Yup.string().required("Required"),
+    }),
+    onSubmit: (values) => {
+      console.log(values.imageUrl[0]);
+      new Promise((resolve) => {
+        resolve(values);
+      })
+        .then((values) => {
+          let formData = new FormData()
+          formData.append('name', values.name)
+          formData.append('imageUrl', values.imageUrl[0])
+          formData.append('quantity', values.quantity)
+          formData.append('price', values.price)
+          formData.append('purchasePrice', values.purchasePrice)
+          formData.append('unit', values.unit)
+          formData.append('usage', values.usage)
+          formData.append('expiredDay', values.expiredDay)
+          addMed(formData, navigate);
+          handleClose();
+        })
+        .then(() => {
+          setTimeout(() => {
+            loadData();
+          }, 100);
+        });
+    },
   });
+
+  // const [newMedicine, setNewMedicine] = useState({
+  //   name: "",
+  //   imageUrl: "",
+  //   quantity: -1,
+  //   price: -1,
+  //   purchasePrice: -1,
+  //   unit: -1,
+  //   usage: "",
+  //   expiredDay: new Date().toLocaleDateString("en-US"),
+  // });
 
   const handleAddMedicine = (e) => {
     e.preventDefault();
-    console.log("handleAddMedicine");
-    console.log("date: " + newMedicine.expiredDay);
-   addMed(newMedicine, navigate);
-    setNewMedicine({
-      name: "",
-      imageUrl: "",
-      quantity: -1,
-      price: -1,
-      purchasePrice: -1,
-      unit: -1,
-      usage: "",
-      expiredDay: new Date().toLocaleDateString('en-US'),
-    });
+    console.log(formik.values);
+    addMed(formik.values, navigate);
+    // setNewMedicine({
+    //   name: "",
+    //   imageUrl: "",
+    //   quantity: -1,
+    //   price: -1,
+    //   purchasePrice: -1,
+    //   unit: -1,
+    //   usage: "",
+    //   expiredDay: new Date().toLocaleDateString("en-US"),
+    // });
+    handleClose();
+    loadData();
   };
 
   return (
@@ -65,153 +118,145 @@ const MedicineModal = () => {
         <Modal.Body>
           {/* <MedicineForm></MedicineForm> */}
           <>
-            <Form>
-              {/* <Row className="mb-3">
-          <Form.Group as={Col} controlId="formGridEmail">
-            <Form.Label>Mã thuốc</Form.Label>
-            <Form.Control
-              type="text"
-              onChange={(e) => {
-                // set_id(e.target.value)
-                setNewMedicine({ ...newMedicine, _id: e.target.value });
-              }}
-            />
-          </Form.Group>
-        </Row> */}
-
+            <Form onSubmit={formik.handleSubmit}>
               <Row className="mb-3">
                 <Form.Group
                   className="mb-3"
                   as={Col}
                   controlId="formGroupPassword"
                 >
-                  <Form.Label>Tên thuốc</Form.Label>
+                  <Form.Label column sm={12}>Tên thuốc</Form.Label>
                   <Form.Control
-                    value={newMedicine.name}
-                    onChange={(e) => {
-                      setNewMedicine({ ...newMedicine, name: e.target.value });
-                    }}
+                    id="name"
+                    value={formik.values.name}
+                    // onChange={(e) => {
+                    //   // setNewMedicine({ ...newMedicine, name: e.target.value });
+                    //   formik.handleChange();
+                    // }}
+                    onChange={formik.handleChange}
+                    placeholder="Nhập tên thuốc"
                   />
+
+                  {formik.errors.name && (
+                    <p className="errorMsg"> {formik.errors.name} </p>
+                  )}
                 </Form.Group>
                 <Form.Group as={Col}>
-                  Hình ảnh
-                  <Form.Control
-                    value={newMedicine.imageUrl }
-                    onChange={(e) => {
-                      setNewMedicine({
-                        ...newMedicine,
-                        imageUrl: e.target.value,
-                      });
-                    }}
-                  />
-                  <img src={newMedicine.imageUrl} />
-                  {/* <UploadAndDisplayImage/> */}
+                <Form.Label column sm={12}>Email</Form.Label>
+                <UploadAndDisplayImage 
+                value={formik.values.imageUrl ? formik.values.imageUrl : []} 
+                onChange={(value) => {
+                  if(value && value.length > 0) {
+                    formik.values.imageUrl = value
+                  }
+                }}
+                />
+                  {formik.errors.imageUrl && (
+                    <p className="errorMsg"> {formik.errors.imageUrl} </p>
+                  )}
                 </Form.Group>
               </Row>
               <Row className="mb-3">
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Lượng/SP</Form.Label>
+                  <Form.Label column sm={12}>Lượng/SP</Form.Label>
                   <Form.Control
-                  type
-                    value={newMedicine.quantity}
-                    onChange={(e) => {
-                      setNewMedicine({
-                        ...newMedicine,
-                        quantity: e.target.value,
-                      });
-                    }}
+                    id="quantity"
+                    type="number"
+                    placeholder="0"
+                    value={formik.values.quantity}
+                    onChange={formik.handleChange}
                   />
+                  {formik.errors.quantity && (
+                    <p className="errorMsg"> {formik.errors.quantity} </p>
+                  )}
                 </Form.Group>
 
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Giá bán</Form.Label>
+                  <Form.Label column sm={12}>Giá bán</Form.Label>
 
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
-                        value={newMedicine.price}
-                        onChange={(e) => {
-                          setNewMedicine({
-                            ...newMedicine,
-                            price: e.target.value,
-                          });
-                        }}
-                        placeholder="0"
+                        id="price"
+                        type="number"
+                        value={formik.values.price}
+                        onChange={formik.handleChange}
                       />
+                      {formik.errors.price && (
+                        <p className="errorMsg"> {formik.errors.price} </p>
+                      )}
                     </Form.Group>
                   </Row>
                 </Form.Group>
               </Row>
               <Row className="mb-3">
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Đơn vị</Form.Label>
+                  <Form.Label column sm={12}>Đơn vị</Form.Label>
                   <Form.Control
-                    value={newMedicine.unit}
-                    onChange={(e) => {
-                      setNewMedicine({ ...newMedicine, unit: e.target.value });
-                    }}
+                    id="unit"
+                    type="number"
+                    placeholder="0"
+                    value={formik.values.unit}
+                    onChange={formik.handleChange}
                   />
+                  {formik.errors.unit && (
+                    <p className="errorMsg"> {formik.errors.unit} </p>
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Giá nhập</Form.Label>
+                  <Form.Label column sm={12}>Giá nhập</Form.Label>
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
-                        value={newMedicine.purchasePrice}
-                        onChange={(e) => {
-                          setNewMedicine({
-                            ...newMedicine,
-                            purchasePrice: e.target.value,
-                          });
-                        }}
+                        id="purchasePrice"
+                        type="number"
+                        value={formik.values.purchasePrice}
+                        onChange={formik.handleChange}
                         placeholder="0"
                       />
+                      {formik.errors.purchasePrice && (
+                        <p className="errorMsg">
+                          {formik.errors.purchasePrice}
+                        </p>
+                      )}
                     </Form.Group>
                   </Row>
                 </Form.Group>
               </Row>
               <Row className="mb-3">
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Cách sử dụng</Form.Label>
+                  <Form.Label column sm={12}>Cách sử dụng</Form.Label>
                   <Form.Control
-                    value={newMedicine.usage}
-                    onChange={(e) => {
-                      setNewMedicine({ ...newMedicine, usage: e.target.value });
-                    }}
+                    id="usage"
+                    value={formik.values.usage}
+                    onChange={formik.handleChange}
                     as="textarea"
                     rows={3}
                   />
+                  {formik.errors.usage && (
+                    <p className="errorMsg">{formik.errors.usage}</p>
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Ngày hết hạn</Form.Label>
+                  <Form.Label column sm={12}>Ngày hết hạn</Form.Label>
 
                   <DatePicker
                     selected={
-                      newMedicine.expiredDay === ""
+                      formik.values.expiredDay === ""
                         ? new Date()
-                        : new Date(newMedicine.expiredDay)
+                        : new Date(formik.values.expiredDay)
                     }
                     dateFormat="MM/dd/yyyy"
-                    onChange={(e) => {
-                      setNewMedicine({
-                        ...newMedicine,
-                        expiredDay: new Date(e).toLocaleDateString("en-US"),
-                      });
-                    }}
+                    onChange={formik.handleChange}
                   ></DatePicker>
                 </Form.Group>
               </Row>
+              <Button type="submit" variant="primary">
+                Lưu lại
+              </Button>
             </Form>
           </>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Hủy bỏ
-          </Button>
-          <Button variant="primary" onClick={handleAddMedicine}>
-            Lưu lại
-          </Button>
-        </Modal.Footer>
       </Modal>
     </>
   );

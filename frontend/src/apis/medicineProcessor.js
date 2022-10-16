@@ -1,6 +1,9 @@
 import axios from "axios";
 import { addMedicine } from "../redux/reducer/medicineSlice";
-import { getMedicineSuccess } from "../redux/reducer/medicineSlice";
+import {
+  getMedicineSuccess,
+  getMedDetailSuccess,
+} from "../redux/reducer/medicineSlice";
 import {
   setLoading,
   setNotLoading,
@@ -12,10 +15,11 @@ import Swal from "sweetalert2";
 const medProcessor = {};
 
 export const addMed = async (medicine, navigate) => {
+  console.log(medicine);
   try {
     const res = await axios.post("/api/medicine/", medicine);
     store.dispatch(addMedicine(res.data));
-    navigate("/medicine");
+    // navigate("/medicine");
   } catch (error) {
     console.log(error);
   }
@@ -46,7 +50,7 @@ medProcessor.getAll = async () => {
         text: "Vui lòng kiểm tra lại kết nối mạng",
       });
     });
-    // console.log(response.data);
+  // console.log(response.data);
   store.dispatch(setNotLoading());
 };
 
@@ -71,33 +75,26 @@ medProcessor.getAll = async () => {
 //   return result.data.data;
 // };
 
-medProcessor.getMedicineDetailObj = async (id) => {
-  const medDetail = {
-    name: "",
-    url: "",
-    quantity: -1,
-    price: -1,
-    purchasePrice: -1,
-    unit: -1,
-    usage: "",
-    expireDay: "",
-  };
-  await axios
-    .get(`/medicine/${id}`)
+medProcessor.getMedicineDetailObj = (id) => {
+  const response = axios
+    .get(`api/medicine/${id}`)
     .then((response) => {
-      // store.dispatch(getMedicineSuccess(response.data));
-      medDetail = response.data;
+      store.dispatch(getMedDetailSuccess(response.data.data));
     })
     .catch((err) => {
       console.log("Err: ", err);
     });
-  return medDetail;
 };
 
-medProcessor.updateMedcine = async (id, data, navigate) => {
+medProcessor.updateMedcine = async (med, navigate) => {
+  let tempId = med._id;
+  delete med._id
+  delete med.createdAt
+  delete med.updatedAt
+  delete med.__v
   await axios
-    .put(`/medicine/${id}`, data)
-    .then(navigate("/medicine"))
+    .put(`api/medicine/${tempId}`, med)
+    // .then(navigate("/medicine"))
     .catch((err) => {
       console.log("Err: ", err);
     });

@@ -20,21 +20,32 @@ import MedicineModal from "./MedicineModal";
 import Table from "react-bootstrap/Table";
 import Col from "react-bootstrap/Col";
 import medicineProcessor from "../../apis/medicineProcessor";
+import UpdateMedicineModal from "./UpdateMedicineModal";
 
 const Medicine = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [key, setKey] = useState("profile");
+  const [medId, setMedID] = useState('')
+  const [isShowUpdate, setIsShowUpdate] = useState(false)
   const meds = useSelector((state) => state.med.medicine);
-  // const [medis, setMedis] = useState([]);
 
   const loadData = async () => {
     // setMedis((arr) => [...arr, ...medicineProcessor.addMed.getAllObj()]);
     // console.log(await medicineProcessor.getAllObj());
     medicineProcessor.getAll();
-    // console.log("asd: " + medis);
   };
+
+  const openUpdateModal = (id) => {
+    setMedID(id)
+    setIsShowUpdate(true)
+  }
+
+  const closeUpdateModal = () => {
+    setMedID('')
+    setIsShowUpdate(false)
+  }
 
   useEffect(() => {
     loadData();
@@ -42,9 +53,14 @@ const Medicine = () => {
 
   return (
     <>
+    <UpdateMedicineModal 
+    closeModal={closeUpdateModal} 
+    isVisible={isShowUpdate} 
+    medID={medId}
+    loadData={loadData}
+    ></UpdateMedicineModal>
       <Navbar>
         <Container fluid>
-          {/* <Navbar.Brand href="#">Navbar scroll</Navbar.Brand> */}
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
             <Nav
@@ -57,15 +73,8 @@ const Medicine = () => {
               </h4>
             </Nav>
             <Form className="d-flex">
-              {/* <Button
-                variant="success"
-                style={{ marginRight: "20px" }}
-                onClick={addTab}
-              >
-                <FaPlusCircle></FaPlusCircle> Thêm thuốc
-              </Button> */}
-              <MedicineModal></MedicineModal>
-              <Button variant="primary" style={{ marginRight: "20px" }}>
+              <MedicineModal loadData ={loadData}></MedicineModal>
+              <Button variant="primary" style={{ marginRight: "20px" }} onClick = {loadData}>
                 <FaRedoAlt /> Tải lại
               </Button>
             </Form>
@@ -73,17 +82,12 @@ const Medicine = () => {
         </Container>
       </Navbar>
 
-      {/* thêm 1 thanh search */}
-
       <Tabs
         id="uncontrolled-tab-example"
         className="mb-3"
         activeKey={key}
         onSelect={(k) => setKey(k)}
       >
-        {/* <Tab eventKey="http://localhost:3000/pathological1" title="Home">
-          asd
-        </Tab> */}
 
         <Tab eventKey="profile" title="Tất cả">
           <div style={{ marginLeft: "100px", marginRight: "100px" }}>
@@ -105,44 +109,20 @@ const Medicine = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>asd</td>
-                  <td>qwe</td>
-                  <td>zxc</td>
-                  <td></td>
-                  <td>
-                    <Nav.Link href="/asdsad" style={{ display: "inline" }}>
-                      <FaEdit size={25} />
-                    </Nav.Link>
-                    {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
-                    {/* <Nav.Link href="/asdsad" style={{ display: "inline" }}>
-                      <FaEdit size={25} />
-                    </Nav.Link> */}
-                  </td>
-                </tr>
-                {meds.map((med) => {
+
+                {meds.map((med, index) => {
                   return (
                     <tr>
-                      <td>1</td>
+                      <td>{index + 1}</td>
                       <td>
-                        {/* <img src={med.url} /> */}
                         {med.imageUrl}
                       </td>
                       <td>{med._id}</td>
                       <td>{med.name}</td>
                       <td>{med.usage}</td>
                       <td>
-                        <Nav.Link
-                          href={`/medicine/${med.medId}`}
-                          style={{ display: "inline" }}
-                        >
-                          <FaEdit size={25} />
-                        </Nav.Link>
-                        {/* <Link to="/"><FaEdit size={20} style = {{padding:"0px",margin:"0",display:"inline"}}/></Link> */}
-                        {/* <Nav.Link href="/delete" style={{ display: "inline" }}>
-                          <FaEdit size={25} />
-                        </Nav.Link> */}
+                        {/* <UpdateMedicineModal medID={med._id}></UpdateMedicineModal> */}
+                        <FaEdit color="#2980b9" cursor={"pointer"} size={25} onClick={() => {openUpdateModal(med._id)}} />
                       </td>
                     </tr>
                   );
@@ -151,16 +131,6 @@ const Medicine = () => {
             </Table>
           </div>
         </Tab>
-        {/* <Tab eventKey="contact" title="Contact" link>
-          qweqweqwewqe
-        </Tab> */}
-        {/* {myTab.map((item) => {
-          return (
-            <Tab eventKey={item.value} title={item.title}>
-              {item.content}
-            </Tab>
-          );
-        })} */}
       </Tabs>
     </>
   );
