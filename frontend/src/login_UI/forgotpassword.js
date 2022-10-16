@@ -1,42 +1,35 @@
-import "./login.css";
+import "./forgotpassword.css";
 import React from "react";
 import axios from "../apis/api";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-function Login() {
+function Forgotpassword() {
   
   const [error, setError] = React.useState("");
 
   const formik =  useFormik({
     initialValues: {
-      username: "",
-      password: "",
+      email: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string()
+        email: Yup.string()
         .required("Không được trống")
         .min(2, "Phải dài hơn 2 kí tự"),
-      password: Yup.string()
-        .required("Không được trống")
-        .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-          "Mật khẩu không đúng định dạng"
-        ),
+     
     }),
 
    onSubmit: async  (values) => {
     console.log(values)
-    const { username, password } = values;
+    const { username } = values;
     try {
-      console.log({ username, password })
+      console.log({ username})
       const res = await axios({
-        url: '/api/auth/login',
-        method: 'post',
+        url: '',
+        method: 'Get',
         data: {
-          username,
-          password
+          username
+          
         }
       });
 
@@ -48,7 +41,6 @@ function Login() {
           }
           setError("Successfull")
           localStorage.setItem('user', JSON.stringify(user));
-          window.location.href = '/homepage'
       } else {
         console.log("sai mk")
       }
@@ -74,60 +66,28 @@ function Login() {
           <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
             <form onSubmit={formik.handleSubmit}>
               <div className="divider d-flex align-items-center my-4">
-                <p className="text-center fw-bold mx-3 mb-0">Đăng Nhập</p>
+                <p className="text-center fw-bold mx-3 mb-0">Quên Mật Khẩu</p>
               </div>
               {/* Email input */}
               <div className="form-outline mb-4">
                 <input
                   className="form-control form-control-lg"
                   placeholder="Enter a valid email address"
-                  id="username"
-                  name="username"
-                  value={formik.values.username}
+                  id="email"
+                  name="email"
+                  value={formik.values.email}
                   onChange={formik.handleChange}
                 />
-               {formik.errors.username && (
-                  <p className="errorMsg"> {formik.errors.username} </p>
+               {formik.errors.email && (
+                  <p className="errorMsg"> {formik.errors.email} </p>
                 )}
                 <label className="form-label" htmlFor="form3Example3">
                   Email
                 </label>
               </div>
               {/* Password input */}
-              <div className="form-outline mb-3">
-                <input
-                  type="password"
-                  className="form-control form-control-lg"
-                  placeholder="Enter password"
-                  id="password"
-                  name="password"
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                />
-                {formik.errors.password && (
-                  <p className="errorMsg"> {formik.errors.password} </p>
-                )}
-                <label className="form-label" htmlFor="form3Example4" required>
-                  Mật Khẩu
-                </label>
-              </div>
-              <div className="d-flex justify-content-between align-items-center">
-                {/* Checkbox */}
-                <div className="form-check mb-0">
-                  <input
-                    className="form-check-input me-2"
-                    type="checkbox"
-                    defaultValue
-                    id="form2Example3"
-                  />
-                  <label className="form-check-label" htmlFor="form2Example3">
-                    Nhớ mật khẩu
-                  </label>
-                </div>
-                <a href="/forgotpassword" className="text-body">
-                  Quên mật khẩu
-                </a>
-              </div>
+             
+              
               <div className="text-center text-lg-start mt-4 pt-2">
                 <button
                   type="onSubmit"
@@ -135,7 +95,7 @@ function Login() {
                   href="/homepage"
                   styleFor={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                 >
-                  Đăng Nhập
+                  Xác Nhận
                 </button>
               </div>
             </form>
@@ -146,4 +106,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Forgotpassword;

@@ -3,6 +3,7 @@ require('express-async-errors');
 
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require("cors");
 const medicineRouter = require('./modules/medicine/medicine.router');
 const roleController = require('./modules/role/role.controller');
 const roleRouter = require('./modules/role/role.router');
@@ -25,6 +26,7 @@ mongoose.connect(process.env.MONGODB_URL, err => {
 })
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
     console.log('time', Date.now(), req.method, req.originalUrl);
