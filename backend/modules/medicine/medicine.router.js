@@ -5,6 +5,7 @@ const needAuthenticated = require('../../middlewares/needAuthenticated');
 const isRole = require('../../middlewares/isRole');
 const medicineSchema = require('./medicine.validation');
 const validateInput = require('../../middlewares/validateInput')
+const fileUploader = require('../../middlewares/cloudinary.config');
 
 router.get(
     '/', 
@@ -17,6 +18,7 @@ router.post(
     '/', 
     //needAuthenticated, 
     //isRole, 
+    fileUploader.single('imageUrl'),
     validateInput(medicineSchema, 'body'),
     medicineController.createMedicine
 );

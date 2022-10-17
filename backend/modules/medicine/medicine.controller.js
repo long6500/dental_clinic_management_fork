@@ -8,6 +8,7 @@ const getMedicine = async (req, res, next) => {
 
 const createMedicine = async (req, res) => {
   // const senderUser = req.user;
+  const imgUrl = req.file.path; 
   const {
     name,
     imageUrl,
@@ -18,12 +19,12 @@ const createMedicine = async (req, res) => {
     usage,
     expiredDay,
   } = req.body;
-  // console.log(await getNext());
+  console.log(req.body);
   const medID = await getNext();
   const newMedicine = await MedicineModel.create({
     _id: medID,
     name,
-    imageUrl,
+    imageUrl: imgUrl,
     quantity,
     price,
     purchasePrice,
