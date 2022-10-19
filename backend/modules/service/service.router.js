@@ -4,7 +4,8 @@ const serviceController = require('./service.controller');
 const needAuthenticated = require('../../middlewares/needAuthenticated');
 const isRole = require('../../middlewares/isRole');
 const serviceSchema = require('./service.validation');
-const validateInput = require('../../middlewares/validateInput')
+const validateInput = require('../../middlewares/validateInput');
+const fileUploader = require('../../middlewares/cloudinary.config');
 
 router.get(
     '/', 
