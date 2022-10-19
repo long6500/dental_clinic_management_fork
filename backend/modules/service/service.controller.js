@@ -1,4 +1,6 @@
 const ServiceModel = require('./service');
+const ConsumableModel = require('../consumable/consumable');
+const PrescriptionModel = require('../prescription/prescription');
 const HTTPError = require('../../common/httpError');
 
 const getService = async (req, res, next) => {
@@ -8,25 +10,51 @@ const getService = async (req, res, next) => {
 }
 
 const createService = async (req, res) => {
-    const senderUser = req.user;
-    const { name, imageUrl, time, price, note, status } = req.body;
+    //const senderUser = req.user;
+    const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
+    const _id = await getNext();
+
     const newService = await ServiceModel.create({
-        _id: await getNext(),
+        _id: _id,
         name,
         imageUrl,
         time,
         price,
         note,
         status,
-        createBy: senderUser._id
+        //createBy: senderUser._id
     });
-    res.send({ success: 1, data: newService });
+
+    const consumableArray = JSON.parse(JSON.stringify(consumable));
+    consumableArray.forEach(async (element) => {
+        await ConsumableModel.create({
+            serviceId: _id,
+            medicineId: element.medicineId,
+            uses: element.uses,
+            numberOfUses: element.numberOfUses,
+            //createBy: senderUser._id,
+        });
+    });
+
+    const prescriptionArray = JSON.parse(JSON.stringify(prescription));
+    prescriptionArray.forEach(async (element) => {
+        await PrescriptionModel.create({
+            serviceId: _id,
+            medicineId: element.medicineId,
+            quantity: element.quantity,
+            usage: element.usage,
+            //createBy: senderUser._id,
+        });
+    });
+
+    const fullService = {...newService._doc,consumableArray,prescriptionArray};
+    res.send({ success: 1, data: fullService });
 }
 
 const updateService = async (req, res) => {
-    const senderUser = req.user;
+    //const senderUser = req.user;
     const { serviceId } = req.params;
-    const { name, imageUrl, time, price, note, status } = req.body;
+    const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
 
     const existService = await ServiceModel.findOne({ _id: serviceId });
     if (!existService) {
@@ -41,18 +69,52 @@ const updateService = async (req, res) => {
             price,
             note,
             status,
-            modifyBy: senderUser._id
+            //modifyBy: senderUser._id
         }, { new: true });
 
-    res.send({ success: 1, data: updatedService });
+    await ConsumableModel.deleteMany({serviceId: serviceId});
+    const consumableArray = JSON.parse(JSON.stringify(consumable));
+    consumableArray.forEach(async (element) => {
+        await ConsumableModel.create({
+            serviceId: serviceId,
+            medicineId: element.medicineId,
+            uses: element.uses,
+            numberOfUses: element.numberOfUses,
+            //createBy: senderUser._id,
+        });
+    });
+
+    await PrescriptionModel.deleteMany({serviceId: serviceId});
+    const prescriptionArray = JSON.parse(JSON.stringify(prescription));
+    prescriptionArray.forEach(async (element) => {
+        await PrescriptionModel.create({
+            serviceId: serviceId,
+            medicineId: element.medicineId,
+            quantity: element.quantity,
+            usage: element.usage,
+            //createBy: senderUser._id,
+        });
+    });
+
+    const fullService = {...updateService._doc,consumableArray,prescriptionArray};
+    res.send({ success: 1, data: fullService });
 }
 
 const getServiceById = async (req, res) => {
     const { serviceId } = req.params;
 
     const service = await ServiceModel.findById(serviceId);
+    const consumable = await ConsumableModel.find({serviceId: serviceId});
+    const prescription = await PrescriptionModel.find({serviceId: serviceId});
+    const consumableArray = JSON.parse(JSON.stringify(consumable));
+    const prescriptionArray = JSON.parse(JSON.stringify(prescription));
 
-    res.send({ success: 1, data: service });
+    if(!service){
+        throw new HTTPError(400, 'Not found service');
+    }
+
+    const fullService = {...service._doc,consumableArray,prescriptionArray};
+    res.send({ success: 1, data: fullService });
 }
 
 const updateStatus = async (req, res) => {

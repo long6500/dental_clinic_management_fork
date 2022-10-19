@@ -8,38 +8,38 @@ const validateInput = require('../../middlewares/validateInput')
 
 router.get(
     '/', 
-    needAuthenticated, 
-    isRole, 
+    //needAuthenticated, 
+    //isRole, 
     serviceController.getService
 );
 
 router.post(
     '/', 
-    needAuthenticated, 
-    isRole, 
+    //needAuthenticated, 
+    //isRole, 
     validateInput(serviceSchema, 'body'),
     serviceController.createService
 );
 
 router.put(
     '/:serviceId', 
-    needAuthenticated, 
-    isRole, 
+    //needAuthenticated, 
+    //isRole, 
     validateInput(serviceSchema, 'body'),
     serviceController.updateService
 );
 
 router.get(
     '/:serviceId', 
-    needAuthenticated, 
-    isRole, 
+    //needAuthenticated, 
+    //isRole, 
     serviceController.getServiceById
 );
 
 router.put(
     '/:serviceId/:status', 
-    needAuthenticated, 
-    isRole,
+    //needAuthenticated, 
+    //isRole,
     serviceController.updateStatus
 );
 
