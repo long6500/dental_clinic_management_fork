@@ -1,10 +1,8 @@
 import "./login.css";
 import React from "react";
 import axios from "../apis/api";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
 function Login() {
   
   const [error, setError] = React.useState("");
@@ -39,15 +37,15 @@ function Login() {
           password
         }
       });
-
-      if (res.data.success) {
+        
+          
+      if (res.success) {
           const user = {
-              username: res.data.data.username,
-              _id: res.data.data._id,
-              
+              _id: res.id,
+              token:res.token,
           }
-          setError("Successfull")
           localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem("token",res.data.token);
           window.location.href = '/homepage'
       } else {
         console.log("sai mk")

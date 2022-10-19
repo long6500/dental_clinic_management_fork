@@ -11,6 +11,7 @@ import Service from "./pages/Services/Service";
 import Profile from "./profile/profile"
 import Changepassword from "./profile/changpassword";
 import Forgotpassword from "./login_UI/forgotpassword";
+import Customer from "./customer/listCustomer";
 function App() {
   const isLoading = useSelector((state) => state.loading);
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/medicine" element={<Medicine />}></Route>
           <Route path="/medicine/:_id" element={<UpdateMedicineModal />} />
           <Route path="/pathological" element={<Service />}></Route>
+          <Route path="/Customer" element={<Customer />}></Route>
         </Routes>
       </Router>
     </>
