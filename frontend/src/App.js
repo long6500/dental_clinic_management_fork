@@ -24,7 +24,7 @@ function App() {
           <Route path="/Profile" element={<Profile />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/medicine" element={<Medicine />}></Route>
-          <Route path="/medicine/:medId" element={<UpdateMedicineModal />} />
+          <Route path="/medicine/:_id" element={<UpdateMedicineModal />} />
           <Route path="/pathological" element={<Service />}></Route>
         </Routes>
       </Router>
