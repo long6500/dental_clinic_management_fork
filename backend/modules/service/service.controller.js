@@ -13,11 +13,11 @@ const createService = async (req, res) => {
     //const senderUser = req.user;
     const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
     const _id = await getNext();
-
+    const imgUrl = req.file.path;
     const newService = await ServiceModel.create({
         _id: _id,
         name,
-        imageUrl,
+        imageUrl: imgUrl,
         time,
         price,
         note,
@@ -55,7 +55,7 @@ const updateService = async (req, res) => {
     //const senderUser = req.user;
     const { serviceId } = req.params;
     const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
-
+    const imgUrl = req.file.path;
     const existService = await ServiceModel.findOne({ _id: serviceId });
     if (!existService) {
         throw new HTTPError(400, 'Not found service');
@@ -64,7 +64,7 @@ const updateService = async (req, res) => {
     const updatedService = await ServiceModel
         .findByIdAndUpdate(serviceId, {
             name,
-            imageUrl,
+            imageUrl: imgUrl,
             time,
             price,
             note,

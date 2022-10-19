@@ -27,6 +27,7 @@ router.put(
     '/:medicineId', 
     //needAuthenticated, 
     //isRole, 
+    fileUploader.single('imageUrl'),
     validateInput(medicineSchema, 'body'),
     medicineController.updateMedicine
 );

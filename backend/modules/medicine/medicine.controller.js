@@ -39,6 +39,7 @@ const createMedicine = async (req, res) => {
 const updateMedicine = async (req, res) => {
   const senderUser = req.user;
   const { medicineId } = req.params;
+  const imgUrl = req.file.path; 
   const {
     name,
     imageUrl,
@@ -60,7 +61,7 @@ const updateMedicine = async (req, res) => {
     medicineId,
     {
       name,
-      imageUrl,
+      imageUrl: imgUrl,
       quantity,
       price,
       purchasePrice,
