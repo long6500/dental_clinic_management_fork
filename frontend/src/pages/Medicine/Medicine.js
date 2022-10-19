@@ -27,8 +27,8 @@ const Medicine = () => {
   const dispatch = useDispatch();
 
   const [key, setKey] = useState("profile");
-  const [medId, setMedID] = useState('')
-  const [isShowUpdate, setIsShowUpdate] = useState(false)
+  const [medId, setMedID] = useState("");
+  const [isShowUpdate, setIsShowUpdate] = useState(false);
   const meds = useSelector((state) => state.med.medicine);
 
   const loadData = async () => {
@@ -38,27 +38,45 @@ const Medicine = () => {
   };
 
   const openUpdateModal = (id) => {
-    setMedID(id)
-    setIsShowUpdate(true)
-  }
+    setMedID(id);
+    setIsShowUpdate(true);
+  };
 
   const closeUpdateModal = () => {
-    setMedID('')
-    setIsShowUpdate(false)
-  }
+    setMedID("");
+    setIsShowUpdate(false);
+  };
 
+  // useEffect(() => {
+  //   new Promise((resolve) => {
+  //     resolve();
+  //   })
+  //     .then(() => {
+  //       loadData();
+  //     })
+  //     .then(() => {
+  //       setTimeout(() => {
+  //         loadData();
+  //       }, 200);
+  //     });
+  // }, []);
   useEffect(() => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    console.log("meds.length: " + meds.length);
+    loadData(); 
+  }, [meds.length]);
+
   return (
     <>
-    <UpdateMedicineModal 
-    closeModal={closeUpdateModal} 
-    isVisible={isShowUpdate} 
-    medID={medId}
-    loadData={loadData}
-    ></UpdateMedicineModal>
+      <UpdateMedicineModal
+        closeModal={closeUpdateModal}
+        isVisible={isShowUpdate}
+        medID={medId}
+        loadData={loadData}
+      ></UpdateMedicineModal>
       <Navbar>
         <Container fluid>
           <Navbar.Toggle aria-controls="navbarScroll" />
@@ -73,8 +91,12 @@ const Medicine = () => {
               </h4>
             </Nav>
             <Form className="d-flex">
-              <MedicineModal loadData ={loadData}></MedicineModal>
-              <Button variant="primary" style={{ marginRight: "20px" }} onClick = {loadData}>
+              <MedicineModal loadData={loadData}></MedicineModal>
+              <Button
+                variant="primary"
+                style={{ marginRight: "20px" }}
+                onClick={loadData}
+              >
                 <FaRedoAlt /> Tải lại
               </Button>
             </Form>
@@ -88,7 +110,6 @@ const Medicine = () => {
         activeKey={key}
         onSelect={(k) => setKey(k)}
       >
-
         <Tab eventKey="profile" title="Tất cả">
           <div style={{ marginLeft: "100px", marginRight: "100px" }}>
             <Form>
@@ -105,24 +126,26 @@ const Medicine = () => {
                   <th>Mã thuốc</th>
                   <th>Tên thuốc</th>
                   <th>Cách sử dụng</th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
-
                 {meds.map((med, index) => {
                   return (
                     <tr>
-                      <td>{index + 1}</td>
-                      <td>
-                        {med.imageUrl}
-                      </td>
                       <td>{med._id}</td>
+                      <td>{med.imageUrl}</td>
                       <td>{med.name}</td>
                       <td>{med.usage}</td>
                       <td>
                         {/* <UpdateMedicineModal medID={med._id}></UpdateMedicineModal> */}
-                        <FaEdit color="#2980b9" cursor={"pointer"} size={25} onClick={() => {openUpdateModal(med._id)}} />
+                        <FaEdit
+                          color="#2980b9"
+                          cursor={"pointer"}
+                          size={25}
+                          onClick={() => {
+                            openUpdateModal(med._id);
+                          }}
+                        />
                       </td>
                     </tr>
                   );

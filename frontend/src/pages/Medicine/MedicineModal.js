@@ -40,10 +40,10 @@ const MedicineModal = (prop) => {
         .required("Required")
         .min(4, "Must be 4 characters or more"),
       // imageUrl: Yup.required("Required"),
-      quantity: Yup.number().required("Required").positive(),
-      price: Yup.number().required("Required").positive(),
-      purchasePrice: Yup.number().required("Required").positive(),
-      unit: Yup.number().required("Required").positive(),
+      quantity: Yup.number().required("Required").positive("Phải là số dương").integer("Phải là số tự nhiên"),
+      price: Yup.number().required("Required").positive("Phải là số dương").moreThan(Yup.ref('purchasePrice'),"Giá bán phải lớn hơn giá nhập"),
+      purchasePrice: Yup.number().required("Required").positive("Phải là số dương").lessThan(Yup.ref('price'),"Giá nhập phải nhỏ hơn giá bán "),
+      unit: Yup.number().required("Required").positive("Phải là số dương").integer("Phải là số tự nhiên"),
       usage: Yup.string().required("Required"),
     }),
     onSubmit: (values) => {
@@ -161,7 +161,7 @@ const MedicineModal = (prop) => {
                   <Form.Label column sm={12}>Lượng/SP</Form.Label>
                   <Form.Control
                     id="quantity"
-                    type="number"
+                    type="text"
                     placeholder="0"
                     value={formik.values.quantity}
                     onChange={formik.handleChange}
@@ -178,7 +178,7 @@ const MedicineModal = (prop) => {
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
                         id="price"
-                        type="number"
+                        type="text"
                         value={formik.values.price}
                         onChange={formik.handleChange}
                       />
@@ -194,7 +194,7 @@ const MedicineModal = (prop) => {
                   <Form.Label column sm={12}>Đơn vị</Form.Label>
                   <Form.Control
                     id="unit"
-                    type="number"
+                    type="text"
                     placeholder="0"
                     value={formik.values.unit}
                     onChange={formik.handleChange}
@@ -209,7 +209,7 @@ const MedicineModal = (prop) => {
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
                         id="purchasePrice"
-                        type="number"
+                        type="text"
                         value={formik.values.purchasePrice}
                         onChange={formik.handleChange}
                         placeholder="0"
