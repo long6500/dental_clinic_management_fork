@@ -1,8 +1,8 @@
+const fs = require('fs');
 const Joi = require('joi');
 
 const medicineSchema = Joi.object({
   name: Joi.string().required(),
-  imageUrl: Joi.string().min(8).required(),
   quantity: Joi.number().integer().required(),
   price: Joi.number().required(),
   purchasePrice: Joi.number().required(),

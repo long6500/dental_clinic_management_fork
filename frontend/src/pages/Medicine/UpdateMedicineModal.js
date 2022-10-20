@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaRedoAlt, FaEdit } from "react-icons/fa";
 import MedicineForm from "./MedicineForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { addMed } from "../../apis/medicineProcessor";
@@ -11,73 +11,54 @@ import Col from "react-bootstrap/Col";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch, useSelector } from "react-redux";
+import { getMedDetailSuccess, getMedicineSuccess } from '../../redux/reducer/medicineSlice'
 import medicineProcessor from "../../apis/medicineProcessor";
+import Nav from "react-bootstrap/Nav";
 
-const UpdateMedicineModal = () => {
-  const [show, setShow] = useState(false);
+const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
+  const dispatch = useDispatch()
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
-  const navigate = useNavigate();
-  // const [currentMed, setCurrentMed] = useState(null);
-  const { medId } = useParams();
-
-  const [newMedicine, setNewMedicine] = useState({
-    name: "",
-    url: "",
-    quantity: -1,
-    price: -1,
-    purchasePrice: -1,
-    unit: -1,
-    usage: "",
-    expireDay: "",
-  });
+  const newMedicine = useSelector((state) => state.med.medDetail);
 
   useEffect(() => {
-    if (medId && medId !== "") {
-      setNewMedicine(medicineProcessor.getMedicineDetailObj(medId));
-    }
-    // return () => {
-    //   // dispatch(removeSelectedProduct());
-    // };
-  }, [medId]);
+    medID && medicineProcessor.getMedicineDetailObj(medID)
+  }, [medID])
+
+  const navigate = useNavigate();
 
   const handleUpdateMedicine = (e) => {
     e.preventDefault();
-    console.log("UpdateMedicine");
-    medicineProcessor.updateMedcine(medId, newMedicine, navigate);
-    // const response = addMed(newMedicine, navigate);
+    new Promise((resolve) => {
+      resolve()
+    }).then(() => {
+      medicineProcessor.updateMedcine({
+        ...newMedicine, 
+        price: newMedicine.price?.$numberDecimal, 
+        purchasePrice: newMedicine.purchasePrice?.$numberDecimal,
+      }, navigate);
+      closeModal()
+    }).then(() => {
+      setTimeout(() => {
+        loadData()
+      }, 100)
+    })
   };
 
   return (
     <>
-      <Button
-        variant="success"
-        onClick={handleShow}
-        style={{ marginRight: "20px" }}
-      >
-        <FaPlusCircle></FaPlusCircle> Thêm thuốc
-      </Button>
-
-      <Modal size="lg" show={show} onHide={handleClose} backdrop="static">
+      <Modal size="lg" show={isVisible} onHide={closeModal}>
         <Modal.Header closeButton>
           <Modal.Title>Thông tin thuốc</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* <MedicineForm></MedicineForm> */}
           <>
             <Form>
               <Row className="mb-3">
                 <Form.Group as={Col} controlId="formGridEmail">
                   <Form.Label>Mã thuốc</Form.Label>
-                  <Form.Control
+                  <Form.Control disabled
                     type="text"
-                    onChange={(e) => {
-                      // setMedId(e.target.value)
-                      setNewMedicine({ ...newMedicine, medId: e.target.value });
-                    }}
-                    defaultValue={newMedicine.medId}
+                    value={newMedicine._id}
                   />
                 </Form.Group>
               </Row>
@@ -91,34 +72,32 @@ const UpdateMedicineModal = () => {
                   <Form.Label>Tên thuốc</Form.Label>
                   <Form.Control
                     onChange={(e) => {
-                      setNewMedicine({ ...newMedicine, name: e.target.value });
+                      dispatch(getMedDetailSuccess({name: e.target.value}))
                     }}
-                    defaultValue={newMedicine.name}
+                    value={newMedicine.name}
                   />
                 </Form.Group>
                 <Form.Group as={Col}>
                   Hình ảnh
                   <Form.Control
                     onChange={(e) => {
-                      setNewMedicine({ ...newMedicine, url: e.target.value });
+                      dispatch(getMedDetailSuccess({imageUrl: e.target.value}))
+                      // setNewMedicine({ ...newMedicine, url: e.target.value });
                     }}
-                    defaultValue={newMedicine.url}
+                    value={newMedicine.imageUrl}
                   />
                   <img src={newMedicine.url} />
-                  {/* <UploadAndDisplayImage></UploadAndDisplayImage> */}
                 </Form.Group>
               </Row>
               <Row className="mb-3">
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label>Lượng/SP</Form.Label>
                   <Form.Control
-                    onChange={(e) => {
-                      setNewMedicine({
-                        ...newMedicine,
-                        quantity: e.target.value,
-                      });
-                    }}
-                    defaultValue={newMedicine.quantity}
+                    onChange={(e) => {dispatch(getMedDetailSuccess({quantity: e.target.value}))}}
+                    value={newMedicine.quantity}
+                    step="0.01"
+                    min="0"
+                    type="number"
                   />
                 </Form.Group>
 
@@ -128,17 +107,13 @@ const UpdateMedicineModal = () => {
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
-                        onChange={(e) => {
-                          setNewMedicine({
-                            ...newMedicine,
-                            price: e.target.value,
-                          });
-                        }}
-                        defaultValue={newMedicine.price}
+                        type="number"
+                        onChange={(e) => {dispatch(getMedDetailSuccess({price: e.target.value}))}}
+                        value={newMedicine.price?.$numberDecimal}
+                        // defaultValue={price?.$numberDecimal}
+                        step="0.01"
+                        min="0"
                       />
-                    </Form.Group>
-                    <Form.Group className="mb-3" as={Col}>
-                      <Form.Control defaultValue="0" />
                     </Form.Group>
                   </Row>
                 </Form.Group>
@@ -147,10 +122,11 @@ const UpdateMedicineModal = () => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label>Đơn vị</Form.Label>
                   <Form.Control
-                    onChange={(e) => {
-                      setNewMedicine({ ...newMedicine, unit: e.target.value });
-                    }}
-                    defaultValue={newMedicine.unit}
+                    onChange={(e) => {dispatch(getMedDetailSuccess({unit: e.target.value}))}}
+                    value={newMedicine.unit}
+                    step="0.01"
+                    min="0"
+                    type="number"
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" as={Col}>
@@ -158,17 +134,12 @@ const UpdateMedicineModal = () => {
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
                       <Form.Control
-                        onChange={(e) => {
-                          setNewMedicine({
-                            ...newMedicine,
-                            purchasePrice: e.target.value,
-                          });
-                        }}
-                        defaultValue={newMedicine.purchasePrice}
+                        onChange={(e) => {dispatch(getMedDetailSuccess({purchasePrice: e.target.value}))}}
+                        value={newMedicine.purchasePrice?.$numberDecimal}
+                        step="0.01"
+                        min="0"
+                        type="number"
                       />
-                    </Form.Group>
-                    <Form.Group className="mb-3" as={Col}>
-                      <Form.Control defaultValue="0" />
                     </Form.Group>
                   </Row>
                 </Form.Group>
@@ -177,10 +148,8 @@ const UpdateMedicineModal = () => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label>Cách sử dụng</Form.Label>
                   <Form.Control
-                    onChange={(e) => {
-                      setNewMedicine({ ...newMedicine, usage: e.target.value });
-                    }}
-                    defaultValue={newMedicine.usage}
+                    onChange={(e) => {dispatch(getMedDetailSuccess({usage: e.target.value}))}}
+                    value={newMedicine.usage}
                     as="textarea"
                     rows={3}
                   />
@@ -189,11 +158,9 @@ const UpdateMedicineModal = () => {
                   <Form.Label>Ngày hết hạn</Form.Label>
 
                   <DatePicker
-                    selected={newMedicine.expireDay}
-                    dateFormat="dd/MM/yyyy"
-                    onChange={(e) => {
-                      setNewMedicine({ ...newMedicine, expireDay: e });
-                    }}
+                    selected={new Date(newMedicine.expiredDay)}
+                    dateFormat="MM/dd/yyyy"
+                    onChange={(e) => {dispatch(getMedDetailSuccess({expiredDay: e}))}}
                   ></DatePicker>
                 </Form.Group>
               </Row>
@@ -201,10 +168,10 @@ const UpdateMedicineModal = () => {
           </>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={closeModal}>
             Hủy bỏ
           </Button>
-          <Button variant="primary" onClick={handleUpdateMedicine()}>
+          <Button variant="primary" onClick={handleUpdateMedicine}>
             Lưu lại
           </Button>
         </Modal.Footer>
