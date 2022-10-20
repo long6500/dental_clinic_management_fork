@@ -10,7 +10,7 @@ const ins = axios.create({
     const token = localStorage.getItem('token');
     if (!token) return config;
   
-    config.headers['authorization'] = `Bearer ${token}`;
+    config.headers['authorization'] = `${token}`;
     return config;
   
   }, function (error) {
