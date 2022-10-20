@@ -13,11 +13,11 @@ const createService = async (req, res) => {
     //const senderUser = req.user;
     const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
     const _id = await getNext();
-    const imgUrl = req.file.path;
+    // const imgUrl = req.file.path;
     const newService = await ServiceModel.create({
         _id: _id,
         name,
-        imageUrl: imgUrl,
+        // imageUrl: imgUrl,
         time,
         price,
         note,

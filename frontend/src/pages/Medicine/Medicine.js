@@ -21,6 +21,7 @@ import Table from "react-bootstrap/Table";
 import Col from "react-bootstrap/Col";
 import medicineProcessor from "../../apis/medicineProcessor";
 import UpdateMedicineModal from "./UpdateMedicineModal";
+import MyPagination from "../../components/MyPagination";
 
 const Medicine = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const Medicine = () => {
     // setMedis((arr) => [...arr, ...medicineProcessor.addMed.getAllObj()]);
     // console.log(await medicineProcessor.getAllObj());
     medicineProcessor.getAll();
+    // console.log("chay lai");
   };
 
   const openUpdateModal = (id) => {
@@ -60,14 +62,23 @@ const Medicine = () => {
   //       }, 200);
   //     });
   // }, []);
+
   useEffect(() => {
     loadData();
   }, []);
 
   useEffect(() => {
-    console.log("meds.length: " + meds.length);
-    loadData(); 
+    loadData();
   }, [meds.length]);
+
+  // useEffect(() => {
+  //   console.log("meds.length: " + meds.length);
+  //   loadData();
+  // }, [meds.length]);
+
+  const handleChangePage = ()=>{
+    
+  }
 
   return (
     <>
@@ -121,9 +132,8 @@ const Medicine = () => {
             <Table striped bordered hover>
               <thead>
                 <tr>
-                  <th>STT</th>
-                  <th>Ảnh</th>
                   <th>Mã thuốc</th>
+                  <th>Ảnh</th>
                   <th>Tên thuốc</th>
                   <th>Cách sử dụng</th>
                 </tr>
@@ -132,11 +142,16 @@ const Medicine = () => {
                 {meds.map((med, index) => {
                   return (
                     <tr>
-                      <td>{med._id}</td>
-                      <td>{med.imageUrl}</td>
+                      <td style={{ width: "10%" }}>{med._id}</td>
+                      <td style={{ textAlign: "center" }}>
+                        <img
+                          src={med.imageUrl}
+                          style={{ height: "50px", width: "50px" }}
+                        />
+                      </td>
                       <td>{med.name}</td>
                       <td>{med.usage}</td>
-                      <td>
+                      <td style={{ textAlign: "center" }}>
                         {/* <UpdateMedicineModal medID={med._id}></UpdateMedicineModal> */}
                         <FaEdit
                           color="#2980b9"
@@ -146,12 +161,17 @@ const Medicine = () => {
                             openUpdateModal(med._id);
                           }}
                         />
+                        <Form.Check
+                          type="switch"
+                          style={{ display: "inline", marginLeft: "10px" }}
+                        />
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </Table>
+            
           </div>
         </Tab>
       </Tabs>

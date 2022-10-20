@@ -51,12 +51,11 @@ function App() {
 
   return (
     <>
-      <LoadingComponent isLoading={isLoading} />
+      {/* <LoadingComponent isLoading={isLoading} /> */}
       <Router>
         <Navbarr />
 
         <Routes>
-
           <Route element={<GuestRoute user={userInfo.data} />}>
 
             <Route path="/Login" element={<Login />} />
