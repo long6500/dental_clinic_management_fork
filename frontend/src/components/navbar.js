@@ -61,7 +61,7 @@ const Navbarr = () => {
           <Nav>
             <NavDropdown title="Tên user" id="basic-nav-dropdown">
               <NavDropdown.Item href="/pathological1">Ghi chú</NavDropdown.Item>
-              <NavDropdown.Item href="/pathological1">
+              <NavDropdown.Item href="/Profile">
                 Thông tin chung
               </NavDropdown.Item>
               <NavDropdown.Item href="/pathological1">

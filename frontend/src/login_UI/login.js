@@ -1,13 +1,11 @@
 import "./login.css";
 import React from "react";
 import axios from "../apis/api";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
 function Login() {
-  const [username, setUsername] = React.useState("");
-  const [password, setpassword] = React.useState("");
+  
+  const [error, setError] = React.useState("");
 
   const formik =  useFormik({
     initialValues: {
@@ -27,14 +25,9 @@ function Login() {
     }),
 
    onSubmit: async  (values) => {
+    console.log(values)
     const { username, password } = values;
     try {
-      // const res = await axios({
-      //     url: '/api/auth/login',
-      //     method: 'post',
-      //     data: { username, password }
-      // });
-      
       console.log({ username, password })
       const res = await axios({
         url: '/api/auth/login',
@@ -44,28 +37,26 @@ function Login() {
           password
         }
       });
-      console.log("a");
-
-      if (res.data.success) {
+        
+          
+      if (res.success) {
           const user = {
-              username: res.data.data.username,
-              _id: res.data.data._id,
-              
+              _id: res.id,
+              token:res.token,
           }
-          console.log("successfull")
           localStorage.setItem('user', JSON.stringify(user));
-          //window.location.href = '/homepage'
+          localStorage.setItem("token",res.data.token);
+          window.location.href = '/homepage'
       } else {
-        console.log("Loi")
+        console.log("sai mk")
       }
 
   } catch (err) {
-    console.log(err)
+    console.log("sai")
+    setError(err);
   }
- // window.location.href = '/'
     },
   });
-
 
   return (
     <section className="vh-100">
@@ -93,8 +84,8 @@ function Login() {
                   value={formik.values.username}
                   onChange={formik.handleChange}
                 />
-                {formik.errors.name && (
-                  <p className="errorMsg"> {formik.errors.name} </p>
+               {formik.errors.username && (
+                  <p className="errorMsg"> {formik.errors.username} </p>
                 )}
                 <label className="form-label" htmlFor="form3Example3">
                   Email
