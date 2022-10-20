@@ -13,14 +13,14 @@ function App() {
   const isLoading = useSelector((state) => state.loading);
   return (
     <>
-      <LoadingComponent isLoading={isLoading} />
+      {/* <LoadingComponent isLoading={isLoading} /> */}
       <Router>
         <Navbarr />
         <Routes>
           <Route path="/Login" element={<Login />} />
           <Route path="/medicine" element={<Medicine />}></Route>
           <Route path="/medicine/:_id" element={<UpdateMedicineModal />} />
-          <Route path="/pathological" element={<Service />}></Route>
+          <Route path="/service" element={<Service />}></Route>
         </Routes>
       </Router>
     </>
