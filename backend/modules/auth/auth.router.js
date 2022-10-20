@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require('./auth.controller');
 const validateInput = require('../../middlewares/validateInput');
 const { loginSchema, registerSchema }= require('./auth.validation');
+const needAuthenticated = require('../../middlewares/needAuthenticated');
 
 // const wrapHandleError = (controller) => {
 //   return async (req, res, next) => {
@@ -27,5 +28,9 @@ router.post(
   authController.login
 );
 
-
+router.get(
+  '/verify', 
+  needAuthenticated,
+  authController.verify
+);
 module.exports = router;
