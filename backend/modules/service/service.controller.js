@@ -30,7 +30,6 @@ const createService = async (req, res) => {
         await ConsumableModel.create({
             serviceId: _id,
             medicineId: element.medicineId,
-            uses: element.uses,
             numberOfUses: element.numberOfUses,
             //createBy: senderUser._id,
         });
@@ -78,7 +77,6 @@ const updateService = async (req, res) => {
         await ConsumableModel.create({
             serviceId: serviceId,
             medicineId: element.medicineId,
-            uses: element.uses,
             numberOfUses: element.numberOfUses,
             //createBy: senderUser._id,
         });
