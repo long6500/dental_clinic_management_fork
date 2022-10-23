@@ -3,6 +3,8 @@ import React from "react";
 import axios from "../apis/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import * as mdb from 'mdb-ui-kit'; // lib
+import { Input } from 'mdb-ui-kit'; // module
 function Login() {
   
   const [error, setError] = React.useState("");
@@ -47,13 +49,11 @@ function Login() {
           localStorage.setItem('user', JSON.stringify(user));
           localStorage.setItem("token",res.data.token);
           window.location.href = '/homepage'
-      } else {
-        console.log("sai mk")
-      }
+      } 
 
   } catch (err) {
-    console.log("sai")
-    setError(err);
+    
+    alert(err)
   }
     },
   });
