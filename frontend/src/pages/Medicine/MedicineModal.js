@@ -21,7 +21,7 @@ const MedicineModal = (prop) => {
   const handleClose = () => setShow(false);
   const handleShow = () => {
     setShow(true);
-    console.log(formik.values.expiredDay);
+    // console.log(formik.values.expiredDay);
   };
 
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const MedicineModal = (prop) => {
   const formik = useFormik({
     initialValues: {
       name: "",
-      imageUrl: "",
+      imageUrl: null,
       quantity: 0,
       price: 0,
       purchasePrice: 0,
@@ -45,7 +45,7 @@ const MedicineModal = (prop) => {
       name: Yup.string()
         .required("Required")
         .min(4, "Must be 4 characters or more"),
-      // imageUrl: Yup.required("Required"),
+      imageUrl: Yup.mixed().required("Bắt buộc"),
       quantity: Yup.number()
         .required("Required")
         .positive("Phải là số dương")
@@ -64,41 +64,31 @@ const MedicineModal = (prop) => {
         .integer("Phải là số tự nhiên"),
       usage: Yup.string().required("Required"),
     }),
-    onSubmit: (values) => {
-      console.log(values.imageUrl[0]);
-      new Promise((resolve) => {
-        resolve(values);
-      })
-        .then((values) => {
-          let formData = new FormData();
-          formData.append("name", values.name);
-          formData.append("imageUrl", values.imageUrl[0]);
-          formData.append("quantity", values.quantity);
-          formData.append("price", values.price);
-          formData.append("purchasePrice", values.purchasePrice);
-          formData.append("unit", values.unit);
-          formData.append("usage", values.usage);
-          // formData.append("expiredDay", values.expiredDay);
-          formData.append("expiredDay", exDay);
+    onSubmit: async (values) => {
+      let formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("imageUrl", values.imageUrl[0]);
+      formData.append("quantity", values.quantity);
+      formData.append("price", values.price);
+      formData.append("purchasePrice", values.purchasePrice);
+      formData.append("unit", values.unit);
+      formData.append("usage", values.usage);
+      // formData.append("expiredDay", values.expiredDay);
+      formData.append("expiredDay", exDay);
 
-          // console.log(values.expiredDay);
-          addMed(formData, navigate);
-          handleClose();
-          values.name = "";
-          values.imageUrl = "";
-          values.quantity = 0;
-          values.price = 0;
-          values.purchasePrice = 0;
-          values.unit = 0;
-          values.usage = "";
-          // values.expiredDay = new Date().toLocaleDateString("en-US");
-          setExDay(new Date().toLocaleDateString("en-US"));
-        })
-        .then(() => {
-          setTimeout(() => {
-            loadData();
-          }, 200);
-        });
+      console.log("Add: "+ typeof(values.price));
+      handleClose();
+      values.name = "";
+      values.imageUrl = "";
+      values.quantity = 0;
+      values.price = 0;
+      values.purchasePrice = 0;
+      values.unit = 0;
+      values.usage = "";
+      // values.expiredDay = new Date().toLocaleDateString("en-US");
+      setExDay(new Date().toLocaleDateString("en-US"));
+       addMed(formData, navigate);
+      await loadData();
     },
   });
 
@@ -183,7 +173,6 @@ const MedicineModal = (prop) => {
                       if (value && value.length > 0) {
                         formik.values.imageUrl = value;
                       }
-                      console.log(formik.values.imageUrl);
                     }}
                   />
                   {formik.errors.imageUrl && (
@@ -293,10 +282,12 @@ const MedicineModal = (prop) => {
                       //   ? new Date()
                       //   : new Date(formik.values.expiredDay)
                       // formik.values.expiredDay
-                     new Date(exDay)
+                      new Date(exDay)
                     }
                     dateFormat="MM/dd/yyyy"
-                    onChange={(e) => {setExDay(e)}}
+                    onChange={(e) => {
+                      setExDay(e);
+                    }}
                   ></DatePicker>
                 </Form.Group>
               </Row>

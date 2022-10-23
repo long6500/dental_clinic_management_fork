@@ -16,8 +16,13 @@ const medProcessor = {};
 
 export const addMed = async (medicine, navigate) => {
   try {
-    const res = await axios.post("/api/medicine/", medicine);
-    store.dispatch(addMedicine(res.data));
+    await axios.post("/api/medicine/", medicine)
+    .then(response => {
+      store.dispatch(addMedicine(response.data.data));
+    })
+    .catch(error => {
+      console.log(error);
+    });
     // navigate("/medicine");
   } catch (error) {
     console.log(error);
@@ -37,7 +42,7 @@ medProcessor.addMed = async (medicine, navigate) => {
 
 medProcessor.getAll = async () => {
   store.dispatch(setLoading());
-  const response = await axios
+  await axios
     .get("/api/medicine")
     .then((response) => {
       store.dispatch(getMedicineSuccess(response.data.data));
@@ -49,7 +54,6 @@ medProcessor.getAll = async () => {
         text: "Vui lòng kiểm tra lại kết nối mạng",
       });
     });
-  // console.log(response.data);
   store.dispatch(setNotLoading());
 };
 

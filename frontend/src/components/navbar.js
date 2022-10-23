@@ -26,7 +26,7 @@ const Navbarr = () => {
 
             {/* <Nav.Link href="/asdsad">Khám tổng quát</Nav.Link> */}
             <Nav.Link href="/asd">Phiếu khám</Nav.Link>
-            <Nav.Link href="/asd">Khách hàng</Nav.Link>
+            <Nav.Link href="/Customer">Khách hàng</Nav.Link>
 
             <NavDropdown title="Quản lý" id="basic-nav-dropdown">
               <NavDropdown.Item href="/services">Phiếu khám</NavDropdown.Item>
