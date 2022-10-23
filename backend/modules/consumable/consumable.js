@@ -11,10 +11,6 @@ const ConsumableSchema = new mongoose.Schema({
         require: true,
         ref: 'Medicine'
     },
-    uses: {
-        type: Number,
-        require: true,
-    },
     numberOfUses: {
         type: Number,
         require: true,
