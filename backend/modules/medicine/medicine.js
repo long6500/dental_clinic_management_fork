@@ -36,6 +36,11 @@ const MedicineSchema = new mongoose.Schema({
         type: Date,
         // require: true,
     },
+    status: {
+        type: Boolean,
+        default: true,
+        require: true,
+    },
     createBy: {
         type: mongoose.Types.ObjectId,
     },

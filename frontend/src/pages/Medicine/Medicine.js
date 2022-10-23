@@ -22,7 +22,6 @@ import Col from "react-bootstrap/Col";
 import medicineProcessor from "../../apis/medicineProcessor";
 import UpdateMedicineModal from "./UpdateMedicineModal";
 import ReactPaginate from "react-paginate";
-import MedicineTable from "./MedicineTable";
 
 const Medicine = ({ itemsPerPage }) => {
   const navigate = useNavigate();
@@ -75,9 +74,9 @@ const Medicine = ({ itemsPerPage }) => {
   // Invoke when user click to request another page.
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % meds.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`
-    );
+    // console.log(
+    //   `User requested page number ${event.selected}, which is offset ${newOffset}`
+    // );
     setItemOffset(newOffset);
   };
 

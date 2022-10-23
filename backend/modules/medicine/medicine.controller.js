@@ -37,7 +37,7 @@ const createMedicine = async (req, res) => {
 };
 
 const updateMedicine = async (req, res) => {
-  const senderUser = req.user;
+  // const senderUser = req.user;
   const { medicineId } = req.params;
   const imgUrl = req.file.path; 
   const {
@@ -69,7 +69,7 @@ const updateMedicine = async (req, res) => {
       usage,
       expiredDay,
       status,
-      modifyBy: senderUser._id,
+      // modifyBy: senderUser._id,
     },
     { new: true }
   );
@@ -86,7 +86,7 @@ const getMedicineById = async (req, res) => {
 };
 
 const updateStatus = async (req, res) => {
-  const senderUser = req.user;
+  // const senderUser = req.user;
   const { medicineId, status } = req.params;
 
   const existMedicine = await MedicineModel.findOne({ _id: medicineId });
@@ -98,7 +98,7 @@ const updateStatus = async (req, res) => {
     medicineId,
     {
       status,
-      modifyBy: senderUser._id,
+      // modifyBy: senderUser._id,
     },
     { new: true }
   );

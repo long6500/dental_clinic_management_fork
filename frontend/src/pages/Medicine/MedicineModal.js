@@ -21,7 +21,7 @@ const MedicineModal = (prop) => {
   const handleClose = () => setShow(false);
   const handleShow = () => {
     setShow(true);
-    console.log(formik.values.expiredDay);
+    // console.log(formik.values.expiredDay);
   };
 
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ const MedicineModal = (prop) => {
       // formData.append("expiredDay", values.expiredDay);
       formData.append("expiredDay", exDay);
 
-      // console.log(values.expiredDay);
+      console.log("Add: "+ typeof(values.price));
       handleClose();
       values.name = "";
       values.imageUrl = "";
@@ -87,7 +87,7 @@ const MedicineModal = (prop) => {
       values.usage = "";
       // values.expiredDay = new Date().toLocaleDateString("en-US");
       setExDay(new Date().toLocaleDateString("en-US"));
-      await addMed(formData, navigate);
+       addMed(formData, navigate);
       await loadData();
     },
   });

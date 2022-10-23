@@ -61,7 +61,7 @@ function App() {
             <Route path="/Login" element={<Login />} />
             <Route path="/Forgotpassword" element={<Forgotpassword />} />
             <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
-
+            <Route path="/service" element={<Service />}></Route>
           </Route>
 
           <Route element={<PrivateRoute user={userInfo.data} />}>
@@ -70,7 +70,7 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             {/* <Route path="/medicine" element={<Medicine />}></Route> */}
             {/* <Route path="/medicine/:medId" element={<UpdateMedicineModal />} /> */}
-            <Route path="/service" element={<Service />}></Route>
+            {/* <Route path="/service" element={<Service />}></Route> */}
             <Route path="/Customer" element={<Customer />}></Route>
 
           </Route>
