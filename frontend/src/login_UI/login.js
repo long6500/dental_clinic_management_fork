@@ -3,13 +3,14 @@ import React from "react";
 import axios from "../apis/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import * as mdb from 'mdb-ui-kit'; // lib
-import { Input } from 'mdb-ui-kit'; // module
+import useAuth from "../components/hooks/useAuth";
+import { useNavigate } from "react-router";
 function Login() {
-  
   const [error, setError] = React.useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const formik =  useFormik({
+  const formik = useFormik({
     initialValues: {
       username: "",
       password: "",
@@ -26,35 +27,29 @@ function Login() {
         ),
     }),
 
-   onSubmit: async  (values) => {
-    console.log(values)
-    const { username, password } = values;
-    try {
-      console.log({ username, password })
-      const res = await axios({
-        url: '/api/auth/login',
-        method: 'post',
-        data: {
-          username,
-          password
-        }
-      });
-        
-          
-      if (res.success) {
-          const user = {
-              _id: res.id,
-              token:res.token,
-          }
-          localStorage.setItem('user', JSON.stringify(user));
-          localStorage.setItem("token",res.data.token);
-          window.location.href = '/homepage'
-      } 
+    onSubmit: async (values) => {
+      console.log(values);
+      const { username, password } = values;
+      try {
+        console.log({ username, password });
+        const res = await axios({
+          url: "/api/auth/login",
+          method: "post",
+          data: {
+            username,
+            password,
+          },
+        });
 
-  } catch (err) {
-    
-    alert(err)
-  }
+        if (res.success) {
+          login({
+            _id: res.id,
+            token: res.token,
+          });
+        }
+      } catch (err) {
+        alert(err);
+      }
     },
   });
 
@@ -71,71 +66,47 @@ function Login() {
           </div>
           <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
             <form onSubmit={formik.handleSubmit}>
-              <div className="divider d-flex align-items-center my-4">
-                <p className="text-center fw-bold mx-3 mb-0">Đăng Nhập</p>
-              </div>
-              {/* Email input */}
-              <div className="form-outline mb-4">
-                <input
-                  className="form-control form-control-lg"
-                  placeholder="Enter a valid email address"
-                  id="username"
-                  name="username"
-                  value={formik.values.username}
-                  onChange={formik.handleChange}
-                />
-               {formik.errors.username && (
-                  <p className="errorMsg"> {formik.errors.username} </p>
-                )}
-                <label className="form-label" htmlFor="form3Example3">
-                  Email
-                </label>
-              </div>
-              {/* Password input */}
-              <div className="form-outline mb-3">
-                <input
-                  type="password"
-                  className="form-control form-control-lg"
-                  placeholder="Enter password"
-                  id="password"
-                  name="password"
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                />
-                {formik.errors.password && (
-                  <p className="errorMsg"> {formik.errors.password} </p>
-                )}
-                <label className="form-label" htmlFor="form3Example4" required>
-                  Mật Khẩu
-                </label>
-              </div>
-              <div className="d-flex justify-content-between align-items-center">
-                {/* Checkbox */}
-                <div className="form-check mb-0">
-                  <input
-                    className="form-check-input me-2"
-                    type="checkbox"
-                    defaultValue
-                    id="form2Example3"
-                  />
-                  <label className="form-check-label" htmlFor="form2Example3">
-                    Nhớ mật khẩu
-                  </label>
-                </div>
-                <a href="/forgotpassword" className="text-body">
-                  Quên mật khẩu
-                </a>
-              </div>
-              <div className="text-center text-lg-start mt-4 pt-2">
-                <button
-                  type="onSubmit"
-                  className="btn btn-primary btn-lg"
-                  href="/homepage"
-                  styleFor={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
-                >
-                  Đăng Nhập
-                </button>
-              </div>
+            <div className="col-right">
+      <div className="login-form">
+      <h2>Đăng Nhập</h2>
+        <form>
+          <div className="login_top">
+          <label>Tên đăng nhập</label>
+            <input type="text" placeholder="Username or Email" id="username"
+            name="username"
+            value={formik.values.username}
+            onChange={formik.handleChange}  />
+          
+          {formik.errors.username && (
+            <p className="errorMsg"> {formik.errors.username} </p>
+          )}
+          </div>
+           
+          <div className="login_mide">
+          <label>Mật khẩu</label>
+            <input type="password" placeholder="Password"  id="password"
+            name="password"
+            value={formik.values.password}
+            onChange={formik.handleChange}/>
+          
+          {formik.errors.password && (
+            <p className="errorMsg"> {formik.errors.password} </p>
+          )}
+          </div>
+           
+
+          <div className="login_bottom">
+
+           <button className="btnlogin" type="submit"   >Đăng nhập</button>
+            <a href="/forgotpassword">Forget Password?</a>
+          
+          </div>
+          
+           
+
+        </form>
+      </div>
+    </div>
             </form>
           </div>
         </div>

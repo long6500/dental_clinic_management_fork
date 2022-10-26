@@ -1,6 +1,5 @@
 import "./profile.css";
 import React from "react";
-import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -11,8 +10,7 @@ function Profile() {
   const [email, setemail] = React.useState("");
   const [address, setaddress] = React.useState("");
 
-  // const [message, setMessage] = useState('');
-  // const [error, setError] = useState('');
+ 
 
   const formik = useFormik({
     initialValues: {

@@ -70,9 +70,10 @@ function Forgotpassword() {
               </div>
               {/* Email input */}
               <div className="form-outline mb-4">
+              <label>Tên đăng nhập</label><br></br>
                 <input
-                  className="form-control form-control-lg"
-                  placeholder="Enter a valid email address"
+                  className="input_forgotpass "
+                  placeholder="Nhập tên đăng nhập"
                   id="email"
                   name="email"
                   value={formik.values.email}
@@ -81,9 +82,7 @@ function Forgotpassword() {
                {formik.errors.email && (
                   <p className="errorMsg"> {formik.errors.email} </p>
                 )}
-                <label className="form-label" htmlFor="form3Example3">
-                  Email
-                </label>
+               
               </div>
               {/* Password input */}
              
