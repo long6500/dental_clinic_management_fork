@@ -36,5 +36,11 @@
 }
 
 .errorMsg{
-    color: red;
+    color: #e74c3c;
+    font-size: 13px !important;
 }
+
+#serviceModal {
+    width: 1600px;
+    max-width: 100%;
+  }

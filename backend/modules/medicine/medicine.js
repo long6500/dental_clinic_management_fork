@@ -26,7 +26,7 @@ const MedicineSchema = new mongoose.Schema({
         require: true,
     },
     unit: {
-        type: Number,
+        type: String,
         require: true,
     },
     usage: {
@@ -34,7 +34,17 @@ const MedicineSchema = new mongoose.Schema({
     },
     expiredDay: {
         type: Date,
-        // require: true,
+        require: true,
+    },
+    status: {
+        type: Boolean,
+        default: true,
+        require: true,
+    },
+    status: {
+        type: Boolean,
+        default: true,
+        require: true,
     },
     createBy: {
         type: mongoose.Types.ObjectId,

@@ -18,7 +18,7 @@ router.post(
     '/', 
     //needAuthenticated, 
     //isRole, 
-    fileUploader.single('imageUrl'),
+    // fileUploader.single('imageUrl'),
     validateInput(serviceSchema, 'body'),
     serviceController.createService
 );
@@ -27,7 +27,7 @@ router.put(
     '/:serviceId', 
     //needAuthenticated, 
     //isRole, 
-    fileUploader.single('imageUrl'),
+    // fileUploader.single('imageUrl'),
     validateInput(serviceSchema, 'body'),
     serviceController.updateService
 );

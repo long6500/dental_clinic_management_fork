@@ -13,11 +13,11 @@ const createService = async (req, res) => {
     //const senderUser = req.user;
     const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
     const _id = await getNext();
-    const imgUrl = req.file.path;
+    // const imgUrl = req.file.path;
     const newService = await ServiceModel.create({
         _id: _id,
         name,
-        imageUrl: imgUrl,
+        // imageUrl: imgUrl,
         time,
         price,
         note,
@@ -30,7 +30,6 @@ const createService = async (req, res) => {
         await ConsumableModel.create({
             serviceId: _id,
             medicineId: element.medicineId,
-            uses: element.uses,
             numberOfUses: element.numberOfUses,
             //createBy: senderUser._id,
         });
@@ -78,7 +77,6 @@ const updateService = async (req, res) => {
         await ConsumableModel.create({
             serviceId: serviceId,
             medicineId: element.medicineId,
-            uses: element.uses,
             numberOfUses: element.numberOfUses,
             //createBy: senderUser._id,
         });
@@ -118,7 +116,7 @@ const getServiceById = async (req, res) => {
 }
 
 const updateStatus = async (req, res) => {
-    const senderUser = req.user;
+    // const senderUser = req.user;
     const { serviceId, status } = req.params;
 
     const existService = await ServiceModel.findOne({ _id: serviceId });
@@ -129,7 +127,7 @@ const updateStatus = async (req, res) => {
     const updatedService = await ServiceModel
         .findByIdAndUpdate(serviceId, {
             status,
-            modifyBy: senderUser._id
+            // modifyBy: senderUser._id
         }, { new: true });
 
     res.send({ success: 1, data: updatedService });

@@ -81,7 +81,14 @@ const login = async (req, res) => {
     });
 }
 
+const verify = async (req, res) => {
+    const {user} = req;
+
+    res.send({success: 1, data: user});
+};
+
 module.exports = {
     register,
-    login
+    login,
+    verify,
 }

@@ -11,7 +11,7 @@ const Navbarr = () => {
   return (
     <Navbar bg="primary" variant="dark">
       <Container>
-        <Navbar.Brand href="#home">EDENTAL</Navbar.Brand>
+        <Navbar.Brand href="#home">Dental Clinic</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
@@ -24,9 +24,9 @@ const Navbarr = () => {
               </NavDropdown.Item>
             </NavDropdown>
 
-            <Nav.Link href="/asdsad">Khám tổng quát</Nav.Link>
+            {/* <Nav.Link href="/asdsad">Khám tổng quát</Nav.Link> */}
             <Nav.Link href="/asd">Phiếu khám</Nav.Link>
-            <Nav.Link href="/asd">Khách hàng</Nav.Link>
+            <Nav.Link href="/Customer">Khách hàng</Nav.Link>
 
             <NavDropdown title="Quản lý" id="basic-nav-dropdown">
               <NavDropdown.Item href="/services">Phiếu khám</NavDropdown.Item>
@@ -39,7 +39,7 @@ const Navbarr = () => {
               <NavDropdown.Item href="/medicine">
                 Đăng ký thuốc
               </NavDropdown.Item>
-              <NavDropdown.Item href="/pathological">
+              <NavDropdown.Item href="/service">
                 Đăng ký thủ thuật
               </NavDropdown.Item>
               <NavDropdown.Divider />
