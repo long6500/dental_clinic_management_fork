@@ -13,14 +13,16 @@ import Forgotpassword from "./login_UI/forgotpassword";
 import Customer from "./customer/listCustomer";
 import PrivateRoute from "./components/Route/PrivateRoute";
 import GuestRoute from "./components/Route/GuestRoute";
-import axios from "axios";
+import axios from "../src/apis/api";
 import React from 'react';
+export const AuthContext = React.createContext();
 function App() {
   const isLoading = useSelector((state) => state.loading);
   const [userInfo, setUserInfo] = React.useState({
     status: "idle",
     data: null,
   });
+
   const verifyUserInfo = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -39,7 +41,15 @@ function App() {
       setUserInfo({ status: "success", data: null });
     }
   };
-
+  
+  const login =({username,_id,token})=>{
+    localStorage.setItem('token',token)
+    setUserInfo({status:"success",data:{username,_id,}})
+  }
+  const logout = ()=>{
+     localStorage.removeItem('token')
+     setUserInfo({status:"success",data:null})
+}
   React.useEffect(() => {
     verifyUserInfo();
   }, []);
@@ -51,7 +61,8 @@ function App() {
 
   return (
     <>
-      {/* <LoadingComponent isLoading={isLoading} /> */}
+    <AuthContext.Provider value={{user: userInfo.data,login,logout}}>
+      <LoadingComponent isLoading={isLoading} />
       <Router>
         <Navbarr />
 
@@ -78,6 +89,7 @@ function App() {
 
 
       </Router>
+      </AuthContext.Provider>
     </>
   );
 }

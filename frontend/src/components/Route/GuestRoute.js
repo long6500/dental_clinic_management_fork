@@ -1,10 +1,10 @@
 import { Outlet,Navigate  } from "react-router-dom";
-// import React from 'react';
-// import useAuth from '../../hooks/useAuth';
-export default function GuestRoute({user}) {
-    // const { user } = useAuth();
+import React from 'react';
+import useAuth from "../../components/hooks/useAuth";
+export default function GuestRoute() {
+    const { isAuthenticated } = useAuth();
   
-    if (user) return <Navigate to={"/"} replace />
+    if (isAuthenticated) return <Navigate to={"/"} replace />
   
     return <Outlet />
   }
