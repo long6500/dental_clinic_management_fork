@@ -81,12 +81,13 @@
   
   .login-form p {
     font-size: 10px;
-    color: red;
+    color: rgb(0, 0, 0);
   }
   
   .login-form p:last-child {
     margin: 0;
     padding-top: 3px;
+    color: red;
   }
   
   .login-form p a {
@@ -108,7 +109,7 @@
   }
   
   .login-form label span {
-    color: #ff574e;
+    color: #000000;
     padding-left: 2px;
   }
   
@@ -123,13 +124,13 @@
   }
   
   .login-form input:focus {
-    border-color: #ff574e;
+    border-color:#44c7f5;
   }
   
   .login-form button,
   .login-form button[type=submit] {
     display: inline-block;
-    width: 100%;
+    width: 50%;
     margin-top: 5px;
     color: #44c7f5;
     font-size: 16px;
@@ -141,6 +142,9 @@
     box-shadow: inset 0 0 0 0 #44c7f5;
     transition: .3s;
     -webkit-transition: .3s;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px;
   }
   
   .login-form button:hover,
@@ -153,5 +157,8 @@
   }
   .login_top,.login_mide,.login_bottom{
     margin-top:15px;
+  }
+  .login_bottom a{
+     font-size: 13px;
   }
   
