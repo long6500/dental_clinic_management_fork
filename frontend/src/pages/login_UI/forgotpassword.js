@@ -1,6 +1,6 @@
 import "./forgotpassword.css";
 import React from "react";
-import axios from "../apis/api";
+import axios from "../../apis/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
