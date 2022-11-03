@@ -2,23 +2,22 @@ const UserModel = require('./user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const HTTPError = require('../../common/httpError');
-const profileController = require('../profile/profile.controller');
 
 const createUser = async () => {
     try {
-        if (await UserModel.find().count() > 0) return;
+        if (await UserModel.find().count() > 0) return null;
 
-        const password = 'admin1234';
+        const password = process.env.PASSWORD_ADMIN;
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
         const user = [
-            { username: "admin", password: hashPassword },
+            { username: process.env.USERNAME_ADMIN, password: hashPassword },
         ];
 
-        await FunctionModel.create(user);
-        return;
+        const admin = await UserModel.create(user);
+        return admin._id;
     } catch (err) {
-        return err;
+        return null;
     }
 }
 

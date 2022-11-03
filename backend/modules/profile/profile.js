@@ -15,9 +15,18 @@ const ProfileSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        require: true,
     },
     address: {
         type: String,
+    },
+    workingDays: {
+        type: Number,
+        require: true,
+    },
+    salary: {
+        type: Number,
+        require: true,
     },
     userId: {
         type: mongoose.Types.ObjectId,

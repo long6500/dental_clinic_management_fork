@@ -1,14 +1,19 @@
 const MedicineModel = require("./medicine");
 const HTTPError = require("../../common/httpError");
 
-const getMedicine = async (req, res, next) => {
+const getMedicine = async (req, res) => {
   const medicine = await MedicineModel.find({});
   res.send({ success: 1, data: medicine });
 };
 
+const getActiveMedicine = async (req, res) => {
+  const medicine = await MedicineModel.find({status: true});
+  res.send({ success: 1, data: medicine });
+};
+
 const createMedicine = async (req, res) => {
-  //const senderUser = req.user;
-  //const imgUrl = req.file.path; 
+  const senderUser = req.user;
+  const imgUrl = req.file.path; 
   const {
     name,
     imageUrl,
@@ -23,14 +28,14 @@ const createMedicine = async (req, res) => {
   const newMedicine = await MedicineModel.create({
     _id: medID,
     name,
-    //imageUrl: imgUrl,
+    imageUrl: imgUrl,
     quantity,
     price,
     purchasePrice,
     unit,
     usage,
     expiredDay,
-    //createBy: senderUser._id,
+    createBy: senderUser._id,
   });
   res.send({ success: 1, data: newMedicine });
 };
@@ -85,7 +90,7 @@ const getMedicineById = async (req, res) => {
 };
 
 const updateStatus = async (req, res) => {
-  //const senderUser = req.user;
+  const senderUser = req.user;
   const { medicineId, status } = req.params;
 
   const existMedicine = await MedicineModel.findOne({ _id: medicineId });
@@ -97,7 +102,7 @@ const updateStatus = async (req, res) => {
     medicineId,
     {
       status,
-      //modifyBy: senderUser._id,
+      modifyBy: senderUser._id,
     },
     { new: true }
   );
@@ -126,4 +131,5 @@ module.exports = {
   updateMedicine,
   getMedicineById,
   updateStatus,
+  getActiveMedicine,
 };
