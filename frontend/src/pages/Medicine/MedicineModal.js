@@ -10,7 +10,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useFormik, useField, useFormikContext } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
 import UploadAndDisplayImage from "../../components/uploadImage";
 
@@ -21,7 +21,7 @@ const MedicineModal = (prop) => {
   const handleClose = () => setShow(false);
   const handleShow = () => {
     setShow(true);
-    console.log(formik.values.expiredDay);
+    // console.log(formik.values.expiredDay);
   };
 
   const navigate = useNavigate();
@@ -31,11 +31,11 @@ const MedicineModal = (prop) => {
   const formik = useFormik({
     initialValues: {
       name: "",
-      imageUrl: "",
+      imageUrl: null,
       quantity: 0,
       price: 0,
       purchasePrice: 0,
-      unit: 0,
+      unit: "",
       usage: "",
       // expiredDay: new Date().toLocaleDateString("en-US"),
       // expiredDay: new Date(),
@@ -45,7 +45,7 @@ const MedicineModal = (prop) => {
       name: Yup.string()
         .required("Required")
         .min(4, "Must be 4 characters or more"),
-      // imageUrl: Yup.required("Required"),
+      imageUrl: Yup.mixed().required("Bắt buộc"),
       quantity: Yup.number()
         .required("Required")
         .positive("Phải là số dương")
@@ -58,60 +58,34 @@ const MedicineModal = (prop) => {
         .required("Required")
         .positive("Phải là số dương")
         .lessThan(Yup.ref("price"), "Giá nhập phải nhỏ hơn giá bán "),
-      unit: Yup.number()
-        .required("Required")
-        .positive("Phải là số dương")
-        .integer("Phải là số tự nhiên"),
+      unit: Yup.string().required("Required"),
       usage: Yup.string().required("Required"),
     }),
-    onSubmit: (values) => {
-      console.log(values.imageUrl[0]);
-      new Promise((resolve) => {
-        resolve(values);
-      })
-        .then((values) => {
-          let formData = new FormData();
-          formData.append("name", values.name);
-          formData.append("imageUrl", values.imageUrl[0]);
-          formData.append("quantity", values.quantity);
-          formData.append("price", values.price);
-          formData.append("purchasePrice", values.purchasePrice);
-          formData.append("unit", values.unit);
-          formData.append("usage", values.usage);
-          // formData.append("expiredDay", values.expiredDay);
-          formData.append("expiredDay", exDay);
-
-          // console.log(values.expiredDay);
-          addMed(formData, navigate);
-          handleClose();
-          values.name = "";
-          values.imageUrl = "";
-          values.quantity = 0;
-          values.price = 0;
-          values.purchasePrice = 0;
-          values.unit = 0;
-          values.usage = "";
-          // values.expiredDay = new Date().toLocaleDateString("en-US");
-          setExDay(new Date().toLocaleDateString("en-US"));
-        })
-        .then(() => {
-          setTimeout(() => {
-            loadData();
-          }, 200);
-        });
+    onSubmit: async (values) => {
+      let formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("imageUrl", values.imageUrl[0]);
+      formData.append("quantity", values.quantity);
+      formData.append("price", values.price);
+      formData.append("purchasePrice", values.purchasePrice);
+      formData.append("unit", values.unit);
+      formData.append("usage", values.usage);
+      // formData.append("expiredDay", values.expiredDay);
+      formData.append("expiredDay", exDay);
+      handleClose();
+      values.name = "";
+      values.imageUrl = "";
+      values.quantity = 0;
+      values.price = 0;
+      values.purchasePrice = 0;
+      values.unit = "";
+      values.usage = "";
+      // values.expiredDay = new Date().toLocaleDateString("en-US");
+      setExDay(new Date().toLocaleDateString("en-US"));
+      addMed(formData, navigate);
+      await loadData();
     },
   });
-
-  // const [newMedicine, setNewMedicine] = useState({
-  //   name: "",
-  //   imageUrl: "",
-  //   quantity: -1,
-  //   price: -1,
-  //   purchasePrice: -1,
-  //   unit: -1,
-  //   usage: "",
-  //   expiredDay: new Date().toLocaleDateString("en-US"),
-  // });
 
   const handleAddMedicine = (e) => {
     e.preventDefault();
@@ -183,7 +157,6 @@ const MedicineModal = (prop) => {
                       if (value && value.length > 0) {
                         formik.values.imageUrl = value;
                       }
-                      console.log(formik.values.imageUrl);
                     }}
                   />
                   {formik.errors.imageUrl && (
@@ -200,7 +173,7 @@ const MedicineModal = (prop) => {
                     id="quantity"
                     type="text"
                     placeholder="0"
-                    value={formik.values.quantity}
+                    // value={formik.values.quantity}
                     onChange={formik.handleChange}
                   />
                   {formik.errors.quantity && (
@@ -218,8 +191,8 @@ const MedicineModal = (prop) => {
                       <Form.Control
                         id="price"
                         type="text"
-                        value={formik.values.price}
                         onChange={formik.handleChange}
+                        placeholder = "0"
                       />
                       {formik.errors.price && (
                         <p className="errorMsg"> {formik.errors.price} </p>
@@ -236,8 +209,7 @@ const MedicineModal = (prop) => {
                   <Form.Control
                     id="unit"
                     type="text"
-                    placeholder="0"
-                    value={formik.values.unit}
+                    placeholder=""
                     onChange={formik.handleChange}
                   />
                   {formik.errors.unit && (
@@ -253,7 +225,6 @@ const MedicineModal = (prop) => {
                       <Form.Control
                         id="purchasePrice"
                         type="text"
-                        value={formik.values.purchasePrice}
                         onChange={formik.handleChange}
                         placeholder="0"
                       />
@@ -293,10 +264,12 @@ const MedicineModal = (prop) => {
                       //   ? new Date()
                       //   : new Date(formik.values.expiredDay)
                       // formik.values.expiredDay
-                     new Date(exDay)
+                      new Date(exDay)
                     }
                     dateFormat="MM/dd/yyyy"
-                    onChange={(e) => {setExDay(e)}}
+                    onChange={(e) => {
+                      setExDay(e);
+                    }}
                   ></DatePicker>
                 </Form.Group>
               </Row>

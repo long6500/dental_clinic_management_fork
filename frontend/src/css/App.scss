@@ -36,10 +36,45 @@
 }
 
 .errorMsg{
-    color: red;
+    color: #e74c3c;
+    font-size: 13px !important;
 }
 
 #serviceModal {
     width: 1600px;
     max-width: 100%;
-  }
+}
+
+#customerModal {
+    width: 70%;
+    max-width: 100%;
+}
+
+
+#medCodeContainer {
+    position: absolute;
+    background-color: #fff;
+    border-top: none;
+    border: 1px solid #bdbdbd;
+    border-radius: 0.25rem;
+    width: 80%;
+    max-height: 200px;
+    overflow: scroll;
+    z-index: 1;
+}
+
+#medCodeContainer ul {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#medCodeContainer ul li:hover {
+background-color: #b2bec3;
+}
+
+#medCodeContainer ul li {
+    padding: 3px 5px;
+    list-style: none;
+    width: 100%;
+    cursor: pointer;
+}
