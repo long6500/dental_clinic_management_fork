@@ -14,7 +14,7 @@ const ServiceSchema = new mongoose.Schema({
         require: true,
     },
     time: {
-        type: Date,
+        type: Number,
         require: true,
     },
     price: {

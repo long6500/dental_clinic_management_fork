@@ -19,7 +19,7 @@ const createMedicine = async (req, res) => {
     usage,
     expiredDay,
   } = req.body;
-  console.log(req.body);
+  console.log(imageUrl);
   const medID = await getNext();
   const newMedicine = await MedicineModel.create({
     _id: medID,

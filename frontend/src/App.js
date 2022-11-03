@@ -6,11 +6,12 @@ import { useSelector } from "react-redux";
 import "./css/App.scss";
 import LoadingComponent from "./components/loadingComponent";
 import UpdateMedicineModal from "./pages/Medicine/UpdateMedicineModal";
+import Test from './components/test'
 import Service from "./pages/Services/Service";
 import Profile from "./profile/profile";
 import Changepassword from "./profile/changpassword";
 import Forgotpassword from "./login_UI/forgotpassword";
-import Customer from "./customer/listCustomer";
+import Customer from "./pages/customer/listCustomer";
 import PrivateRoute from "./components/Route/PrivateRoute";
 import GuestRoute from "./components/Route/GuestRoute";
 import axios from "axios";
@@ -61,7 +62,10 @@ function App() {
             <Route path="/Login" element={<Login />} />
             <Route path="/Forgotpassword" element={<Forgotpassword />} />
             <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
-            <Route path="/service" element={<Service />}></Route>
+            <Route path="/service" element={<Service itemsPerPage={5}/>}></Route>
+            <Route path="/Customer" element={<Customer />}></Route>
+            <Route path="/test" element={<Test />}></Route>
+
           </Route>
 
           <Route element={<PrivateRoute user={userInfo.data} />}>
@@ -71,7 +75,6 @@ function App() {
             {/* <Route path="/medicine" element={<Medicine />}></Route> */}
             {/* <Route path="/medicine/:medId" element={<UpdateMedicineModal />} /> */}
             {/* <Route path="/service" element={<Service />}></Route> */}
-            <Route path="/Customer" element={<Customer />}></Route>
 
           </Route>
         </Routes>
