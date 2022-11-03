@@ -216,6 +216,7 @@ const Customer = () => {
         cusId={cusId}
         loadData={loadData}
       />
+
       <Navbar>
         <Container fluid>
           <Navbar.Toggle aria-controls="navbarScroll" />
@@ -230,8 +231,10 @@ const Customer = () => {
               </h4>
             </Nav>
             <Form className="d-flex">
+
               <CustomerModal loadData={loadData} />
               <Button variant="primary" style={{ marginRight: "20px" }}>
+
                 <FaRedoAlt /> Tải lại
               </Button>
             </Form>
@@ -239,7 +242,9 @@ const Customer = () => {
         </Container>
       </Navbar>
 
+
       <CustomerTable />
+
     </>
   );
 };

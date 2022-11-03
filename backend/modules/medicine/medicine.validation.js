@@ -6,7 +6,7 @@ const medicineSchema = Joi.object({
   quantity: Joi.number().integer().required(),
   price: Joi.number().required(),
   purchasePrice: Joi.number().required(),
-  unit: Joi.number().required(),
+  unit: Joi.string().required(),
   usage: Joi.string(),
   expiredDay: Joi.date(),
   status: Joi.boolean(),

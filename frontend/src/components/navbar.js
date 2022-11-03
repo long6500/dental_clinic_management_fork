@@ -5,9 +5,16 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import "bootstrap/dist/css/bootstrap.css";
 import Button from "react-bootstrap/Button";
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 // import ModalD from "../Modal/Modal";
 
 const Navbarr = () => {
+
+  const logout = () => {
+    localStorage.removeItem("token");
+  };
+
   return (
     <Navbar bg="primary" variant="dark">
       <Container>
@@ -17,7 +24,9 @@ const Navbarr = () => {
           <Nav className="me-auto">
             <NavDropdown title="Đặt lịch hẹn" id="basic-nav-dropdown">
               <NavDropdown.Item href="/team">Đặt lịch hẹn</NavDropdown.Item>
-              <NavDropdown.Item href="/team">Danh sách lịch hẹn</NavDropdown.Item>
+              <NavDropdown.Item href="/team">
+                Danh sách lịch hẹn
+              </NavDropdown.Item>
 
               <NavDropdown.Item href="/quytrinh">
                 Danh sách tái khám
@@ -46,6 +55,7 @@ const Navbarr = () => {
               <NavDropdown.Item href="/rangho">
                 Quản lý nhân viên
               </NavDropdown.Item>
+
               {/* <NavDropdown.Divider />
             <NavDropdown.Item href="#action/3.4">
               Separated link
@@ -71,17 +81,17 @@ const Navbarr = () => {
                 Chăm sóc khách hàng
               </NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="/pathological1">
+              <NavDropdown.Item href="/login" onClick = {logout}>
                 Đăng xuất
               </NavDropdown.Item>
+              {/* <Link onCLick>Đăng xuất</Link> */}
+
               <NavDropdown.Item href="/pathological1">
                 Thông tin phần mềm
               </NavDropdown.Item>
             </NavDropdown>
           </Nav>
-        
         </Navbar.Collapse>
-        
       </Container>
     </Navbar>
   );
