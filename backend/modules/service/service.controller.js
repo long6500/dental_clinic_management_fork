@@ -4,54 +4,68 @@ const PrescriptionModel = require('../prescription/prescription');
 const HTTPError = require('../../common/httpError');
 
 const getService = async (req, res, next) => {
-
     const service = await ServiceModel.find({});
     res.send({ success: 1, data: service });
 }
 
+const getActiveService = async (req, res, next) => {
+    const service = await ServiceModel.find({status: true});
+    res.send({ success: 1, data: service });
+}
+
 const createService = async (req, res) => {
-    //const senderUser = req.user;
+    const senderUser = req.user;
     const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
     const _id = await getNext();
-    // const imgUrl = req.file.path;
+    const imgUrl = req.file.path;
     const newService = await ServiceModel.create({
         _id: _id,
         name,
-        // imageUrl: imgUrl,
+        imageUrl: imgUrl,
         time,
         price,
         note,
         status,
-        //createBy: senderUser._id
+        createBy: senderUser._id
     });
 
-    const consumableArray = JSON.parse(JSON.stringify(consumable));
-    consumableArray.forEach(async (element) => {
-        await ConsumableModel.create({
-            serviceId: _id,
-            medicineId: element.medicineId,
-            numberOfUses: element.numberOfUses,
-            //createBy: senderUser._id,
-        });
-    });
+    var consumableArray;
+    if (consumable != null) {
+        consumableArray = JSON.parse(JSON.stringify(consumable));
+        consumableArray.forEach(async (element) => {
+            const temp = JSON.parse(element);
 
-    const prescriptionArray = JSON.parse(JSON.stringify(prescription));
-    prescriptionArray.forEach(async (element) => {
-        await PrescriptionModel.create({
-            serviceId: _id,
-            medicineId: element.medicineId,
-            quantity: element.quantity,
-            usage: element.usage,
-            //createBy: senderUser._id,
+            await ConsumableModel.create({
+                serviceId: _id,
+                medicineId: temp.medicineId,
+                numberOfUses: temp.numberOfUses,
+                createBy: senderUser._id,
+            });
         });
-    });
+    }
+
+    var prescriptionArray;
+    if (prescription != null) {
+        prescriptionArray = JSON.parse(JSON.stringify(prescription));
+        prescriptionArray.forEach(async (element) => {
+            const temp = JSON.parse(element);
+
+            await PrescriptionModel.create({
+                serviceId: _id,
+                medicineId: element.medicineId,
+                quantity: element.quantity,
+                usage: element.usage,
+                createBy: senderUser._id,
+            });
+        });
+    }
 
     const fullService = {...newService._doc,consumableArray,prescriptionArray};
     res.send({ success: 1, data: fullService });
 }
 
 const updateService = async (req, res) => {
-    //const senderUser = req.user;
+    const senderUser = req.user;
     const { serviceId } = req.params;
     const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
     const imgUrl = req.file.path;
@@ -68,31 +82,41 @@ const updateService = async (req, res) => {
             price,
             note,
             status,
-            //modifyBy: senderUser._id
+            modifyBy: senderUser._id
         }, { new: true });
 
     await ConsumableModel.deleteMany({serviceId: serviceId});
-    const consumableArray = JSON.parse(JSON.stringify(consumable));
-    consumableArray.forEach(async (element) => {
-        await ConsumableModel.create({
-            serviceId: serviceId,
-            medicineId: element.medicineId,
-            numberOfUses: element.numberOfUses,
-            //createBy: senderUser._id,
+    var consumableArray;
+    if (consumable != null) {
+        consumableArray = JSON.parse(JSON.stringify(consumable));
+        consumableArray.forEach(async (element) => {
+            const temp = JSON.parse(element);
+
+            await ConsumableModel.create({
+                serviceId: _id,
+                medicineId: temp.medicineId,
+                numberOfUses: temp.numberOfUses,
+                createBy: senderUser._id,
+            });
         });
-    });
+    }
 
     await PrescriptionModel.deleteMany({serviceId: serviceId});
-    const prescriptionArray = JSON.parse(JSON.stringify(prescription));
-    prescriptionArray.forEach(async (element) => {
-        await PrescriptionModel.create({
-            serviceId: serviceId,
-            medicineId: element.medicineId,
-            quantity: element.quantity,
-            usage: element.usage,
-            //createBy: senderUser._id,
+    var prescriptionArray;
+    if (prescription != null) {
+        prescriptionArray = JSON.parse(JSON.stringify(prescription));
+        prescriptionArray.forEach(async (element) => {
+            const temp = JSON.parse(element);
+
+            await PrescriptionModel.create({
+                serviceId: _id,
+                medicineId: element.medicineId,
+                quantity: element.quantity,
+                usage: element.usage,
+                createBy: senderUser._id,
+            });
         });
-    });
+    }
 
     const fullService = {...updateService._doc,consumableArray,prescriptionArray};
     res.send({ success: 1, data: fullService });
@@ -154,4 +178,5 @@ module.exports = {
     updateService,
     getServiceById,
     updateStatus,
+    getActiveService,
 }

@@ -1,39 +1,27 @@
-const Profile = require("./profile");
 const HTTPError = require("../../common/httpError");
+const ProfileModel = require("./profile");
+const AuthController = require('../auth/auth.controller');
+
+const createAdmin = async (req, res) => {
+    const admin = AuthController.createUser();
+    if(admin) return;
+    try {
+      if (await ProfileModel.find().count() > 0) return null;
+
+      const profileAdmin = { _id: "admin", fullname: 'Nguyễn Thành Nam', phone:'0974485920', email: process.env.EMAIL_ADMIN, address:'', userId: admin};
+      await ProfileModel.create(profileAdmin);
+      return;
+  } catch (err) {
+      return err;
+  }
+};
 
 const getProfile = async (req, res, next) => {
-    const medicine = await MedicineModel.find({});
+    const profile = await ProfileModel.find({});
     res.send({ success: 1, data: medicine });
 };
 
-const getProfileById = async (req, res, next) => {
-    const medicine = await MedicineModel.find({});
-    res.send({ success: 1, data: medicine });
-};
-
-const updateStatus = async (req, res) => {
-    const senderUser = req.user;
-    const { medicineId, status } = req.params;
-  
-    const existMedicine = await MedicineModel.findOne({ _id: medicineId });
-    if (!existMedicine) {
-      throw new HTTPError(400, "Not found medicine");
-    }
-  
-    const updatedMedicine = await MedicineModel.findByIdAndUpdate(
-      medicineId,
-      {
-        status,
-        modifyBy: senderUser._id,
-      },
-      { new: true }
-    );
-  
-    res.send({ success: 1, data: updatedMedicine });
-};
 
 module.exports = {
     getProfile,
-    getProfileById,
-    updateStatus,
-  };
+};

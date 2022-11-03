@@ -9,15 +9,22 @@ const fileUploader = require('../../middlewares/cloudinary.config');
 
 router.get(
     '/', 
-    //needAuthenticated, 
-    //isRole, 
+    needAuthenticated, 
+    isRole, 
     medicineController.getMedicine
+);
+
+router.get(
+    '/activeMedicine', 
+    needAuthenticated, 
+    isRole, 
+    medicineController.getActiveMedicine
 );
 
 router.post(
     '/', 
-    //needAuthenticated, 
-    //isRole, 
+    needAuthenticated, 
+    isRole, 
     fileUploader.single('imageUrl'),
     validateInput(medicineSchema, 'body'),
     medicineController.createMedicine
@@ -25,8 +32,8 @@ router.post(
 
 router.put(
     '/:medicineId', 
-    //needAuthenticated, 
-    //isRole, 
+    needAuthenticated, 
+    isRole, 
     fileUploader.single('imageUrl'),
     validateInput(medicineSchema, 'body'),
     medicineController.updateMedicine
@@ -34,15 +41,15 @@ router.put(
 
 router.get(
     '/:medicineId', 
-    //needAuthenticated, 
-    //isRole, 
+    needAuthenticated, 
+    isRole, 
     medicineController.getMedicineById
 );
 
 router.put(
     '/:medicineId/:status', 
-    //needAuthenticated, 
-    //isRole,
+    needAuthenticated, 
+    isRole,
     medicineController.updateStatus
 );
 

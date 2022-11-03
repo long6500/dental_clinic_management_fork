@@ -9,40 +9,47 @@ const fileUploader = require('../../middlewares/cloudinary.config');
 
 router.get(
     '/', 
-    //needAuthenticated, 
-    //isRole, 
+    needAuthenticated, 
+    isRole, 
     serviceController.getService
+);
+
+router.get(
+    '/activeService', 
+    needAuthenticated, 
+    isRole, 
+    serviceController.getActiveService
 );
 
 router.post(
     '/', 
-    //needAuthenticated, 
-    //isRole, 
+    needAuthenticated, 
+    isRole, 
     fileUploader.single('imageUrl'),
-    // validateInput(serviceSchema, 'body'),
+    validateInput(serviceSchema, 'body'),
     serviceController.createService
 );
 
 router.put(
     '/:serviceId', 
-    //needAuthenticated, 
-    //isRole, 
-    // fileUploader.single('imageUrl'),
+    needAuthenticated, 
+    isRole, 
+    fileUploader.single('imageUrl'),
     validateInput(serviceSchema, 'body'),
     serviceController.updateService
 );
 
 router.get(
     '/:serviceId', 
-    //needAuthenticated, 
-    //isRole, 
+    needAuthenticated, 
+    isRole, 
     serviceController.getServiceById
 );
 
 router.put(
     '/:serviceId/:status', 
-    //needAuthenticated, 
-    //isRole,
+    needAuthenticated, 
+    isRole,
     serviceController.updateStatus
 );
 

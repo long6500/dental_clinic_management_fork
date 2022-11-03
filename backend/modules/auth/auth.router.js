@@ -33,4 +33,5 @@ router.get(
   needAuthenticated,
   authController.verify
 );
+
 module.exports = router;
