@@ -18,8 +18,8 @@ router.post(
     '/', 
     //needAuthenticated, 
     //isRole, 
-    // fileUploader.single('imageUrl'),
-    validateInput(serviceSchema, 'body'),
+    fileUploader.single('imageUrl'),
+    // validateInput(serviceSchema, 'body'),
     serviceController.createService
 );
 

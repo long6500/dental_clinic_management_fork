@@ -114,8 +114,8 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                     value={newMedicine.imageUrl}
                     onChange={(e) => {
                       dispatch(getMedDetailSuccess({ imageUrl: e }));
-                      console.log("img: " + newMedicine.imageUrl);
-                      console.log("e: " + e);
+                      // console.log("img: " + newMedicine.imageUrl);
+                      // console.log("e: " + e);
                     }}
                   />
                 </Form.Group>

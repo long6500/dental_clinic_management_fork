@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import "./css/App.scss";
 import LoadingComponent from "./components/loadingComponent";
 import UpdateMedicineModal from "./pages/Medicine/UpdateMedicineModal";
+import Test from './components/test'
 import Service from "./pages/Services/Service";
 import Profile from "./pages/profile/profile";
 import Changepassword from "./pages/profile/changpassword";
@@ -71,8 +72,16 @@ function App() {
 
             <Route path="/Login" element={<Login />} />
             <Route path="/Forgotpassword" element={<Forgotpassword />} />
+
+{/*        <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
+            <Route path="/service" element={<Service itemsPerPage={5}/>}></Route>
+            <Route path="/Customer" element={<Customer />}></Route>
+            <Route path="/test" element={<Test />}></Route>   */}
+
+
             {/* <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route> */}
             <Route path="/service" element={<Service />}></Route>
+
           </Route>
 
           <Route element={<PrivateRoute user={userInfo.data} />}>
@@ -82,8 +91,10 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             <Route path="/medicine" element={<Medicine />}></Route>
             {/* <Route path="/service" element={<Service />}></Route> */}
+
             <Route path="/Customer" element={<Customer />}></Route>
             <Route path="/Staff" element={<Staff />}></Route>
+
           </Route>
         </Routes>
 

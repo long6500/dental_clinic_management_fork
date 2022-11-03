@@ -46,14 +46,14 @@ const Navbarr = () => {
 
             <NavDropdown title="Thiết lập" id="basic-nav-dropdown">
               <NavDropdown.Item href="/medicine">
-                Đăng ký thuốc
+                Quản lý thuốc
               </NavDropdown.Item>
               <NavDropdown.Item href="/service">
-                Đăng ký thủ thuật
+                Quản lý thủ thuật
               </NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item href="/rangho">
-                Đăng ký nhân viên
+                Quản lý nhân viên
               </NavDropdown.Item>
 
               {/* <NavDropdown.Divider />

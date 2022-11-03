@@ -11,22 +11,126 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Table from "react-bootstrap/Table";
 import { FaTrashAlt } from "react-icons/fa";
+import medicineProcessor from "../../apis/medicineProcessor";
+import serviceProcessor from "../../apis/serviceProcessor";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import UploadAndDisplayImage from "../../components/uploadImage";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-const ServiceModal = () => {
+const ServiceModal = ({ loadData }) => {
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      imageUrl: null,
+      time: 0,
+      price: 0,
+      note: "",
+    },
+    enableReinitialize: true,
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .required("Required")
+        .min(4, "Must be 4 characters or more"),
+      imageUrl: Yup.mixed().required("Bắt buộc"),
+      time: Yup.number()
+        .required("Required")
+        .positive("Phải là số dương")
+        .integer("Phải là số tự nhiên"),
+      price: Yup.number().required("Required").positive("Phải là số dương"),
+      note: Yup.string(),
+    }),
+    onSubmit: async (values) => {
+      let formData = new FormData();
+
+      formData.append("name", values.name);
+      formData.append("imageUrl", values.imageUrl[0]);
+      formData.append("time", values.time);
+      formData.append("price", values.price);
+      formData.append("note", values.note);
+      for (var i = 0; i < consumableUiList.length; i++) {
+        const tempOb = {
+          medicineId: consumableUiList[i][0],
+          numberOfUses: consumableUiList[i][4],
+        };
+        formData.append("consumable[]", JSON.stringify(tempOb));
+      }
+
+      for (var i = 0; i < prescriptionList.length; i++) {
+        const tempOb = {
+          medicineId: prescriptionList[i][0],
+          quantity: prescriptionList[i][4],
+          usage: prescriptionList[i][5],
+        };
+        formData.append("prescription[]", JSON.stringify(tempOb));
+      }
+
+      // for (var i = 0; i < prescriptionList.length; i++) {
+      //   var myItemInArr = prescriptionList[i];
+      //   for (var prop in myItemInArr) {
+      //     fileData.append(`prescription[${i}][${prop}]`, myItemInArr[prop]);
+      //   }
+      // }
+
+      handleClose();
+      values.name = "";
+      values.imageUrl = null;
+      values.time = 0;
+      values.price = 0;
+      values.note = "";
+      setConsumableUiList([]);
+      setPrescriptionList([]);
+
+      serviceProcessor.addService(formData);
+      for (const value of formData.values()) {
+        console.log(value);
+      }
+      // await loadData();
+    },
+  });
+
+  // const handleAddService = async () => {
+  //   // serviceProcessor.addService(service);
+  //   handleClose();
+  //   await loadData();
+  // };
+
+  const meds = useSelector((state) => state.med.medicine);
+  const [suggestionList, setSuggestionList] = useState([]);
   const { Control } = Form;
+  //only MedID
+  const [selectedMed, setSelectedMed] = useState("");
+  const [selectedMedObj, setSelectedMedObj] = useState({});
+  const [isShowSuggestion, setIsShowSuggestion] = useState([]);
+  const [isShowSuggestion1, setIsShowSuggestion1] = useState([]);
 
-  //consumableUiList
-  const consumableUiListType = [
-    "text",
-    "text",
-    "text",
-    "text",
-    "text",
-    "number",
-  ];
+  const loadDataMed = async () => {
+    medicineProcessor.getAll();
+    handleClose();
+  };
+
+  useEffect(() => {
+    loadDataMed();
+    if (meds.length > 0) {
+      setSuggestionList([...meds.filter((item) => item.status === true)]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (suggestionList.length < 1) {
+      setSuggestionList([...meds.filter((item) => item.status === true)]);
+    }
+  }, [meds]);
+
+  const consumableUiListType = ["text", "select", "text", "text", "number"];
+  const consumableUiListStyle = {
+    // 1: "100px"
+  };
+  const consumableUiListSuggest = { 1: true };
   const [consumableUiList, setConsumableUiList] = useState([]);
 
-  const disableList = [2, 3];
+  const disableList = [0, 2, 3];
 
   const deleteConsumableUiList = (rowIndex) => {
     let temp = consumableUiList;
@@ -38,7 +142,6 @@ const ServiceModal = () => {
   const [prescriptionList, setPrescriptionList] = useState([]);
 
   const deleteprescriptionList = (rowIndex) => {
-    console.log(rowIndex);
     let temp = prescriptionList;
     temp.splice(rowIndex, 1);
     setPrescriptionList([...temp]);
@@ -52,10 +155,6 @@ const ServiceModal = () => {
   const navigate = useNavigate();
 
   // useEffect(() => {
-  //   console.log(consumableUiList);
-  // }, [consumableUiList]);
-
-  // useEffect(() => {
   //   console.log(prescriptionList);
   // }, [prescriptionList]);
 
@@ -65,19 +164,87 @@ const ServiceModal = () => {
     //     item
     //   })
     // })
-    setConsumableUiList([...consumableUiList, ["", "", "", "", "", ""]]);
+    setIsShowSuggestion([...isShowSuggestion, true]);
+    setConsumableUiList([...consumableUiList, ["", "", "", "", ""]]);
   };
 
   const addPrescriptionRow = () => {
-    // consumableUiList.forEach(item => {
-    //   item.forEach(item => {
-    //     item
-    //   })
-    // })
-    console.log("chay");
+    setIsShowSuggestion1([...isShowSuggestion1, true]);
+
     setPrescriptionList([...prescriptionList, ["", "", "", "", "", ""]]);
   };
 
+  //searchTextBox for ID
+  const searchTextBox = (data = [], rowIndex, colIndex) => {
+    return (
+      <div id="medCodeContainer" hidden={isShowSuggestion[rowIndex]}>
+        <ul>
+          {data.map((item) => {
+            return (
+              <li
+                onClick={(e) => {
+                  isShowSuggestion[rowIndex] = true;
+                  setIsShowSuggestion([...isShowSuggestion]);
+                  let tempList = consumableUiList;
+                  tempList[rowIndex][colIndex] = e.target.textContent;
+
+                  const searchResult = meds.find(
+                    (item) => item.name === e.target.textContent
+                  );
+                  consumableUiList[rowIndex][colIndex - 1] = searchResult._id;
+                  consumableUiList[rowIndex][colIndex] = searchResult.name;
+                  consumableUiList[rowIndex][colIndex + 1] =
+                    searchResult.quantity;
+                  consumableUiList[rowIndex][colIndex + 2] = searchResult.unit;
+                  setConsumableUiList(consumableUiList);
+
+                  setConsumableUiList([...tempList]);
+                  // setSelectedMed(e.target.textContent);
+                }}
+              >
+                {item.name}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  };
+
+  const searchTextBox1 = (data = [], rowIndex, colIndex) => {
+    return (
+      <div id="medCodeContainer" hidden={isShowSuggestion1[rowIndex]}>
+        <ul>
+          {data.map((item) => {
+            return (
+              <li
+                onClick={(e) => {
+                  isShowSuggestion1[rowIndex] = true;
+                  setIsShowSuggestion1([...isShowSuggestion1]);
+                  let tempList = prescriptionList;
+                  tempList[rowIndex][colIndex] = e.target.textContent;
+
+                  const searchResult = meds.find(
+                    (item) => item.name === e.target.textContent
+                  );
+                  prescriptionList[rowIndex][colIndex - 1] = searchResult._id;
+                  prescriptionList[rowIndex][colIndex] = searchResult.name;
+                  prescriptionList[rowIndex][colIndex + 1] =
+                    searchResult.quantity;
+                  prescriptionList[rowIndex][colIndex + 2] = searchResult.unit;
+                  setPrescriptionList(prescriptionList);
+                  setPrescriptionList([...tempList]);
+                  // setSelectedMed(e.target.textContent);
+                }}
+              >
+                {item.name}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  };
   return (
     <>
       <Button
@@ -100,17 +267,23 @@ const ServiceModal = () => {
         <Modal.Body>
           {/* <MedicineForm></MedicineForm> */}
           <>
-            <Form>
+            <Form onSubmit={formik.handleSubmit}>
               <Row className="mb-3">
-                <Form.Group as={Col} controlId="formGridEmail">
+                {/* <Form.Group as={Col} controlId="formGridEmail">
                   <Form.Label>Mã thủ thuật</Form.Label>
                   <Form.Control type="text" />
-                </Form.Group>
+                </Form.Group> */}
                 <Form.Group as={Col}>
-                  <Form.Label>Hình ảnh</Form.Label>
-                  <Form.Control type="text" />
-                  {/* <img src={} /> */}
-                  {/* <UploadAndDisplayImage></UploadAndDisplayImage> */}
+                  <Form.Label>Tên thủ thuật</Form.Label>
+                  <Form.Control
+                    id="name"
+                    // value={formik.values.name}
+                    onChange={formik.handleChange}
+                    placeholder="Nhập tên thủ thuật"
+                  />
+                  {formik.errors.name && (
+                    <p className="errorMsg"> {formik.errors.name} </p>
+                  )}
                 </Form.Group>
               </Row>
 
@@ -120,13 +293,37 @@ const ServiceModal = () => {
                   as={Col}
                   controlId="formGroupPassword"
                 >
-                  <Form.Label>Tên thủ thuật</Form.Label>
-                  <Form.Control />
+                  <Form.Label column sm={12}>
+                    Hình Ảnh
+                  </Form.Label>
+                  <UploadAndDisplayImage
+                    value={formik.values.imageUrl ? formik.values.imageUrl : []}
+                    onChange={(value) => {
+                      console.log(value);
+                      if (value && value.length > 0) {
+                        formik.values.imageUrl = value;
+                      }
+                    }}
+                  />
+                  {formik.errors.imageUrl && (
+                    <p className="errorMsg"> {formik.errors.imageUrl} </p>
+                  )}
                 </Form.Group>
 
                 <Form.Group as={Col} controlId="formGridEmail">
-                  <Form.Label>Thời gian (phút)</Form.Label>
-                  <Form.Control type="text" />
+                  <Form.Label column sm={12}>
+                    Thời gian (phút)
+                  </Form.Label>
+                  <Form.Control
+                    id="time"
+                    type="text"
+                    value={formik.values.time}
+                    onChange={formik.handleChange}
+                    placeholder="0"
+                  />
+                  {formik.errors.time && (
+                    <p className="errorMsg"> {formik.errors.time} </p>
+                  )}
                 </Form.Group>
               </Row>
               <Row className="mb-3">
@@ -134,17 +331,36 @@ const ServiceModal = () => {
                   <Form.Label>Giá</Form.Label>
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
-                      <Form.Control defaultValue="0" />
+                      <Form.Control
+                        id="price"
+                        type="text"
+                        value={formik.values.price}
+                        onChange={formik.handleChange}
+                        placeholder="0"
+                      />{" "}
+                      {formik.errors.price && (
+                        <p className="errorMsg"> {formik.errors.price} </p>
+                      )}
                     </Form.Group>
                   </Row>
                 </Form.Group>
 
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label>Ghi chú</Form.Label>
-                  <Form.Control as="textarea" rows={3} />
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    id="note"
+                    value={formik.values.note}
+                    onChange={formik.handleChange}
+                  />
+                  {formik.errors.note && (
+                    <p className="errorMsg"> {formik.errors.note} </p>
+                  )}
                 </Form.Group>
               </Row>
 
+              {/* ConsumableList */}
               <Row className="mb-3">
                 <Col>
                   <Form.Label style={{ marginBottom: "4px" }}>
@@ -174,68 +390,90 @@ const ServiceModal = () => {
                     <th>Tên thuốc</th>
                     <th>Lượng</th>
                     <th>Đơn vị</th>
-                    <th>Một lần dùng</th>
                     <th>Số lần dùng</th>
                   </tr>
                 </thead>
-                {
-                  // const [consumableUiList, setConsumableUiList] = useState([
-                  //   {
-                  //     medId: 1,
-                  //     name: "long quay",
-                  //     quanity: 11,
-                  //     unit: 1,
-                  //     uses: 1,
-                  //     numberOfUses: 1,
-                  //   },
-                  // ]);
-                  consumableUiList.length > 0 && (
-                    <tbody>
-                      {consumableUiList.map((row, rowIndex) => {
-                        return (
-                          <tr>
-                            <td>
-                              <Control
-                                type="text"
-                                disabled
-                                value={rowIndex + 1}
-                              />
-                            </td>
-                            {row.map((col, colIndex) => {
-                              return (
-                                <>
-                                  <td>
-                                    <Control
-                                      type={consumableUiListType[colIndex]}
-                                      value={col}
-                                      onChange={(e) => {
-                                        let tempList = consumableUiList;
-                                        tempList[rowIndex][colIndex] =
-                                          e.target.value;
-                                        setConsumableUiList([...tempList]);
-                                      }}
-                                      // style={erroolist[rowIndex][colIndex] && {border: 'red'}}
-                                      disabled={
-                                        disableList.includes(colIndex)
-                                          ? true
-                                          : false
+                {consumableUiList.length > 0 && (
+                  <tbody>
+                    {consumableUiList.map((row, rowIndex) => {
+                      return (
+                        <tr>
+                          <td style={{ width: "80px" }}>
+                            <Control
+                              type="text"
+                              disabled
+                              value={rowIndex + 1}
+                            />
+                          </td>
+                          {row.map((col, colIndex) => {
+                            return (
+                              <>
+                                <td
+                                  style={{
+                                    // width: `${consumableUiListStyle[colIndex]}`,
+                                    position: "relative",
+                                  }}
+                                  onBlur={(e) => {
+                                    if (
+                                      e.relatedTarget.id === "searchMedName"
+                                    ) {
+                                      isShowSuggestion[rowIndex] = true;
+                                      setIsShowSuggestion([
+                                        ...isShowSuggestion,
+                                      ]);
+                                    }
+                                  }}
+                                >
+                                  <Control
+                                    id="searchMedName"
+                                    className="searchMedName"
+                                    type={consumableUiListType[colIndex]}
+                                    value={col}
+                                    onFocus={() => {
+                                      if (consumableUiListSuggest[colIndex]) {
+                                        isShowSuggestion[rowIndex] = false;
+                                        setIsShowSuggestion([
+                                          ...isShowSuggestion,
+                                        ]);
                                       }
-                                    />
-                                  </td>
-                                </>
-                              );
-                            })}
-                            <td
-                              onClick={() => deleteConsumableUiList(rowIndex)}
-                            >
-                              <FaTrashAlt cursor="pointer" color="#e74c3c" />
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  )
-                }
+                                    }}
+                                    //onChange k thay chay
+                                    onChange={(e) => {
+                                      console.log("onChange");
+                                      let tempList = consumableUiList;
+                                      tempList[rowIndex][colIndex] =
+                                        e.target.value;
+                                      setConsumableUiList([...tempList]);
+                                    }}
+                                    // style={erroolist[rowIndex][colIndex] && {border: 'red'}}
+                                    disabled={
+                                      disableList.includes(colIndex)
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                  {consumableUiListSuggest[colIndex] &&
+                                    searchTextBox(
+                                      suggestionList,
+                                      rowIndex,
+                                      colIndex
+                                    )}
+                                </td>
+                              </>
+                            );
+                          })}
+                          <td onClick={() => deleteConsumableUiList(rowIndex)}>
+                            <FaTrashAlt
+                              cursor="pointer"
+                              color="#e74c3c"
+                              style={{ transform: "translateY(7px)" }}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                )}
               </Table>
 
               <Row className="mb-3">
@@ -275,59 +513,76 @@ const ServiceModal = () => {
                     {prescriptionList.map((row, rowIndex) => {
                       return (
                         <tr>
-                          <td>
-                            <input
+                          <td style={{ width: "80px" }}>
+                            <Control
                               type="text"
                               disabled
-                              size="1 "
                               value={rowIndex + 1}
                             />
                           </td>
-                          {/* {row.map((col, colIndex) => {
-                              return (
-                                <>
-                                  <td>
-                                    <Control
-                                      type="text"
-                                      value={col}
-                                      onChange={(e) => {
-                                        let tempList = prescriptionList;
-                                        tempList[rowIndex][colIndex] =
-                                          e.target.value;
-                                          setPrescriptionList([...tempList]);
-                                      }}
-                                      // style={erroolist[rowIndex][colIndex] && {border: 'red'}}
-                                      disabled={
-                                        disableList.includes(colIndex)
-                                          ? true
-                                          : false
+                          {row.map((col, colIndex) => {
+                            return (
+                              <>
+                                <td
+                                  style={{
+                                    width: `${consumableUiListStyle[colIndex]}`,
+                                    position: "relative",
+                                  }}
+                                  onBlur={(e) => {
+                                    if (
+                                      e.relatedTarget.id === "searchMedName1"
+                                    ) {
+                                      isShowSuggestion1[rowIndex] = true;
+                                      setIsShowSuggestion1([
+                                        ...isShowSuggestion1,
+                                      ]);
+                                    }
+                                  }}
+                                >
+                                  <Control
+                                    id="searchMedName1"
+                                    className="searchMedName1"
+                                    type={consumableUiListType[colIndex]}
+                                    value={col}
+                                    onFocus={() => {
+                                      console.log("focus");
+                                      if (consumableUiListSuggest[colIndex]) {
+                                        isShowSuggestion1[rowIndex] = false;
+                                        setIsShowSuggestion1([
+                                          ...isShowSuggestion1,
+                                        ]);
                                       }
-                                    />
-                                  </td>
-                                </>
-                              );
-                            })} */}
-                          <td>
-                            <input type="text" />
-                          </td>
-                          <td>
-                            <input type="text" />
-                          </td>
-                          <td>
-                            <input type="text" disabled />
-                          </td>
-                          <td>
-                            <input type="text" disabled />
-                          </td>
-                          <td>
-                            <input type="text" />
-                          </td>
-                          <td>
-                            <input type="text" />
-                          </td>
+                                    }}
+                                    onChange={(e) => {
+                                      let tempList = prescriptionList;
+                                      tempList[rowIndex][colIndex] =
+                                        e.target.value;
+                                      setPrescriptionList([...tempList]);
+                                    }}
+                                    // style={erroolist[rowIndex][colIndex] && {border: 'red'}}
+                                    disabled={
+                                      disableList.includes(colIndex)
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                  {consumableUiListSuggest[colIndex] &&
+                                    searchTextBox1(
+                                      suggestionList,
+                                      rowIndex,
+                                      colIndex
+                                    )}
+                                </td>
+                              </>
+                            );
+                          })}
 
                           <td onClick={() => deleteprescriptionList(rowIndex)}>
-                            <FaTrashAlt cursor="pointer" color="#e74c3c" />
+                            <FaTrashAlt
+                              cursor="pointer"
+                              color="#e74c3c"
+                              style={{ transform: "translateY(7px)" }}
+                            />
                           </td>
                         </tr>
                       );
@@ -335,17 +590,27 @@ const ServiceModal = () => {
                   </tbody>
                 )}
               </Table>
+
+              <Button
+                type="submit"
+                variant="primary"
+                style={{ float: "right" }}
+              >
+                Lưu lại
+              </Button>
+              <Button
+                style={{
+                  float: "right",
+                  marginRight: "10px",
+                  backgroundColor: "gray",
+                }}
+                onClick={handleClose}
+              >
+                Hủy bỏ
+              </Button>
             </Form>
           </>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Hủy bỏ
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Lưu lại
-          </Button>
-        </Modal.Footer>
       </Modal>
     </>
   );

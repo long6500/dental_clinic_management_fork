@@ -57,19 +57,10 @@ medProcessor.getAll = async () => {
   store.dispatch(setNotLoading());
 };
 
-// medProcessor.getAllObj = async () => {
-//   const result = [];
-//   await axios
-//     .get("/api/medicine")
-//     .then((response) => {
-//       result = response.data;
-//     })
-//     .catch((err) => {
-//       console.log("Err: ", err);
-//     });
-//     // console.log(response.data);
-//   return result;
-// };
+medProcessor.getAllObj = async () => {
+  const result = await axios.get("/api/medicine")
+  return result.data.data;
+};
 
 // medProcessor.getAllObj = async () => {
 //   const result = await axios
@@ -101,6 +92,18 @@ medProcessor.updateMedcine = async (med, navigate) => {
     .catch((err) => {
       console.log("Err: ", err);
     });
+};
+
+medProcessor.changeStatus = async (id, state, navigate) => {
+  const result = await axios.put(`api/medicine/${id}/${state}`)
+  if(result.data.success !== 1){
+    Swal.fire(
+      'Thất bại',
+      `Cập nhật thất bại tại id=${id}`,
+      'failed'
+    )
+  }
+  return result.data
 };
 
 export default medProcessor;
