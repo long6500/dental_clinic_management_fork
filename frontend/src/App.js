@@ -16,6 +16,7 @@ import GuestRoute from "./components/Route/GuestRoute";
 import axios from "../src/apis/api";
 import React from 'react';
 import Staff from "./pages/Staff/Staff";
+import Editstaff from "./pages/Staff/EditStaff";
 export const AuthContext = React.createContext();
 function App() {
   const isLoading = useSelector((state) => state.loading);
@@ -80,6 +81,7 @@ function App() {
           <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
             <Route path="/ChangePassword" element={<Changepassword />} />
             <Route path="/Profile" element={<Profile />} />
+            <Route path="/Editstaff" element={<Editstaff />} />
             <Route path="/medicine" element={<Medicine />}></Route>
             {/* <Route path="/service" element={<Service />}></Route> */}
             <Route path="/Customer" element={<Customer />}></Route>

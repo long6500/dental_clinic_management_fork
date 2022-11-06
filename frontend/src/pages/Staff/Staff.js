@@ -12,54 +12,53 @@ import { AiFillDelete } from "react-icons/ai";
 import ModaladdStaff from "./ModaladdStaff";
 import EditStaff from "./EditStaff";
 class Staff extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       isOpenModalAddStaff: false,
-      isOpenEditStaff:false,
+      isOpenEditStaff: false,
     };
   }
 
-  handleAddnewStaff= () => {
+  handleAddnewStaff = () => {
     this.setState({
       isOpenModalAddStaff: true,
     });
-  }
+  };
 
-  handleEditStaff= () => {
+  handleEditStaff = () => {
     this.setState({
       isOpenEditStaff: true,
     });
-  }
+  };
 
-  toggleStaffModal= () => {
+  toggleStaffModal = () => {
     this.setState({
       isOpenModalAddStaff: !this.state.isOpenModalAddStaff,
     });
-  }
+  };
 
-  toggleEditModal= () => {
+  toggleEditModal = () => {
     this.setState({
       isOpenEditStaff: !this.state.isOpenEditStaff,
     });
-  }
+  };
 
   render() {
     return (
       <>
         <Navbar>
-        <EditStaff
+          {/* <EditStaff
             isOpenEdit={this.state.isOpenEditStaff}
             toggleFromParentEdit={this.toggleEditModal}
             test={"abcd1231"}
-          ></EditStaff>
+          ></EditStaff> */}
           <ModaladdStaff
             isOpen={this.state.isOpenModalAddStaff}
             toggleFromParent={this.toggleStaffModal}
             test={"abc"}
           ></ModaladdStaff>
-          
+
           <Container fluid>
             <Navbar.Toggle aria-controls="navbarScroll" />
             <Navbar.Collapse id="navbarScroll">
@@ -106,31 +105,36 @@ class Staff extends Component {
               <Table striped bordered hover>
                 <thead>
                   <tr>
-                    <th>STT</th>
                     <th>Mã nhân viên</th>
                     <th>Tên nhân viên</th>
+                    <th>Chức Danh</th>
                     <th>Điện thoại</th>
                     <th>Địa chỉ</th>
+                    <th>Trạng Thái</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>1</td>
+                    <td>3123đá</td>
                     <td>asd</td>
+                    <td>3123đá</td>
+                    <td>3123đá</td>
                     <td>qwe</td>
                     <td>zxc</td>
-                    <td></td>
                     <td>
-                      <Nav.Link  onClick={() => this.handleEditStaff()} test={"abcd1231"} style={{ display: "inline" }}>
-                        <FaEdit size={25} />
-                      </Nav.Link>
                       <Nav.Link
-                        href="/"
-                        style={{ display: "inline", color: "red" }}
+                        onClick={() => this.handleEditStaff()}
+                        test={"abcd1231"}
+                        style={{ display: "inline" }}
+                        centered
                       >
-                        <AiFillDelete size={25} />
+                        <FaEdit size={25}/>                       
                       </Nav.Link>
+                      <Form.Check
+                            type="switch"
+                            style={{ display: "inline", marginLeft: "10px" }}
+                          />
                     </td>
                   </tr>
                 </tbody>
