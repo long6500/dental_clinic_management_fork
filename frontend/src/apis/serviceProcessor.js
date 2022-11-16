@@ -1,4 +1,6 @@
-import axios from "axios";
+// import axios from "axios";
+import axios from "./api";
+
 import Swal from "sweetalert2";
 
 const serviceProcessor = {};
@@ -44,10 +46,10 @@ serviceProcessor.updateService = async (service, id) => {
 
 serviceProcessor.changeStatus = async (id, state, navigate) => {
   const result = await axios.put(`api/service/${id}/${state}`);
-  if (result.data.success !== 1) {
+  if (result.success !== 1) {
     Swal.fire("Thất bại", `Cập nhật thất bại tại id=${id}`, "failed");
   }
-  return result.data;
+  return result;
 };
 
 export default serviceProcessor;

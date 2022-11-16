@@ -7,7 +7,21 @@ const getCustomer = async (req, res) => {
 };
 
 const getActiveCustomer = async (req, res) => {
-  const customers = await CustomerModel.find({status: true});
+  const customers = await CustomerModel.find({ status: true });
+  res.send({ success: 1, data: customers });
+};
+
+const checkPhone = async (req, res) => {
+  const { phone } = req.params;
+  const customers = await CustomerModel.findOne({ phone: phone });
+  if (customers != null) res.send({ success: 0, data: customers });
+  res.send({ success: 1, data: customers });
+};
+
+const checkEmail = async (req, res) => {
+  const { email } = req.params;
+  const customers = await CustomerModel.findOne({ email: email });
+  if (customers != null) res.send({ success: 0, data: customers });
   res.send({ success: 1, data: customers });
 };
 
@@ -23,6 +37,8 @@ const createCustomer = async (req, res) => {
     bloodGroup,
     address,
     note,
+    systemicMedicalHistory,
+    dentalMedicalHistory,
   } = req.body;
   const cusId = await getNext();
   const newCustomer = await CustomerModel.create({
@@ -37,6 +53,8 @@ const createCustomer = async (req, res) => {
     address,
     note,
     createBy: senderUser._id,
+    systemicMedicalHistory,
+    dentalMedicalHistory,
   });
   res.send({ success: 1, data: newCustomer });
 };
@@ -55,9 +73,11 @@ const updateCustomer = async (req, res) => {
     address,
     note,
     status,
+    systemicMedicalHistory,
+    dentalMedicalHistory,
   } = req.body;
 
-  const existCustomer = await CustomerModel.findOne({ '_id': customerId });
+  const existCustomer = await CustomerModel.findOne({ _id: customerId });
   if (!existCustomer) {
     throw new HTTPError(400, "Not found customer");
   }
@@ -75,6 +95,8 @@ const updateCustomer = async (req, res) => {
       address,
       note,
       status,
+      systemicMedicalHistory,
+      dentalMedicalHistory,
       modifyBy: senderUser._id,
     },
     { new: true }
@@ -134,4 +156,6 @@ module.exports = {
   getCustomerById,
   updateStatus,
   getActiveCustomer,
+  checkPhone,
+  checkEmail,
 };

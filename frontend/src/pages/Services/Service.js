@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import { getMedicineSuccess } from "../../redux/reducer/medicineSlice";
 import ReactPaginate from "react-paginate";
+import axios from "../../apis/api";
 
 import { Link } from "react-router-dom";
 import Row from "react-bootstrap/Row";
@@ -48,14 +49,18 @@ const Service = ({ itemsPerPage }) => {
   };
 
   const loadData = async () => {
+    console.log("service");
+
     await axios
       .get("/api/service")
       .then((response) => {
-        setServices(response.data.data);
+        setServices(response.data);
       })
       .catch((err) => {
         console.log("Err: ", err);
       });
+    // setServices(response.data);
+    // console.log(response.data);
   };
 
   useEffect(() => {

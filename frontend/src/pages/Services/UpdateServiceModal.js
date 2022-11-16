@@ -383,7 +383,7 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                         </td>
                         <td>
                           <Form.Control
-                            name="consumableArray.numberOfUses"
+                            id="consumableArray.numberOfUses"
                             type="number"
                             value={item.numberOfUses}
                             onChange={formik.handleChange}

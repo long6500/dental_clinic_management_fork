@@ -9,56 +9,31 @@ import Tabs from "react-bootstrap/Tabs";
 import { FaRedoAlt, FaEdit } from "react-icons/fa";
 import Table from "react-bootstrap/Table";
 import { AiFillDelete } from "react-icons/ai";
-import CustomerModal from "./CustomerModal";
 import CustomTable from "../../components/CustomTable";
 import { AiOutlineCheck, AiOutlineCloseCircle } from "react-icons/ai";
 import CustomToast from "../../components/CustomToast";
-import UpdateCustomerModal from "./UpdateCustomerModal";
 import customerProcessor from "../../apis/customerProcessor";
 import axios from "../../apis/api";
+import MedicalPaperModal from "./MedicalPaperModal";
 
-const Customer = () => {
-  const [customers, setCustomers] = useState([]);
+const ListMedicalPaper = () => {
+  const [isShowUpdate, setIsShowUpdate] = useState(false);
+  const [MedPaper, setMedPaper] = useState();
 
-  const loadData = () => {
-    axios
-      .get("/api/customer")
-      .then((response) => {
-        response.success === 1 && setCustomers(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const openUpdateModal = (id) => {
+    setMedPaper(id);
+    setIsShowUpdate(true);
   };
 
-  const [cusId, setCusID] = useState();
-  const [isShowUpdate, setIsShowUpdate] = useState(false);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  // useEffect(() => {
-  //   loadData();
-  // }, [isShowUpdate]);
-
-  const [currentItems, setCurrentItems] = useState([]);
+  const closeUpdateModal = () => {
+    setIsShowUpdate(false);
+  };
 
   const [isToast, setIsToast] = useState({
     value: false,
     isSuccess: true,
     content: "",
   });
-
-  const openUpdateModal = (id) => {
-    setCusID(id);
-    setIsShowUpdate(true);
-  };
-
-  const closeUpdateModal = () => {
-    setIsShowUpdate(false);
-    // console.log("chay ow day");
-  };
 
   const showToast = (content, isSuccess) => {
     setIsToast({
@@ -69,26 +44,40 @@ const Customer = () => {
     });
   };
 
+  //load Data of all MedicalPaper
+  const loadData = () => {
+    axios
+      .get("/api/customer")
+      .then((response) => {})
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const title = [
     {
       dataKey: "_id",
-      displayName: "Mã khách hàng",
+      displayName: "Mã Phiếu khám",
     },
     {
       dataKey: "fullname",
-      displayName: "Tên khách hàng",
+      displayName: "Ngày",
     },
     {
       dataKey: "phone",
-      displayName: "Điện thoại",
+      displayName: "Khách hàng",
     },
     {
       dataKey: "address",
-      displayName: "Địa chỉ",
+      displayName: "Nhân viên",
+    },
+    {
+      dataKey: "address",
+      displayName: "Thành tiền",
     },
     {
       dataKey: "status",
-      displayName: "Trạng thái",
+      displayName: "Thanh toán",
       custom: (value, data) => {
         return value ? (
           <AiOutlineCheck color="#009432" size={25} />
@@ -137,7 +126,8 @@ const Customer = () => {
       },
     },
   ];
-  function CustomerTable() {
+
+  function MedicalPaperTable() {
     return (
       <>
         <div
@@ -157,7 +147,6 @@ const Customer = () => {
             }}
           />
         </div>
-
         <Tabs id="uncontrolled-tab-example" className="mb-3">
           {/* <Tab eventKey="http://localhost:3000/pathological1" title="Home">
           asd
@@ -171,23 +160,26 @@ const Customer = () => {
                 </Form.Group>
               </Form>
 
-              <CustomTable data={customers} title={title} />
+              <CustomTable
+                //   data={customers}
+                title={title}
+              />
             </div>
           </Tab>
         </Tabs>
       </>
     );
   }
-
   return (
-    <>
-      <UpdateCustomerModal
+    <div>
+      {" "}
+      {/* Update Modal */}
+      {/* <UpdateCustomerModal
         closeModal={closeUpdateModal}
         isVisible={isShowUpdate}
         cusId={cusId}
         loadData={loadData}
-      />
-
+      /> */}
       <Navbar>
         <Container fluid>
           <Navbar.Toggle aria-controls="navbarScroll" />
@@ -198,15 +190,12 @@ const Customer = () => {
               navbarScroll
             >
               <h4 style={{ display: "inline-block", margin: "10px" }}>
-                Danh sách khách hàng
+                Danh sách Phiếu khám
               </h4>
             </Nav>
             <Form className="d-flex">
-              <CustomerModal
-                lbl="Thêm Khách hàng"
-                loadData={loadData}
-                widthh="181px"
-              />
+              {/* Add Modal */}
+              <MedicalPaperModal />
               <Button
                 variant="primary"
                 style={{ marginRight: "20px" }}
@@ -218,10 +207,9 @@ const Customer = () => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-
-      <CustomerTable />
-    </>
+      <MedicalPaperTable />
+    </div>
   );
 };
 
-export default Customer;
+export default ListMedicalPaper;

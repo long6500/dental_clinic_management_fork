@@ -7,72 +7,132 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
 import Button from "react-bootstrap/Button";
+import axios from "../../apis/api";
+import customerProcessor from "../../apis/customerProcessor";
 
 const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
-  const [birthDay, setBirthDay] = useState(
-    new Date().toLocaleDateString("en-US")
-  );
+  const [curCustomer, setCurCustomer] = useState({});
+  const [birthDay, setBirthDay] = useState("");
+
+  const getCustomer = async () => {
+    const response = await axios.get(`api/customer/${cusId}`);
+    setCurCustomer(response.data);
+    setBirthDay(
+      new Date(response.data.dateOfBirth).toISOString().split("T")[0]
+    );
+
+    setCurStatus(response.data.status);
+    setCurPhone(response.data.phone);
+    setCurEmail(response.data.email);
+  };
+
+  const loadSystemMed = async () => {
+    const response = await axios
+      .get("/api/systemicMedicalHistory")
+      .catch((err) => {
+        console.log(err);
+      });
+    setSystemMed(response.data);
+  };
+
+  const loadDentalMed = async () => {
+    const response = await axios
+      .get("/api/dentalMedicalHistory")
+      .catch((err) => {
+        console.log(err);
+      });
+    setDentalMed(response.data);
+  };
+
+  const [systemMed, setSystemMed] = useState([]);
+  const [dentalMed, setDentalMed] = useState([]);
+  const [curStatus, setCurStatus] = useState(false);
+  const [curPhone, setCurPhone] = useState("");
+  const [curEmail, setCurEmail] = useState("");
+
+  useEffect(() => {
+    if (cusId) {
+      getCustomer();
+      loadSystemMed();
+      loadDentalMed();
+      // console.log("asd");
+    }
+  }, [cusId, isVisible]);
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      gender: "male",
-      blood: "",
-      quantity: 0,
-      price: 0,
-      purchasePrice: 0,
-      unit: "",
-      usage: "",
-      body: [],
+      fullname: curCustomer.fullname,
+      job: curCustomer.job,
+      phone: curCustomer.phone,
+      address: curCustomer.address,
+      gender: curCustomer.gender,
+      bloodGroup: curCustomer.bloodGroup,
+      email: curCustomer.email,
+      dateOfBirth: birthDay,
+      note: curCustomer.note,
+      systemicMedicalHistory: curCustomer.systemicMedicalHistory,
+      dentalMedicalHistory: curCustomer.dentalMedicalHistory,
+      status: curStatus,
       // expiredDay: new Date().toLocaleDateString("en-US"),
       // expiredDay: new Date(),
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
-      name: Yup.string()
-        .required("Required")
-        .min(4, "Must be 4 characters or more"),
-      imageUrl: Yup.mixed().required("Bắt buộc"),
-      quantity: Yup.number()
-        .required("Required")
-        .positive("Phải là số dương")
-        .integer("Phải là số tự nhiên"),
-      price: Yup.number()
-        .required("Required")
-        .positive("Phải là số dương")
-        .moreThan(Yup.ref("purchasePrice"), "Giá bán phải lớn hơn giá nhập"),
-      purchasePrice: Yup.number()
-        .required("Required")
-        .positive("Phải là số dương")
-        .lessThan(Yup.ref("price"), "Giá nhập phải nhỏ hơn giá bán "),
-      unit: Yup.string().required("Required"),
-      usage: Yup.string().required("Required"),
+      fullname: Yup.string().required("Nhập tên").min(4, "Tối thiểu 4 kí tự"),
+      phone: Yup.string()
+        .required("Nhập số điện thoại")
+        .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Điền đúng số điện thoại")
+        .test(
+          "Số điện thoại độc nhất",
+          "Số điện thoại đang được sử dụng", // <- key, message
+          function (value) {
+            return new Promise((resolve, reject) => {
+              axios
+                .get(`http://localhost:8080/api/customer/checkPhone/${value}`)
+                .then((res) => {
+                  if (res.success === 1 || curPhone === value) {
+                    resolve(true);
+                  } else resolve(false);
+                })
+                .catch((error) => {
+                  if (
+                    error.response.data.content === "Số điện thoại đã bị lấy"
+                  ) {
+                    resolve(false);
+                  }
+                });
+            });
+          }
+        ),
+      email: Yup.string()
+        .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, "Điền đúng dạng email")
+        .test(
+          "Email độc nhất",
+          "Email đang được sử dụng", // <- key, message
+          function (value) {
+            return new Promise((resolve, reject) => {
+              axios
+                .get(`http://localhost:8080/api/customer/checkEmail/${value}`)
+                .then((res) => {
+                  if (res.success === 1 || curEmail === value) resolve(true);
+                  else resolve(false);
+                })
+                .catch((error) => {
+                  if (error.response.data.content === "Email đã bị lấy") {
+                    resolve(false);
+                  }
+                });
+            });
+          }
+        ),
     }),
     onSubmit: async (values) => {
-      let formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("imageUrl", values.imageUrl[0]);
-      formData.append("quantity", values.quantity);
-      formData.append("price", values.price);
-      formData.append("purchasePrice", values.purchasePrice);
-      formData.append("unit", values.unit);
-      formData.append("usage", values.usage);
       // formData.append("expiredDay", values.expiredDay);
       //   formData.append("expiredDay", exDay);
-
-      console.log("Add: " + typeof values.price);
+      // console.log(values.status);
       closeModal();
-      values.name = "";
-      values.imageUrl = "";
-      values.quantity = 0;
-      values.price = 0;
-      values.purchasePrice = 0;
-      values.unit = "";
-      values.usage = "";
-      // values.expiredDay = new Date().toLocaleDateString("en-US");
-      //   setExDay(new Date().toLocaleDateString("en-US"));
-      //   addMed(formData, navigate);
-      await loadData();
+      await customerProcessor.updateService(values, cusId);
+      loadData();
     },
   });
 
@@ -86,6 +146,19 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
           {/* <MedicineForm></MedicineForm> */}
           <>
             <Form onSubmit={formik.handleSubmit}>
+              <Row className="mb-3">
+                <Form.Label column sm={2}>
+                  Mã khách hàng
+                </Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    disabled
+                    id="_id"
+                    value={cusId}
+                    onChange={formik.handleChange}
+                  />
+                </Col>
+              </Row>
               <Form.Group
                 className="mb-3"
                 as={Row}
@@ -106,13 +179,12 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                 </Form.Label>
                 <Col sm={4}>
                   <Form.Control
-                    id="name"
-                    value={formik.values.name}
+                    id="fullname"
                     onChange={formik.handleChange}
-                    placeholder="Nhập tên thuốc"
+                    value={formik.values.fullname}
                   />
-                  {formik.errors.name && (
-                    <p className="errorMsg"> {formik.errors.name} </p>
+                  {formik.errors.fullname && (
+                    <p className="errorMsg"> {formik.errors.fullname} </p>
                   )}
                 </Col>
 
@@ -121,15 +193,14 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                 </Form.Label>
                 <Col sm={4}>
                   <Form.Control
-                    id="usage"
-                    value={formik.values.usage}
+                    id="job"
                     onChange={formik.handleChange}
+                    value={formik.values.job}
                   />
                 </Col>
               </Form.Group>
 
               <Row className="mb-3">
-                {/* <Form.Group className="mb-3" as={Col}> */}
                 <Form.Label column sm={2}>
                   Số điện thoại
                   <span
@@ -145,33 +216,26 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                 </Form.Label>
                 <Col sm={4}>
                   <Form.Control
-                    id="unit"
+                    id="phone"
                     type="text"
-                    placeholder="0"
-                    value={formik.values.unit}
+                    value={formik.values.phone}
                     onChange={formik.handleChange}
                   />
-                  {formik.errors.unit && (
-                    <p className="errorMsg"> {formik.errors.unit} </p>
+                  {formik.errors.phone && (
+                    <p className="errorMsg"> {formik.errors.phone} </p>
                   )}
                 </Col>
-                {/* </Form.Group> */}
-                {/* <Form.Group className="mb-3" as={Col}> */}
                 <Form.Label column sm={2}>
                   Địa chỉ
                 </Form.Label>
                 <Col sm={4}>
                   <Form.Control
-                    id="purchasePrice"
+                    id="address"
                     type="text"
                     onChange={formik.handleChange}
-                    placeholder="0"
+                    value={formik.values.address}
                   />
-                  {formik.errors.purchasePrice && (
-                    <p className="errorMsg">{formik.errors.purchasePrice}</p>
-                  )}
                 </Col>
-                {/* </Form.Group> */}
               </Row>
 
               <Row className="mb-3">
@@ -183,17 +247,13 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                     id="gender"
                     onChange={(e) => {
                       formik.handleChange(e);
-                      console.log(e.target.value);
                     }}
+                    value={formik.values.gender}
                   >
                     <option value="0">Không xác định</option>
                     <option value="1">Nam</option>
                     <option value="2">Nữ</option>
                   </Form.Select>
-
-                  {formik.errors.quantity && (
-                    <p className="errorMsg"> {formik.errors.quantity} </p>
-                  )}
                 </Col>
 
                 <Form.Label column sm={2}>
@@ -201,11 +261,11 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                 </Form.Label>
                 <Col sm={4}>
                   <Form.Select
-                    id="blood"
+                    id="bloodGroup"
                     onChange={(e) => {
                       formik.handleChange(e);
-                      console.log(e.target.value);
                     }}
+                    value={formik.values.bloodGroup}
                   >
                     <option value="unknown">Không biết</option>
                     <option value="A">A</option>
@@ -213,9 +273,6 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                     <option value="AB">AB</option>
                     <option value="O">O</option>
                   </Form.Select>
-                  {formik.errors.price && (
-                    <p className="errorMsg"> {formik.errors.price} </p>
-                  )}
                 </Col>
               </Row>
 
@@ -233,35 +290,78 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                 <Col sm={4}>
                   <Form.Control
                     type="date"
-                    id="birthdate"
-                    // format="dd/MM/yyyy"
+                    value={formik.values.dateOfBirth}
+                    max={formik.values.dateOfBirth}
+                    id="dateOfBirth"
                     onChange={formik.handleChange}
                   />
                 </Col>
-                <Form.Label column sm={2}>
-                  Tổng tiền
-                </Form.Label>
-                <Col>
-                  <Form.Control
-                    type="date"
-                    id="usage"
-                    value={formik.values.usage}
-                    onChange={formik.handleChange}
-                  />
-                  {formik.errors.usage && (
-                    <p className="errorMsg">{formik.errors.usage}</p>
-                  )}
-                </Col>
-              </Row>
-              <Row className="mb-3">
                 <Form.Label column sm={2}>
                   Ghi chú
                 </Form.Label>
                 <Col sm={4}>
                   <Form.Control
-                    id="usage"
-                    value={formik.values.usage}
+                    id="note"
+                    value={formik.values.note}
                     onChange={formik.handleChange}
+                  />
+                </Col>
+              </Row>
+              <Row className="mb-3">
+                <Form.Label column sm={2}>
+                  Email
+                </Form.Label>
+                <Col sm={4}>
+                  <Form.Control
+                    id="email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    placeholder="Nhập email"
+                  />
+                  {formik.errors.email && (
+                    <p className="errorMsg"> {formik.errors.email} </p>
+                  )}
+                </Col>
+                <Form.Label column sm={2}>
+                  Tổng tiền nợ
+                </Form.Label>
+                <Col sm={4}>
+                  <Form.Control
+                    disabled
+                    id="usage"
+                    onChange={formik.handleChange}
+                  />
+                </Col>
+              </Row>
+              <Row className="mb-3">
+                <Form.Label column sm={2}>
+                  Status
+                </Form.Label>
+
+                <Col sm={2}>
+                  <Form.Check
+                    name="status"
+                    type="radio"
+                    label="Active"
+                    id="active"
+                    checked={curStatus}
+                    onChange={(e) => {
+                      setCurStatus(e.target.checked);
+                      console.log(e.target.checked);
+                    }}
+                  />
+                </Col>
+                <Col sm={2}>
+                  <Form.Check
+                    name="status"
+                    type="radio"
+                    label="Inactive"
+                    id="inactive"
+                    checked={!curStatus}
+                    onChange={(e) => {
+                      setCurStatus(!e.target.checked);
+                      console.log(!e.target.checked);
+                    }}
                   />
                 </Col>
                 <Form.Label column sm={2}>
@@ -269,9 +369,11 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                 </Form.Label>
                 <Col>
                   <Form.Control
+                    disabled
                     id="usage"
                     value={formik.values.usage}
                     onChange={formik.handleChange}
+                    placeholder="0"
                   />
                   {formik.errors.usage && (
                     <p className="errorMsg">{formik.errors.usage}</p>
@@ -280,22 +382,18 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
               </Row>
 
               <Row className="mb-3">
-                <Form.Group className="mb-3" as={Col}>
-                  {/* <Form.Label column>Ghi chú</Form.Label>
-                  <Form.Control
-                    id="usage"
-                    value={formik.values.usage}
-                    onChange={formik.handleChange}
-                  /> */}
-                </Form.Group>
+                <Col sm={6}></Col>
+
                 <Form.Label column sm={2}>
                   Tổng tiền nợ
-                </Form.Label>
+                </Form.Label>   
                 <Col sm={4}>
                   <Form.Control
+                    disabled
                     id="usage"
                     value={formik.values.usage}
                     onChange={formik.handleChange}
+                    placeholder="0"
                   />
                   {formik.errors.usage && (
                     <p className="errorMsg">{formik.errors.usage}</p>
@@ -311,118 +409,48 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                 </Col>
               </Row>
               <Row className="mb-3">
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Gan"
-                    value="Gan"
-                    type="checkbox"
-                    id="1"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Tiểu Đường"
-                    value="Tiểu Đường"
-                    type="checkbox"
-                    id="2"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Thấp khớp"
-                    value="Thấp khớp"
-                    type="checkbox"
-                    id="3"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Thần kinh"
-                    value="Thần kinh"
-                    type="checkbox"
-                    id="4"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Dị ứng"
-                    value="Dị ứng"
-                    type="checkbox"
-                    id="5"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-              </Row>
-              <Row className="mb-3">
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Tiêu hóa"
-                    value="Tiêu hóa"
-                    type="checkbox"
-                    id="6"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Hô hấp"
-                    value="Hô hấp"
-                    type="checkbox"
-                    id="7"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Tim mạch"
-                    value="Tim mạch"
-                    type="checkbox"
-                    id="8"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Thận"
-                    value="Thận"
-                    type="checkbox"
-                    id="9"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="body"
-                    label="Khác"
-                    value="Khác"
-                    type="checkbox"
-                    id="10"
-                    onChange={formik.handleChange}
-                  />
-                </Col>
+                {systemMed.map((sys, index) => {
+                  return (
+                    <Col>
+                      <Form.Check
+                        id={sys._id}
+                        inline
+                        label={sys.name}
+                        type="checkbox"
+                        checked={
+                          !formik.values.systemicMedicalHistory ||
+                          !formik.values.systemicMedicalHistory.includes(
+                            sys._id
+                          )
+                            ? false
+                            : true
+                        }
+                        onChange={(e) => {
+                          const targetState = e.target.checked;
+                          let tempCus = { ...formik.values };
+                          if (targetState) {
+                            tempCus = {
+                              ...tempCus,
+                              systemicMedicalHistory: [
+                                ...tempCus.systemicMedicalHistory,
+                                sys._id,
+                              ],
+                            };
+                          } else {
+                            const deletePos =
+                              tempCus.systemicMedicalHistory.indexOf(sys._id);
+                            deletePos !== -1 &&
+                              tempCus.systemicMedicalHistory.splice(
+                                deletePos,
+                                1
+                              );
+                          }
+                          setCurCustomer({ ...tempCus });
+                        }}
+                      />
+                    </Col>
+                  );
+                })}
               </Row>
 
               <Row className="mb-3">
@@ -433,62 +461,45 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                 </Col>
               </Row>
               <Row className="mb-3">
-                <Col>
-                  <Form.Check
-                    inline
-                    name="group2"
-                    label="Khớp thái dương hàm"
-                    type="checkbox"
-                    id="11"
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="group2"
-                    label="Tiểu Đường"
-                    type="checkbox"
-                    id="12"
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="group2"
-                    label="Thấp khớp"
-                    type="checkbox"
-                    id="13"
-                  />
-                </Col>
-              </Row>
-              <Row className="mb-3">
-                <Col>
-                  <Form.Check
-                    inline
-                    name="group2"
-                    label="Thần kinh"
-                    type="checkbox"
-                    id="14"
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="group2"
-                    label="Dị ứng"
-                    type="checkbox"
-                    id="15"
-                  />
-                </Col>
-                <Col>
-                  <Form.Check
-                    inline
-                    name="group2"
-                    label="Dị ứng"
-                    type="checkbox"
-                    id="16"
-                  />
-                </Col>
+                {dentalMed.map((den) => {
+                  return (
+                    <Col>
+                      <Form.Check
+                        inline
+                        name="dentalMedicalHistory"
+                        label={den.name}
+                        value={den._id}
+                        type="checkbox"
+                        checked={
+                          !formik.values.dentalMedicalHistory ||
+                          !formik.values.dentalMedicalHistory.includes(den._id)
+                            ? false
+                            : true
+                        }
+                        id={den._id}
+                        onChange={(e) => {
+                          const targetState = e.target.checked;
+                          let tempCus = { ...formik.values };
+                          if (targetState) {
+                            tempCus = {
+                              ...tempCus,
+                              dentalMedicalHistory: [
+                                ...tempCus.dentalMedicalHistory,
+                                den._id,
+                              ],
+                            };
+                          } else {
+                            const deletePos =
+                              tempCus.dentalMedicalHistory.indexOf(den._id);
+                            deletePos !== -1 &&
+                              tempCus.dentalMedicalHistory.splice(deletePos, 1);
+                          }
+                          setCurCustomer({ ...tempCus });
+                        }}
+                      />
+                    </Col>
+                  );
+                })}
               </Row>
 
               <Button

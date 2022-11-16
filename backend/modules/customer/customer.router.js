@@ -9,21 +9,35 @@ const validateInput = require('../../middlewares/validateInput')
 router.get(
     '/', 
     needAuthenticated, 
-    isRole, 
+    // isRole, 
     customerController.getCustomer
+);
+
+router.get(
+    '/checkPhone/:phone', 
+    needAuthenticated, 
+    // isRole, 
+    customerController.checkPhone
+);
+
+router.get(
+    '/checkEmail/:email', 
+    needAuthenticated, 
+    // isRole, 
+    customerController.checkEmail
 );
 
 router.get(
     '/activeCustomer', 
     needAuthenticated, 
-    isRole, 
+    // isRole, 
     customerController.getActiveCustomer
 );
 
 router.post(
     '/', 
     needAuthenticated, 
-    isRole, 
+    // isRole, 
     validateInput(customerSchema, 'body'),
     customerController.createCustomer
 );
@@ -31,7 +45,7 @@ router.post(
 router.put(
     '/:customerId', 
     needAuthenticated, 
-    isRole, 
+    // isRole, 
     validateInput(customerSchema, 'body'),
     customerController.updateCustomer
 );
@@ -39,14 +53,14 @@ router.put(
 router.get(
     '/:customerId', 
     needAuthenticated, 
-    isRole, 
+    // isRole, 
     customerController.getCustomerById
 );
 
 router.put(
     '/:customerId/:status', 
     needAuthenticated, 
-    isRole,
+    // isRole,
     customerController.updateStatus
 );
 
