@@ -50,6 +50,47 @@
     max-width: 100%;
 }
 
+#medPaperModal{
+    width: 90%;
+    max-width: 100%;
+
+}
+
+#serviceLeft{
+    // background-color: #3498db;
+    width: 20%;
+    // height: 70%;
+    // display: inline-block;
+    // margin: 0px;
+    float:left;
+
+}
+
+#serviceMiddle{
+    // background-color: #3498db;
+    width: 55%;
+    // text-align: center;
+ 
+    // display:inline-block;
+    // margin-left: 14px;
+    margin: auto;
+
+}
+
+#serviceRight{
+    // background-color: #2ecc71;
+    width: 20%;
+    // height: 70%;
+    float:right;
+
+}
+
+// .pagination{
+//     display: inline;
+//     margin-bottom: 0px;
+// }
+
+
 
 #medCodeContainer {
     position: absolute;

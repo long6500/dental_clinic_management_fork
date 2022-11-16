@@ -1,12 +1,18 @@
 import Navbarr from "./components/navbar";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Redirect,
+  Navigate,
+} from "react-router-dom";
 import Login from "./pages/login_UI/login";
 import Medicine from "./pages/Medicine/Medicine";
 import { useSelector } from "react-redux";
-import "./css/App.scss";
+import "./components/css/App.scss";
 import LoadingComponent from "./components/loadingComponent";
 import UpdateMedicineModal from "./pages/Medicine/UpdateMedicineModal";
-import Test from './components/test'
+import Test from "./components/test";
 import Service from "./pages/Services/Service";
 import Profile from "./pages/profile/profile";
 import Changepassword from "./pages/profile/changpassword";
@@ -15,8 +21,9 @@ import Customer from "./pages/customer/listCustomer";
 import PrivateRoute from "./components/Route/PrivateRoute";
 import GuestRoute from "./components/Route/GuestRoute";
 import axios from "../src/apis/api";
-import React from 'react';
+import React from "react";
 import Staff from "./pages/Staff/Staff";
+import ListMedicalPaper from "./pages/MedicalPaper/ListMedicalPaper";
 export const AuthContext = React.createContext();
 function App() {
   const isLoading = useSelector((state) => state.loading);
@@ -42,15 +49,16 @@ function App() {
       setUserInfo({ status: "success", data: null });
     }
   };
+
+  const login = ({ username, _id, token }) => {
+    localStorage.setItem("token", token);
+    setUserInfo({ status: "success", data: { username, _id } });
+  };
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUserInfo({ status: "success", data: null });
+  };
   
-  const login =({username,_id,token})=>{
-    localStorage.setItem('token',token)
-    setUserInfo({status:"success",data:{username,_id,}})
-  }
-  const logout = ()=>{
-     localStorage.removeItem('token')
-     setUserInfo({status:"success",data:null})
-}
   React.useEffect(() => {
     verifyUserInfo();
   }, []);
@@ -62,44 +70,43 @@ function App() {
 
   return (
     <>
-    <AuthContext.Provider value={{user: userInfo.data,login,logout}}>
-      {/* <LoadingComponent isLoading={isLoading} /> */}
-      <Router>
-        {userInfo.data ? <Navbarr/> : <></>}
+      <AuthContext.Provider value={{ user: userInfo.data, login, logout }}>
+        {/* <LoadingComponent isLoading={isLoading} /> */}
+        <Router>
+          {userInfo.data ? <Navbarr /> : <>asdf</>}
 
-        <Routes>
-          <Route element={<GuestRoute user={userInfo.data} />}>
+          <Routes>
+            <Route element={<GuestRoute user={userInfo.data} />}>
+              <Route path="/Login" element={<Login />} />
+              <Route path="/Forgotpassword" element={<Forgotpassword />} />
+            </Route>
 
-            <Route path="/Login" element={<Login />} />
-            <Route path="/Forgotpassword" element={<Forgotpassword />} />
+            <Route element={<PrivateRoute user={userInfo.data} />}>
+              {/* <Route path="/" element={<Navbarr />} /> */}
+              <Route
+                path="/medicine"
+                element={<Medicine itemsPerPage={5} />}
+              ></Route>
 
-{/*        <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
-            <Route path="/service" element={<Service itemsPerPage={5}/>}></Route>
-            <Route path="/Customer" element={<Customer />}></Route>
-            <Route path="/test" element={<Test />}></Route>   */}
+              <Route
+                path="/service"
+                element={<Service itemsPerPage={5} />}
+              ></Route>
 
+              <Route path="/ChangePassword" element={<Changepassword />} />
+              <Route path="/Profile" element={<Profile />} />
+              {/* <Route path="/medicine" element={<Medicine />}></Route> */}
+              {/* <Route path="/service" element={<Service />}></Route> */}
+              <Route
+                path="/MedicalPaper"
+                element={<ListMedicalPaper />}
+              ></Route>
 
-            {/* <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route> */}
-            <Route path="/service" element={<Service />}></Route>
-
-          </Route>
-
-          <Route element={<PrivateRoute user={userInfo.data} />}>
-
-          <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
-            <Route path="/ChangePassword" element={<Changepassword />} />
-            <Route path="/Profile" element={<Profile />} />
-            <Route path="/medicine" element={<Medicine />}></Route>
-            {/* <Route path="/service" element={<Service />}></Route> */}
-
-            <Route path="/Customer" element={<Customer />}></Route>
-            <Route path="/Staff" element={<Staff />}></Route>
-
-          </Route>
-        </Routes>
-
-
-      </Router>
+              <Route path="/Customer" element={<Customer />}></Route>
+              <Route path="/Staff" element={<Staff />}></Route>
+            </Route>
+          </Routes>
+        </Router>
       </AuthContext.Provider>
     </>
   );

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FaPlusCircle } from "react-icons/fa";
-import MedicineForm from "./MedicineForm";
 import { useNavigate } from "react-router-dom";
 import { addMed } from "../../apis/medicineProcessor";
 import Form from "react-bootstrap/Form";
@@ -82,28 +81,11 @@ const MedicineModal = (prop) => {
       values.usage = "";
       // values.expiredDay = new Date().toLocaleDateString("en-US");
       setExDay(new Date().toLocaleDateString("en-US"));
-      addMed(formData, navigate);
-      await loadData();
+      await addMed(formData, navigate);
+      loadData();
     },
   });
 
-  const handleAddMedicine = (e) => {
-    e.preventDefault();
-    console.log(formik.values);
-    addMed(formik.values, navigate);
-    // setNewMedicine({
-    //   name: "",
-    //   imageUrl: "",
-    //   quantity: -1,
-    //   price: -1,
-    //   purchasePrice: -1,
-    //   unit: -1,
-    //   usage: "",
-    //   expiredDay: new Date().toLocaleDateString("en-US"),
-    // });
-    handleClose();
-    loadData();
-  };
 
   return (
     <>
@@ -192,7 +174,7 @@ const MedicineModal = (prop) => {
                         id="price"
                         type="text"
                         onChange={formik.handleChange}
-                        placeholder = "0"
+                        placeholder="0"
                       />
                       {formik.errors.price && (
                         <p className="errorMsg"> {formik.errors.price} </p>
