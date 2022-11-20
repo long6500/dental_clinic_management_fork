@@ -70,6 +70,7 @@ const MedicineModal = (prop) => {
       formData.append("unit", values.unit);
       formData.append("usage", values.usage);
       // formData.append("expiredDay", values.expiredDay);
+      console.log(values.imageUrl);
       formData.append("expiredDay", exDay);
       handleClose();
       values.name = "";
@@ -85,7 +86,6 @@ const MedicineModal = (prop) => {
       loadData();
     },
   });
-
 
   return (
     <>

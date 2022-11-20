@@ -1,6 +1,7 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const medicineSchema = Joi.object({
+  imageUrl: Joi.string(),
   name: Joi.string().required(),
   quantity: Joi.number().integer().required(),
   price: Joi.number().required(),
@@ -11,4 +12,4 @@ const medicineSchema = Joi.object({
   status: Joi.boolean(),
 });
 
-module.exports = medicineSchema
+module.exports = medicineSchema;
