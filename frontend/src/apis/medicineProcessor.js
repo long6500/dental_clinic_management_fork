@@ -44,7 +44,7 @@ medProcessor.addMed = async (medicine, navigate) => {
 
 medProcessor.getAll = async (keyword, offset, limit) => {
   store.dispatch(setLoading());
-  console.log("dau");
+  // console.log("dau");
   // const token = localStorage.getItem("token");
   // console.log("token " + token);
   const response = await axios.get(
@@ -86,12 +86,12 @@ medProcessor.getMedicineDetailObj = (id) => {
     });
 };
 
-medProcessor.updateMedcine = async (med, navigate) => {
+medProcessor.updateMedcine = async (med) => {
   let tempId = med._id;
-  delete med._id;
-  delete med.createdAt;
-  delete med.updatedAt;
-  delete med.__v;
+  // delete med._id;
+  // delete med.createdAt;
+  // delete med.updatedAt;
+  // delete med.__v;
   await axios
     .put(`api/medicine/${tempId}`, med)
     // .then(navigate("/medicine"))
