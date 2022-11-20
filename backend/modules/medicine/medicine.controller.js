@@ -64,7 +64,6 @@ const createMedicine = async (req, res) => {
 const updateMedicine = async (req, res) => {
   const senderUser = req.user;
   const { medicineId } = req.params;
-  const imgUrl = req.file.path;
   const {
     name,
     imageUrl,
@@ -82,22 +81,44 @@ const updateMedicine = async (req, res) => {
     throw new HTTPError(400, "Not found medicine");
   }
 
-  const updatedMedicine = await MedicineModel.findByIdAndUpdate(
-    medicineId,
-    {
-      name,
-      imageUrl: imgUrl,
-      quantity,
-      price,
-      purchasePrice,
-      unit,
-      usage,
-      expiredDay,
-      status,
-      modifyBy: senderUser._id,
-    },
-    { new: true }
-  );
+  let imgUrl;
+  let updatedMedicine;
+  if (imageUrl || typeof imageUrl === "string" || imageUrl == "") {
+    updatedMedicine = await MedicineModel.findByIdAndUpdate(
+      medicineId,
+      {
+        name,
+        quantity,
+        price,
+        purchasePrice,
+        unit,
+        usage,
+        expiredDay,
+        status,
+        modifyBy: senderUser._id,
+      },
+      { new: true }
+    );
+  } else {
+    console.log(2);
+    imgUrl = req.file.path;
+    updatedMedicine = await MedicineModel.findByIdAndUpdate(
+      medicineId,
+      {
+        name,
+        imageUrl: imgUrl,
+        quantity,
+        price,
+        purchasePrice,
+        unit,
+        usage,
+        expiredDay,
+        status,
+        modifyBy: senderUser._id,
+      },
+      { new: true }
+    );
+  }
 
   res.send({ success: 1, data: updatedMedicine });
 };

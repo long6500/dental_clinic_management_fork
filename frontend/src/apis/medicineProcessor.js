@@ -86,14 +86,15 @@ medProcessor.getMedicineDetailObj = (id) => {
     });
 };
 
-medProcessor.updateMedcine = async (med) => {
-  let tempId = med._id;
+medProcessor.updateMedcine = async (med, id) => {
+  // let tempId = med._id;
+  console.log(med);
   // delete med._id;
   // delete med.createdAt;
   // delete med.updatedAt;
   // delete med.__v;
   await axios
-    .put(`api/medicine/${tempId}`, med)
+    .put(`api/medicine/${id}`, med)
     // .then(navigate("/medicine"))
     .catch((err) => {
       console.log("Err: ", err);

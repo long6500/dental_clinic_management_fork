@@ -23,7 +23,6 @@ import Pagination from "react-bootstrap/Pagination";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
-
 const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
   const dispatch = useDispatch();
 
@@ -35,7 +34,7 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
 
   const navigate = useNavigate();
 
-  const [exDay, setExDay] = useState(new Date().toLocaleDateString("en-US"));
+  const [exDay, setExDay] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -72,6 +71,8 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
     }),
     onSubmit: async (values) => {
       let formData = new FormData();
+      //string || object
+
       formData.append("name", values.name);
       formData.append("imageUrl", values.imageUrl[0]);
       formData.append("quantity", values.quantity);
@@ -82,11 +83,11 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
       // formData.append("expiredDay", values.expiredDay);
       formData.append("expiredDay", exDay);
       closeModal();
-      console.log(values.imageUrl[0]);
+      console.log(typeof values.imageUrl[0]);
       // values.expiredDay = new Date().toLocaleDateString("en-US");
       setExDay(new Date().toLocaleDateString("en-US"));
       // await addMed(formData, navigate);
-      medicineProcessor.updateMedcine(formData);
+      await medicineProcessor.updateMedcine(formData, medID);
       loadData();
     },
   });
@@ -175,6 +176,7 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                       if (value && value.length > 0) {
                         formik.values.imageUrl = value;
                       }
+                      console.log(value);
                     }}
                   />
                   {formik.errors.imageUrl && (
@@ -277,7 +279,7 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                     Ngày hết hạn
                   </Form.Label>
 
-                  <DatePicker
+                  {/* <DatePicker
                     selected={
                       // formik.values.expiredDay === ""
                       //   ? new Date()
@@ -289,7 +291,15 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                     onChange={(e) => {
                       setExDay(e);
                     }}
-                  ></DatePicker>
+                  ></DatePicker> */}
+                  <Form.Control
+                    type="date"
+                    value={formik.values.expiredDay}
+                    // value="2018-06-22"
+                    min={formik.values.expiredDay}
+                    id="expiredDay"
+                    onChange={formik.handleChange}
+                  />
                 </Form.Group>
               </Row>
 
