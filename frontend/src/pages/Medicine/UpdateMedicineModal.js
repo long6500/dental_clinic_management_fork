@@ -18,7 +18,7 @@ import {
 import medicineProcessor from "../../apis/medicineProcessor";
 import Nav from "react-bootstrap/Nav";
 import UploadAndDisplayImage from "../../components/uploadImage";
-import Pagination from 'react-bootstrap/Pagination';
+import Pagination from "react-bootstrap/Pagination";
 
 const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
   const dispatch = useDispatch();
