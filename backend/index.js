@@ -35,6 +35,7 @@ mongoose.connect(process.env.MONGODB_URL, err => {
         functionController.createFunction();
         systemicMedicalHistoryController.createSystemicMedicalHistory();
         dentalMedicalHistoryController.createDentalMedicalHistory();
+        profileController.createAdmin();
     } catch (err) {
         return console.log('Err insert role', err);
     }

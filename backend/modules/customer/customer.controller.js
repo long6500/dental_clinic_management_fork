@@ -6,22 +6,22 @@ const getCustomer = async (req, res) => {
   res.send({ success: 1, data: customers });
 };
 
-const getActiveCustomer = async (req, res) => {
-  const customers = await CustomerModel.find({ status: true });
-  res.send({ success: 1, data: customers });
-};
-
 const checkPhone = async (req, res) => {
-  const { phone } = req.params;
-  const customers = await CustomerModel.findOne({ phone: phone });
-  if (customers != null) res.send({ success: 0, data: customers });
+  const {phone} = req.params;
+  const customers = await CustomerModel.findOne({phone: phone});
+  if(customers != null) res.send({success: 0, data: customers})
   res.send({ success: 1, data: customers });
 };
 
 const checkEmail = async (req, res) => {
-  const { email } = req.params;
-  const customers = await CustomerModel.findOne({ email: email });
-  if (customers != null) res.send({ success: 0, data: customers });
+  const {email} = req.params;
+  const customers = await CustomerModel.findOne({email: email});
+  if(customers != null) res.send({success: 0, data: customers})
+  res.send({ success: 1, data: customers });
+};
+
+const getActiveCustomer = async (req, res) => {
+  const customers = await CustomerModel.find({status: true});
   res.send({ success: 1, data: customers });
 };
 
@@ -77,7 +77,7 @@ const updateCustomer = async (req, res) => {
     dentalMedicalHistory,
   } = req.body;
 
-  const existCustomer = await CustomerModel.findOne({ _id: customerId });
+  const existCustomer = await CustomerModel.findOne({ '_id': customerId });
   if (!existCustomer) {
     throw new HTTPError(400, "Not found customer");
   }
@@ -95,9 +95,9 @@ const updateCustomer = async (req, res) => {
       address,
       note,
       status,
+      modifyBy: senderUser._id,
       systemicMedicalHistory,
       dentalMedicalHistory,
-      modifyBy: senderUser._id,
     },
     { new: true }
   );

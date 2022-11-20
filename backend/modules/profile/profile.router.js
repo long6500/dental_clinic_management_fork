@@ -8,6 +8,7 @@ const needAuthenticated = require('../../middlewares/needAuthenticated');
 
 router.get(
   '/',
+  needAuthenticated,
   profileController.getProfile
 );
 
