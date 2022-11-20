@@ -18,21 +18,62 @@ import ReactPaginate from "react-paginate";
 import { AiOutlineCheck, AiOutlineCloseCircle } from "react-icons/ai";
 import { store } from "../../redux/store";
 import CustomToast from "../../components/CustomToast";
-import CustomTable from '../../components/CustomTable'
+import CustomTable from "../../components/CustomTable";
+import axios from "../../apis/api";
+import { Pagination } from "antd";
+// import "antd/dist/antd.css";
 
 const Medicine = ({ itemsPerPage }) => {
   const [medId, setMedID] = useState("");
   const [isShowUpdate, setIsShowUpdate] = useState(false);
   const [searchMeds, setSearchMeds] = useState("");
-  const meds = useSelector((state) => state.med.medicine);
+  // const meds = useSelector((state) => state.med.medicine);
+  const [meds, setMeds] = useState([]);
   const [isToast, setIsToast] = useState({
     value: false,
     isSuccess: true,
     content: "",
   });
 
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(5);
+  const [total, setTotal] = useState(0);
+
   const loadData = async () => {
-    medicineProcessor.getAll();
+    // medicineProcessor.getAll("", 1, "");
+    const response = await axios
+      .get(
+        `/api/medicine?keyword=${searchMeds}&offset=${offset}&limit=${limit}`
+      )
+      .then((response) => {
+        // response.success === 1 &&
+        //   setMeds(response.data.data) &&
+        // setTotal(response.data.total);
+
+        if (response.success === 1) {
+          setMeds(response.data.data);
+          setTotal(response.data.total);
+        }
+        // console.log(response.data.total);
+      });
+  };
+
+  useEffect(() => {
+    loadData();
+    // console.log(total);
+  }, [offset, total, searchMeds, limit]);
+
+  const onChangePage = (current, pageSize) => {
+    // console.log(current, pageSize);
+    setOffset(current - 1);
+    setLimit(pageSize);
+  };
+
+  const onShowSizeChange = (current, size) => {
+    // console.log(current + " " + size);
+    setLimit(size);
+    setOffset(current);
+    onChangePage(current, size);
   };
 
   const openUpdateModal = (id) => {
@@ -47,7 +88,7 @@ const Medicine = ({ itemsPerPage }) => {
 
   const handleSearch = (e) => {
     setSearchMeds(e.target.value);
-
+    console.log(e.target.value);
   };
 
   const showToast = (content, isSuccess) => {
@@ -77,7 +118,7 @@ const Medicine = ({ itemsPerPage }) => {
       displayName: "Ảnh",
       custom: (value) => {
         return (
-          <img src={value} style={{ height: "50px", width: "50px" }} alt="" />
+          <img src={value} style={{ height: "100px", width: "100px" }} alt="" />
         );
       },
     },
@@ -141,38 +182,6 @@ const Medicine = ({ itemsPerPage }) => {
     },
   ];
 
-  //PAGINATION
-  // We start with an empty list of items.
-  const [currentItems, setCurrentItems] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
-  // Here we use item offsets; we could also use page offsets
-  // following the API or data you're working with.
-  const [itemOffset, setItemOffset] = useState(0);
-
-  useEffect(() => {
-    // Fetch items from another resources.
-    if (meds.length > 0) {
-      let tempMeds = meds.filter(
-        (item) =>
-          item._id?.includes(searchMeds) || item.name?.includes(searchMeds)
-      );
-      const endOffset = itemOffset + itemsPerPage;
-      setCurrentItems(tempMeds.slice(itemOffset, endOffset));
-      setPageCount(Math.ceil(tempMeds.length / itemsPerPage));
-    } else {
-      loadData();
-    }
-  }, [itemOffset, itemsPerPage, searchMeds, meds]);
-
-  // Invoke when user click to request another page.
-  const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % meds.length;
-    // console.log(
-    //   `User requested page number ${event.selected}, which is offset ${newOffset}`
-    // );
-    setItemOffset(newOffset);
-  };
-
   function MedTable() {
     return (
       <>
@@ -206,8 +215,8 @@ const Medicine = ({ itemsPerPage }) => {
                   />
                 </Form.Group>
               </Form>
-              
-              <CustomTable data={currentItems} title={title}/>
+
+              <CustomTable data={meds} title={title} />
             </div>
           </Tab>
         </Tabs>
@@ -251,27 +260,16 @@ const Medicine = ({ itemsPerPage }) => {
       </Navbar>
 
       <MedTable />
-      {/* <CustomTable data={currentItems} title={title}/> */}
-      <ReactPaginate
-        nextLabel="Sau >"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={3}
-        marginPagesDisplayed={2}
-        pageCount={pageCount}
-        previousLabel="< Trước"
-        pageClassName="page-item"
-        pageLinkClassName="page-link"
-        previousClassName="page-item"
-        previousLinkClassName="page-link"
-        nextClassName="page-item"
-        nextLinkClassName="page-link"
-        breakLabel="..."
-        breakClassName="page-item"
-        breakLinkClassName="page-link"
-        containerClassName="pagination"
-        activeClassName="active"
-        renderOnZeroPageCount={null}
-      />
+      <div id="pagin">
+        <Pagination
+          showSizeChanger
+          current={offset + 1}
+          total={total}
+          onChange={onChangePage}
+          defaultPageSize={5}
+          pageSizeOptions={[5, 10, 20, 50]}
+        />
+      </div>
     </>
   );
 };

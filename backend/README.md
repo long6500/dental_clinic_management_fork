@@ -1,1 +1,1 @@
-# dental_clinic_management
+# detail_clinic

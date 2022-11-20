@@ -17,12 +17,6 @@ const needAuthenticated = require('../../middlewares/needAuthenticated');
 // function (req, res, next) 
 
 router.post(
-  '/register',
-  validateInput(registerSchema, 'body'),
-  authController.register
-);
-
-router.post(
   '/login',
   validateInput(loginSchema, 'body'),
   authController.login

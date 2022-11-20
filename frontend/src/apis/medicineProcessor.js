@@ -42,13 +42,15 @@ medProcessor.addMed = async (medicine, navigate) => {
   }
 };
 
-medProcessor.getAll = async () => {
+medProcessor.getAll = async (keyword, offset, limit) => {
   store.dispatch(setLoading());
   // console.log("dau");
   // const token = localStorage.getItem("token");
   // console.log("token " + token);
-  const response = await axios.get("/api/medicine");
-  store.dispatch(getMedicineSuccess(response.data));
+  const response = await axios.get(
+    `/api/medicine?keyword=${keyword}&offset=${offset}&limit=${limit}`
+  );
+  store.dispatch(getMedicineSuccess(response.data.data));
   //   console.log(res);
   // .catch((err) => {
   //   Swal.fire({
@@ -60,26 +62,6 @@ medProcessor.getAll = async () => {
   // console.log(res.data);
   store.dispatch(setNotLoading());
 };
-
-// medProcessor.getAll = async () => {
-//   store.dispatch(setLoading());
-//   console.log("dau");
-//   // const res = await axios.get
-//   //   .get("/api/medicine")
-//   var res;
-//   try {
-//     res = axios({
-//       url: "/api/medicine",
-//       method: "get",
-//     });
-//     console.log("dau 1");
-//   } catch (error) {
-//     console.log(error);
-//   }
-//   setTimeout(console.log("asdas" + res.data), 5000);
-
-//   store.dispatch(setNotLoading());
-// };
 
 medProcessor.getAllObj = async () => {
   const result = await axios.get("/api/medicine");

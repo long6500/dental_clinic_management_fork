@@ -2,18 +2,39 @@ const MedicineModel = require("./medicine");
 const HTTPError = require("../../common/httpError");
 
 const getMedicine = async (req, res) => {
-  const medicine = await MedicineModel.find({});
-  res.send({ success: 1, data: medicine });
+  const { keyword, offset, limit } = req.query;
+
+  const offsetNumber = offset && Number(offset) ? Number(offset) : 0;
+  const limitNumber = limit && Number(limit) ? Number(limit) : 5;
+
+  let filter = {};
+  if (keyword) {
+    const regex = new RegExp(`${keyword}`, "i");
+    const regexCond = { $regex: regex };
+    console.log(regexCond);
+
+    // filter.title = { $regex: regex }
+    filter["$or"] = [{ _id: regexCond }, { name: regexCond }];
+  }
+
+  const [medicine, totalMedicine] = await Promise.all([
+    MedicineModel.find(filter)
+      .skip(offsetNumber * limitNumber)
+      .limit(limitNumber),
+    MedicineModel.countDocuments(filter),
+  ]);
+
+  res.send({ success: 1, data: { data: medicine, total: totalMedicine } });
 };
 
 const getActiveMedicine = async (req, res) => {
-  const medicine = await MedicineModel.find({status: true});
+  const medicine = await MedicineModel.find({ status: true });
   res.send({ success: 1, data: medicine });
 };
 
 const createMedicine = async (req, res) => {
   const senderUser = req.user;
-  const imgUrl = req.file.path; 
+  const imgUrl = req.file.path;
   const {
     name,
     imageUrl,
@@ -41,9 +62,9 @@ const createMedicine = async (req, res) => {
 };
 
 const updateMedicine = async (req, res) => {
-  // const senderUser = req.user;
+  const senderUser = req.user;
   const { medicineId } = req.params;
-  const imgUrl = req.file.path; 
+  const imgUrl = req.file.path;
   const {
     name,
     imageUrl,
@@ -56,7 +77,7 @@ const updateMedicine = async (req, res) => {
     status,
   } = req.body;
 
-  const existMedicine = await MedicineModel.findOne({ '_id': medicineId });
+  const existMedicine = await MedicineModel.findOne({ _id: medicineId });
   if (!existMedicine) {
     throw new HTTPError(400, "Not found medicine");
   }
@@ -73,7 +94,7 @@ const updateMedicine = async (req, res) => {
       usage,
       expiredDay,
       status,
-      // modifyBy: senderUser._id,
+      modifyBy: senderUser._id,
     },
     { new: true }
   );
