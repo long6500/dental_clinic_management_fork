@@ -2,26 +2,45 @@ const CustomerModel = require("./customer");
 const HTTPError = require("../../common/httpError");
 
 const getCustomer = async (req, res) => {
-  const customers = await CustomerModel.find({});
-  res.send({ success: 1, data: customers });
+  const { keyword, offset, limit } = req.query;
+
+  const offsetNumber = offset && Number(offset) ? Number(offset) : 0;
+  const limitNumber = limit && Number(limit) ? Number(limit) : 5;
+
+  let filter = {};
+  if (keyword) {
+    const regex = new RegExp(`${keyword}`, "i");
+    const regexCond = { $regex: regex };
+
+    filter["$or"] = [{ _id: regexCond }, { fullname: regexCond }];
+  }
+
+  const [customers, totalCustomers] = await Promise.all([
+    CustomerModel.find(filter)
+      .skip(offsetNumber * limitNumber)
+      .limit(limitNumber),
+      CustomerModel.countDocuments(filter),
+  ]);
+
+  res.send({ success: 1, data: { data: customers, total: totalCustomers } });
 };
 
 const checkPhone = async (req, res) => {
-  const {phone} = req.params;
-  const customers = await CustomerModel.findOne({phone: phone});
-  if(customers != null) res.send({success: 0, data: customers})
+  const { phone } = req.params;
+  const customers = await CustomerModel.findOne({ phone: phone });
+  if (customers != null) res.send({ success: 0, data: customers })
   res.send({ success: 1, data: customers });
 };
 
 const checkEmail = async (req, res) => {
-  const {email} = req.params;
-  const customers = await CustomerModel.findOne({email: email});
-  if(customers != null) res.send({success: 0, data: customers})
+  const { email } = req.params;
+  const customers = await CustomerModel.findOne({ email: email });
+  if (customers != null) res.send({ success: 0, data: customers })
   res.send({ success: 1, data: customers });
 };
 
 const getActiveCustomer = async (req, res) => {
-  const customers = await CustomerModel.find({status: true});
+  const customers = await CustomerModel.find({ status: true });
   res.send({ success: 1, data: customers });
 };
 

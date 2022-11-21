@@ -4,12 +4,31 @@ const PrescriptionModel = require('../prescription/prescription');
 const HTTPError = require('../../common/httpError');
 
 const getService = async (req, res, next) => {
-    const service = await ServiceModel.find({});
-    res.send({ success: 1, data: service });
+    const { keyword, offset, limit } = req.query;
+
+    const offsetNumber = offset && Number(offset) ? Number(offset) : 0;
+    const limitNumber = limit && Number(limit) ? Number(limit) : 5;
+
+    let filter = {};
+    if (keyword) {
+        const regex = new RegExp(`${keyword}`, "i");
+        const regexCond = { $regex: regex };
+
+        filter["$or"] = [{ _id: regexCond }, { name: regexCond }];
+    }
+
+    const [service, totalService] = await Promise.all([
+        ServiceModel.find(filter)
+            .skip(offsetNumber * limitNumber)
+            .limit(limitNumber),
+        ServiceModel.countDocuments(filter),
+    ]);
+
+    res.send({ success: 1, data: { data: service, total: totalService } });
 }
 
 const getActiveService = async (req, res, next) => {
-    const service = await ServiceModel.find({status: true});
+    const service = await ServiceModel.find({ status: true });
     res.send({ success: 1, data: service });
 }
 
@@ -60,7 +79,7 @@ const createService = async (req, res) => {
         });
     }
 
-    const fullService = {...newService._doc,consumableArray,prescriptionArray};
+    const fullService = { ...newService._doc, consumableArray, prescriptionArray };
     res.send({ success: 1, data: fullService });
 }
 
@@ -68,24 +87,40 @@ const updateService = async (req, res) => {
     const senderUser = req.user;
     const { serviceId } = req.params;
     const { name, imageUrl, time, price, note, status, consumable, prescription } = req.body;
-    const imgUrl = req.file.path;
     const existService = await ServiceModel.findOne({ _id: serviceId });
     if (!existService) {
         throw new HTTPError(400, 'Not found service');
     }
 
-    const updatedService = await ServiceModel
-        .findByIdAndUpdate(serviceId, {
-            name,
-            imageUrl: imgUrl,
-            time,
-            price,
-            note,
-            status,
-            modifyBy: senderUser._id
-        }, { new: true });
+    let imgUrl;
+    let updatedService;
+    if (imageUrl || typeof imageUrl === "string" || imageUrl == "") {
+        updatedService = await ServiceModel.findByIdAndUpdate(
+            serviceId, {
+                name,
+                time,
+                price,
+                note,
+                status,
+                modifyBy: senderUser._id
+            }, { new: true }
+        );
+    } else {
+        imgUrl = req.file.path;
+        updatedService = await ServiceModel.findByIdAndUpdate(
+            serviceId, {
+                name,
+                imageUrl: imgUrl,
+                time,
+                price,
+                note,
+                status,
+                modifyBy: senderUser._id
+            }, { new: true }
+        );
+    }
 
-    await ConsumableModel.deleteMany({serviceId: serviceId});
+    await ConsumableModel.deleteMany({ serviceId: serviceId });
     var consumableArray;
     if (consumable != null) {
         consumableArray = JSON.parse(JSON.stringify(consumable));
@@ -101,7 +136,7 @@ const updateService = async (req, res) => {
         });
     }
 
-    await PrescriptionModel.deleteMany({serviceId: serviceId});
+    await PrescriptionModel.deleteMany({ serviceId: serviceId });
     var prescriptionArray;
     if (prescription != null) {
         prescriptionArray = JSON.parse(JSON.stringify(prescription));
@@ -118,7 +153,7 @@ const updateService = async (req, res) => {
         });
     }
 
-    const fullService = {...updateService._doc,consumableArray,prescriptionArray};
+    const fullService = { ...updateService._doc, consumableArray, prescriptionArray };
     res.send({ success: 1, data: fullService });
 }
 
@@ -126,16 +161,16 @@ const getServiceById = async (req, res) => {
     const { serviceId } = req.params;
 
     const service = await ServiceModel.findById(serviceId);
-    const consumable = await ConsumableModel.find({serviceId: serviceId});
-    const prescription = await PrescriptionModel.find({serviceId: serviceId});
+    const consumable = await ConsumableModel.find({ serviceId: serviceId });
+    const prescription = await PrescriptionModel.find({ serviceId: serviceId });
     const consumableArray = JSON.parse(JSON.stringify(consumable));
     const prescriptionArray = JSON.parse(JSON.stringify(prescription));
 
-    if(!service){
+    if (!service) {
         throw new HTTPError(400, 'Not found service');
     }
 
-    const fullService = {...service._doc,consumableArray,prescriptionArray};
+    const fullService = { ...service._doc, consumableArray, prescriptionArray };
     res.send({ success: 1, data: fullService });
 }
 
@@ -159,17 +194,17 @@ const updateStatus = async (req, res) => {
 
 const getNext = async () => {
     const count = await ServiceModel.find().count();
-    if(count<=0) return 'DV_0000000001';
+    if (count <= 0) return 'DV_0000000001';
 
-    const lastService = await ServiceModel.find().sort({_id: -1}).limit(1);
+    const lastService = await ServiceModel.find().sort({ _id: -1 }).limit(1);
     const nextId = lastService[0]._id;
-    const idNumber = (parseInt(nextId.split('_')[1])+1)+'';
+    const idNumber = (parseInt(nextId.split('_')[1]) + 1) + '';
     var temp = '';
-    for(let i=0; i < (10-idNumber.length); i++){
-        temp+='0';
+    for (let i = 0; i < (10 - idNumber.length); i++) {
+        temp += '0';
     }
-    temp+=idNumber;
-    return 'DV_'+temp;
+    temp += idNumber;
+    return 'DV_' + temp;
 }
 
 module.exports = {

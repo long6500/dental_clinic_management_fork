@@ -11,8 +11,6 @@ const getMedicine = async (req, res) => {
   if (keyword) {
     const regex = new RegExp(`${keyword}`, "i");
     const regexCond = { $regex: regex };
-    console.log(regexCond);
-
     // filter.title = { $regex: regex }
     filter["$or"] = [{ _id: regexCond }, { name: regexCond }];
   }
@@ -100,7 +98,6 @@ const updateMedicine = async (req, res) => {
       { new: true }
     );
   } else {
-    console.log(2);
     imgUrl = req.file.path;
     updatedMedicine = await MedicineModel.findByIdAndUpdate(
       medicineId,
