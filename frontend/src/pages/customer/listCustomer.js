@@ -17,14 +17,27 @@ import UpdateCustomerModal from "./UpdateCustomerModal";
 import customerProcessor from "../../apis/customerProcessor";
 import axios from "../../apis/api";
 
+import { Pagination } from "antd";
+
 const Customer = () => {
   const [customers, setCustomers] = useState([]);
 
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(5);
+  const [total, setTotal] = useState(0);
+  const [searchMeds, setSearchMeds] = useState("");
+
   const loadData = () => {
     axios
-      .get("/api/customer")
+      .get(
+        `/api/customer?keyword=${searchMeds}&offset=${offset}&limit=${limit}`
+      )
       .then((response) => {
-        response.success === 1 && setCustomers(response.data);
+        // response.success === 1 && setCustomers(response.data);
+        if (response.success === 1) {
+          setCustomers(response.data);
+          setTotal(response.data.total);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -36,7 +49,13 @@ const Customer = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [offset, total, searchMeds, limit]);
+
+  const onChangePage = (current, pageSize) => {
+    // console.log(current, pageSize);
+    setOffset(current - 1);
+    setLimit(pageSize);
+  };
 
   // useEffect(() => {
   //   loadData();
@@ -220,6 +239,16 @@ const Customer = () => {
       </Navbar>
 
       <CustomerTable />
+      <div id="pagin">
+        <Pagination
+          showSizeChanger
+          current={offset + 1}
+          total={total}
+          onChange={onChangePage}
+          defaultPageSize={5}
+          pageSizeOptions={[5, 10, 20, 50]}
+        />
+      </div>
     </>
   );
 };

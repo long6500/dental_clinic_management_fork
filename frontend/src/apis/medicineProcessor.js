@@ -75,11 +75,13 @@ medProcessor.getAllObj = async () => {
 //   return result.data.data;
 // };
 
-medProcessor.getMedicineDetailObj = (id) => {
+medProcessor.getMedicineDetailObj = (id, setExDay) => {
+  // const { id } = props;
   const response = axios
     .get(`api/medicine/${id}`)
     .then((response) => {
       store.dispatch(getMedDetailSuccess(response.data));
+      // setExDay(new Date(response.data.expiredDay).toISOString().split("T")[0]);
     })
     .catch((err) => {
       console.log("Err: ", err);
