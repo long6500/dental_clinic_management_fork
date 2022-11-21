@@ -30,6 +30,13 @@ const getActiveMedicine = async (req, res) => {
   res.send({ success: 1, data: medicine });
 };
 
+const checkName = async (req, res) => {
+  const {name} = req.params;
+  const medicine = await MedicineModel.findOne({name: name});
+  if(medicine != null) res.send({success: 0, data: medicine})
+  res.send({ success: 1, data: medicine });
+};
+
 const createMedicine = async (req, res) => {
   const senderUser = req.user;
   const imgUrl = req.file.path;
@@ -43,6 +50,12 @@ const createMedicine = async (req, res) => {
     usage,
     expiredDay,
   } = req.body;
+
+  const existMedicine = await MedicineModel.findOne({ 'name': name });
+  if (existMedicine) {
+    throw new HTTPError(400, "Medicine had exist");
+  }
+  
   const medID = await getNext();
   const newMedicine = await MedicineModel.create({
     _id: medID,
@@ -171,4 +184,5 @@ module.exports = {
   getMedicineById,
   updateStatus,
   getActiveMedicine,
+  checkName,
 };

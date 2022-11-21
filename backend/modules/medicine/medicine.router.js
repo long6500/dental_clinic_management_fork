@@ -21,6 +21,12 @@ router.get(
   medicineController.getActiveMedicine
 );
 
+router.get(
+  '/checkName/:name', 
+  needAuthenticated,
+  medicineController.checkName
+)
+
 router.post(
   "/",
   needAuthenticated,
