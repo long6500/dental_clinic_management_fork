@@ -31,6 +31,7 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
   // const [newMedicine, setNewMedicine] = useState({});
 
   useEffect(() => {
+    console.log(medID);
     medID && medicineProcessor.getMedicineDetailObj(medID);
     if (medID) {
       getNewMedicine();
@@ -151,6 +152,16 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                 <Form.Group as={Col}>
                   <Form.Label column sm={12}>
                     Hình ảnh
+                    <span
+                      style={{
+                        display: "inline",
+                        marginBottom: "0px",
+                        color: "red",
+                      }}
+                    >
+                      {" "}
+                      *
+                    </span>
                   </Form.Label>
                   <UploadAndDisplayImage
                     value={formik.values.imageUrl ? formik.values.imageUrl : []}
@@ -158,7 +169,7 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                       if (value && value.length > 0) {
                         formik.values.imageUrl = value;
                       }
-                      console.log(value);
+                      // console.log(value);
                     }}
                   />
                   {formik.errors.imageUrl && (
@@ -170,6 +181,16 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label column sm={12}>
                     Lượng/SP
+                    <span
+                      style={{
+                        display: "inline",
+                        marginBottom: "0px",
+                        color: "red",
+                      }}
+                    >
+                      {" "}
+                      *
+                    </span>
                   </Form.Label>
                   <Form.Control
                     id="quantity"
@@ -186,6 +207,16 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label column sm={12}>
                     Giá bán
+                    <span
+                      style={{
+                        display: "inline",
+                        marginBottom: "0px",
+                        color: "red",
+                      }}
+                    >
+                      {" "}
+                      *
+                    </span>
                   </Form.Label>
 
                   <Row className="mb-3">
@@ -208,6 +239,16 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label column sm={12}>
                     Đơn vị
+                    <span
+                      style={{
+                        display: "inline",
+                        marginBottom: "0px",
+                        color: "red",
+                      }}
+                    >
+                      {" "}
+                      *
+                    </span>
                   </Form.Label>
                   <Form.Control
                     id="unit"
@@ -222,6 +263,16 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label column sm={12}>
                     Giá nhập
+                    <span
+                      style={{
+                        display: "inline",
+                        marginBottom: "0px",
+                        color: "red",
+                      }}
+                    >
+                      {" "}
+                      *
+                    </span>
                   </Form.Label>
                   <Row className="mb-3">
                     <Form.Group className="mb-3" as={Col}>
@@ -244,6 +295,16 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label column sm={12}>
                     Cách sử dụng
+                    <span
+                      style={{
+                        display: "inline",
+                        marginBottom: "0px",
+                        color: "red",
+                      }}
+                    >
+                      {" "}
+                      *
+                    </span>
                   </Form.Label>
                   <Form.Control
                     id="usage"
@@ -259,6 +320,16 @@ const UpdateMedicineModal = ({ medID, isVisible, closeModal, loadData }) => {
                 <Form.Group className="mb-3" as={Col}>
                   <Form.Label column sm={12}>
                     Ngày hết hạn
+                    <span
+                      style={{
+                        display: "inline",
+                        marginBottom: "0px",
+                        color: "red",
+                      }}
+                    >
+                      {" "}
+                      *
+                    </span>
                   </Form.Label>
 
                   {/* <DatePicker
