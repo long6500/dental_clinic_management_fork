@@ -103,10 +103,11 @@ medProcessor.updateMedcine = async (med, id) => {
 
 medProcessor.changeStatus = async (id, state, navigate) => {
   const result = await axios.put(`api/medicine/${id}/${state}`);
-  if (result.data.success !== 1) {
+  console.log(result);
+  if (result.success !== 1) {
     Swal.fire("Thất bại", `Cập nhật thất bại tại id=${id}`, "failed");
   }
-  return result.data;
+  return result;
 };
 
 export default medProcessor;
