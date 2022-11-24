@@ -18,6 +18,8 @@ import customerProcessor from "../../apis/customerProcessor";
 import axios from "../../apis/api";
 import { Pagination, Table } from "antd";
 
+import { Pagination } from "antd";
+
 const Customer = () => {
   const [customers, setCustomers] = useState([]);
 
@@ -34,7 +36,9 @@ const Customer = () => {
       .then((response) => {
         // response.success === 1 && setCustomers(response.data);
         if (response.success === 1) {
+
           setCustomers(response.data.data);
+
           setTotal(response.data.total);
         }
       })
@@ -228,6 +232,7 @@ const Customer = () => {
         </Container>
       </Navbar>
 
+
       {/* <CustomerTable /> */}
       <div
         style={{
@@ -262,6 +267,7 @@ const Customer = () => {
         {/* <ServiceTable currentItems={services} /> */}
         <Table columns={columns} dataSource={data} pagination={false} />
       </div>
+
 
       <div id="pagin">
         <Pagination
