@@ -36,8 +36,9 @@ const Service = ({ itemsPerPage }) => {
 
   const [services, setServices] = useState([]);
 
-  const openUpdateModal = () => {
+  const openUpdateModal = (id) => {
     setIsShowUpdate(true);
+    setServiceId(id);
   };
 
   const closeUpdateModal = () => {

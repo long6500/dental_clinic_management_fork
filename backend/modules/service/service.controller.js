@@ -2,7 +2,7 @@ const ServiceModel = require("./service");
 const ConsumableModel = require("../consumable/consumable");
 const PrescriptionModel = require("../prescription/prescription");
 const HTTPError = require("../../common/httpError");
-
+const MedicineModel = require("../medicine/medicine");
 const getService = async (req, res, next) => {
   const { keyword, offset, limit } = req.query;
 
@@ -58,7 +58,6 @@ const createService = async (req, res) => {
     createBy: senderUser._id,
   });
 
-  console.log(typeof consumable);
   var consumableArray;
   if (consumable != null) {
     consumableArray = JSON.parse(JSON.stringify(consumable));
@@ -83,9 +82,9 @@ const createService = async (req, res) => {
 
       await PrescriptionModel.create({
         serviceId: _id,
-        medicineId: element.medicineId,
-        quantity: element.quantity,
-        usage: element.usage,
+        medicineId: temp.medicineId,
+        quantity: temp.quantity,
+        usage: temp.usage,
         createBy: senderUser._id,
       });
     });
@@ -174,9 +173,9 @@ const updateService = async (req, res) => {
 
       await PrescriptionModel.create({
         serviceId: _id,
-        medicineId: element.medicineId,
-        quantity: element.quantity,
-        usage: element.usage,
+        medicineId: temp.medicineId,
+        quantity: temp.quantity,
+        usage: temp.usage,
         createBy: senderUser._id,
       });
     });
@@ -196,8 +195,38 @@ const getServiceById = async (req, res) => {
   const service = await ServiceModel.findById(serviceId);
   const consumable = await ConsumableModel.find({ serviceId: serviceId });
   const prescription = await PrescriptionModel.find({ serviceId: serviceId });
-  const consumableArray = JSON.parse(JSON.stringify(consumable));
-  const prescriptionArray = JSON.parse(JSON.stringify(prescription));
+  let consumableArray = JSON.parse(JSON.stringify(consumable));
+  let prescriptionArray = JSON.parse(JSON.stringify(prescription));
+
+  if (consumableArray.length > 0) {
+    await Promise.all(
+      consumableArray.map(async (element, index) => {
+        const medicine = await MedicineModel.findById(element.medicineId);
+
+        consumableArray[index] = {
+          ...consumableArray[index],
+          medicineName: medicine.name,
+          medicineQuantity: medicine.quantity,
+          medicineUnit: medicine.unit,
+        };
+      })
+    );
+  }
+
+  if (prescriptionArray.length > 0) {
+    await Promise.all(
+      prescriptionArray.map(async (element, index) => {
+        const medicine = await MedicineModel.findById(element.medicineId);
+
+        prescriptionArray[index] = {
+          ...prescriptionArray[index],
+          medicineName: medicine.name,
+          medicineQuantity: medicine.quantity,
+          medicineUnit: medicine.unit,
+        };
+      })
+    );
+  }
 
   if (!service) {
     throw new HTTPError(400, "Not found service");
