@@ -3,7 +3,7 @@ import { FaPlusCircle } from "react-icons/fa";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import serviceProcessor from "../../apis/serviceProcessor";
-import axios from "axios";
+import axios from "../../apis/api";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -46,18 +46,29 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
   const [singleSelections, setSingleSelections] = useState([]);
   const [singleSelectionsPre, setSingleSelectionsPre] = useState([]);
 
-  const [currService, setCurrService] = useState({
-    name: "",
-    note: "",
-    price: { $numberDecimal: -1 },
-    status: true,
-    time: 0,
-    _id: "",
-    imageUrl: "",
-    consumableArray: [],
-    prescriptionArray: [],
-  });
-  const meds = useSelector((state) => state.med.medicine);
+  // const [currService, setCurrService] = useState({
+  //   name: "",
+  //   note: "",
+  //   price: { $numberDecimal: -1 },
+  //   status: true,
+  //   time: 0,
+  //   _id: "",
+  //   imageUrl: "",
+  //   consumableArray: [],
+  //   prescriptionArray: [],
+  // });
+
+  const [currService, setCurrService] = useState({});
+  // const meds = useSelector((state) => state.med.medicine);
+  const [meds, setMeds] = useState([]);
+
+  const getMedicine = async () => {
+    await axios.get(`/api/medicine/activeMedicine`).then((response) => {
+      setMeds(response.data);
+      //get Names from list
+      setSuggestionList([...response.data.map((i) => i.name)]);
+    });
+  };
 
   const resetData = () => {
     setCurrService({
@@ -85,8 +96,10 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
       await axios
         .get(`api/service/${serviceId}`)
         .then((response) => {
-          console.log(response.data.data);
-          setCurrService({ ...currService, ...response.data.data });
+          setCurrService(response.data);
+          // setCurrService({ ...currService, ...response.data.data });
+          setConsumableUiList(response.data.consumableArray);
+          // {response.data.consumableArray}
         })
         .catch((err) => {
           console.log("Err: ", err);
@@ -103,39 +116,37 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
   };
 
   useEffect(() => {
-    getService();
+    console.log("cjhay vao dyad");
+    if (serviceId) {
+      getService();
+      getMedicine();
+    }
   }, [serviceId]);
-
-  useEffect(() => {
-    loadDataMed();
-    if (meds.length > 0) {
-      setSuggestionList([...meds.filter((item) => item.status === true)]);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (suggestionList.length < 1) {
-      setSuggestionList([...meds.filter((item) => item.status === true)]);
-    }
-  }, [meds]);
 
   const fillData = (e, rowIndex) => {
     // let tempList = consumableUiList;
-    console.log(consumableUiList);
+    // console.log("1");
 
     const searchResult = meds.find((item) => item.name === e[0]);
+    // console.log(searchResult);
+    // console.log("2");
 
     if (searchResult) {
-      consumableUiList[rowIndex][0] = searchResult._id;
+      console.log(consumableUiList);
+      console.log("3");
+      consumableUiList[rowIndex].medicineId = searchResult._id;
       // consumableUiList[rowIndex][1] = e[0];
       consumableUiList[rowIndex][2] = searchResult.quantity;
       consumableUiList[rowIndex][3] = searchResult.unit;
       setConsumableUiList(consumableUiList);
     } else {
-      consumableUiList[rowIndex][0] = "";
+      // console.log("4");
+      consumableUiList[rowIndex].medicineId = "";
       consumableUiList[rowIndex][2] = "";
       consumableUiList[rowIndex][3] = "";
     }
+    // console.log("5");
+
     // setConsumableUiList([...tempList]);
   };
 
@@ -162,7 +173,7 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
       price: currService.price?.$numberDecimal,
       note: currService.note,
       // consumableArray: [],
-      consumableArray: currService.consumableArray,
+      consumableArray: consumableUiList,
       // prescription: []
     },
     enableReinitialize: true,
@@ -232,39 +243,6 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
     setPrescriptionList([...temp]);
   };
 
-  const searchTextBox = (data = [], rowIndex, colIndex) => {
-    return (
-      <div id="medCodeContainer" hidden={isShowSuggestion[rowIndex]}>
-        <ul>
-          {data.map((item) => {
-            return (
-              <li
-                onClick={(e) => {
-                  isShowSuggestion[rowIndex] = true;
-                  setIsShowSuggestion([...isShowSuggestion]);
-                  let tempList = consumableUiList;
-                  tempList[rowIndex][colIndex] = e.target.textContent;
-                  const searchResult = meds.find(
-                    (item) => item.name === e.target.textContent
-                  );
-                  consumableUiList[rowIndex][colIndex - 1] = searchResult._id;
-                  consumableUiList[rowIndex][colIndex] = searchResult.name;
-                  consumableUiList[rowIndex][colIndex + 1] =
-                    searchResult.quantity;
-                  consumableUiList[rowIndex][colIndex + 2] = searchResult.unit;
-                  setConsumableUiList(consumableUiList);
-
-                  setConsumableUiList([...tempList]);
-                }}
-              >
-                {item.name}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
-  };
   return (
     <>
       <Modal
@@ -403,91 +381,101 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                 </tr>
               </thead>
               <tbody>
-                {consumableUiList.map((row, rowIndex) => {
-                  return (
-                    <tr>
-                      <td style={{ width: "80px" }}>
-                        <Form.Control
-                          type="text"
-                          disabled
-                          value={rowIndex + 1}
-                        />
-                      </td>
-                      <td>
-                        <Form.Control disabled value={row[0]} />
-                      </td>
-                      <td>
-                        {/* Name Service thay bằng TypeHead*/}
-                        <Typeahead
-                          id="basic-typeahead-single"
-                          onChange={(e) => {
-                            fillData(e, rowIndex);
-                            let tempSelect = singleSelections;
-                            tempSelect[rowIndex] = e;
-                            setSingleSelections([...tempSelect]);
-                          }}
-                          options={suggestionList}
-                          selected={singleSelections[rowIndex]}
-                          placeholder="Chọn tên thuốc..."
-                        />
-                      </td>
-                      <td>
-                        {/* Lượng */}
-                        <Form.Control type="number" value={row[2]} disabled />
-                      </td>
-                      <td>
-                        {/* Đơn vị */}
-                        <Form.Control
-                          disabled
-                          value={row[3]}
-                          onChange={formik.handleChange}
-                        />
-                      </td>
-                      <td>
-                        {/* Số lần dùng */}
-                        <Form.Control
-                          // id={`consumableArray[${rowIndex}].numberOfUses`}
-                          type="number"
-                          // min="1"
-                          // required
-                          // defaultValue={1}
-                          // value={row.numberOfUses}
-                          // onChange={formik.handleChange}
-                          onChange={(e) => {
-                            console.log(e.target.value);
-                          }}
-                          {...register(`singleErrorInput${rowIndex}`, {
-                            required: "Bắt buộc",
-                            min: {
-                              value: 1,
-                              message: "Lớn hơn 1",
-                            },
-                          })}
-                        />
-                        <ErrorMessage
-                          errors={errors}
-                          name={`singleErrorInput${rowIndex}`}
-                          render={({ messages }) =>
-                            messages &&
-                            Object.entries(messages).map(([type, message]) => (
-                              <p key={type} style={{ color: "red" }}>
-                                {message}
-                              </p>
-                            ))
-                          }
-                        />
-                      </td>
+                {consumableUiList &&
+                  consumableUiList.map((row, rowIndex) => {
+                    return (
+                      <tr>
+                        <td style={{ width: "80px" }}>
+                          <Form.Control
+                            type="text"
+                            disabled
+                            value={rowIndex + 1}
+                          />
+                        </td>
+                        <td>
+                          <Form.Control
+                            disabled
+                            // value={row.medicineId}
+                            // onChange={() => {
+                            //   console.log(row.medicineId);
+                            // }}
+                            defaultValue={row.medicineId}
+                          />
+                        </td>
+                        <td>
+                          <Typeahead
+                            id="basic-typeahead-single"
+                            onChange={(e) => {
+                              // console.log(e + " : " + rowIndex);
+                              fillData(e, rowIndex);
+                              // let tempSelect = singleSelections;
+                              // tempSelect[rowIndex] = e;
+                              // setSingleSelections([...tempSelect]);
+                            }}
+                            options={suggestionList}
+                            // selected={singleSelections[rowIndex]}
+                            // defaultSelected={suggestionList.slice(0, 1)}
+                            defaultInputValue={row.medicineName}
+                            // inputValue={row.medicineName}
 
-                      <td onClick={() => deleteConsumableUiList(rowIndex)}>
-                        <FaTrashAlt
-                          cursor="pointer"
-                          color="#e74c3c"
-                          style={{ transform: "translateY(7px)" }}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
+                            placeholder="Chọn tên thuốc..."
+                          />
+                        </td>
+                        <td>
+                          <Form.Control
+                            type="number"
+                            value={row.medicineQuantity}
+                            disabled
+                          />
+                        </td>
+                        <td>
+                          <Form.Control
+                            disabled
+                            value={row.medicineUnit}
+                            // onChange={formik.handleChange}
+                          />
+                        </td>
+                        <td>
+                          <Form.Control
+                            type="number"
+                            onChange={(e) => {
+                              console.log(e.target.value);
+                            }}
+                            defaultValue={row.numberOfUses}
+                            // {...register(`singleErrorInput${rowIndex}`, {
+                            //   required: "Bắt buộc",
+                            //   min: {
+                            //     value: 1,
+                            //     message: "Lớn hơn 1",
+                            //   },
+                            // })}
+                          />
+                          {/* <ErrorMessage
+                            errors={errors}
+                            name={`singleErrorInput${rowIndex}`}
+                            render={({ messages }) =>
+                              messages &&
+                              Object.entries(messages).map(
+                                ([type, message]) => (
+                                  <p key={type} style={{ color: "red" }}>
+                                    {message}
+                                  </p>
+                                )
+                              )
+                            }
+                          /> */}
+                        </td>
+
+                        <td onClick={() => deleteConsumableUiList(rowIndex)}>
+                          <FaTrashAlt
+                            cursor="pointer"
+                            color="#e74c3c"
+                            style={{ transform: "translateY(7px)" }}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </Table>
 
@@ -533,12 +521,10 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                           value={rowIndex + 1}
                         />
                       </td>
-                      {/* Chinh sua o day */}
                       <td>
-                        <Form.Control disabled value={row[0]} />
+                        <Form.Control disabled value={row.medicineId} />
                       </td>
                       <td>
-                        {/* Name Service thay bằng TypeHead*/}
                         <Typeahead
                           id="basic-typeahead-single"
                           onChange={(e) => {
@@ -553,11 +539,9 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                         />
                       </td>
                       <td>
-                        {/* Lượng */}
                         <Form.Control type="number" value={row[2]} disabled />
                       </td>
                       <td>
-                        {/* Đơn vị */}
                         <Form.Control
                           disabled
                           value={row[3]}
@@ -565,7 +549,6 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                         />
                       </td>
                       <td>
-                        {/* Số Lượng/SP */}
                         <Form.Control
                           type="number"
                           {...register(`Prescript${rowIndex}`, {
@@ -591,7 +574,6 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                       </td>
 
                       <td>
-                        {/* Cachs dung*/}
                         <Form.Control
                           type="text"
                           {...register(`Prescriptusage${rowIndex}`, {

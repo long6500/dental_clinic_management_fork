@@ -32,6 +32,8 @@ const ServiceModal = ({ loadData }) => {
   const [consumableUiList, setConsumableUiList] = useState([]);
   const [numberOfUses, setNumberOfUses] = useState(0);
 
+  const [validated, setValidated] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -69,6 +71,14 @@ const ServiceModal = ({ loadData }) => {
     }),
     onSubmit: async (values) => {
       console.log("chay vao day");
+
+      // const form = values.currentTarget;
+      // if (form.checkValidity() === false) {
+      //   values.preventDefault();
+      // }
+
+      // setValidated(true);
+
       let formData = new FormData();
       formData.append("name", values.name);
       formData.append("imageUrl", values.imageUrl[0]);
@@ -115,13 +125,14 @@ const ServiceModal = ({ loadData }) => {
     },
   });
 
-  // const handleAddService = async () => {
-  //   // serviceProcessor.addService(service);
-  //   handleClose();
-  //   await loadData();
-  // };
+  const demo = (e) => {
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+    }
 
-  // const meds = useSelector((state) => state.med.medicine);
+    setValidated(true);
+  };
 
   const [meds, setMeds] = useState([]);
 
@@ -173,6 +184,8 @@ const ServiceModal = ({ loadData }) => {
       prescriptionList[rowIndex][2] = "";
       prescriptionList[rowIndex][3] = "";
     }
+
+    console.log(prescriptionList[rowIndex]);
   };
 
   const getMedicine = async () => {
@@ -180,19 +193,11 @@ const ServiceModal = ({ loadData }) => {
       setMeds(response.data);
       //get Names from list
       setSuggestionList([...response.data.map((i) => i.name)]);
-      // console.log(meds.map((i) => i.name));
-      // console.log(response.data);
     });
   };
   useEffect(() => {
     getMedicine();
   }, []);
-
-  // const consumableUiListType = ["text", "select", "text", "text", "number"];
-
-  // const consumableUiListSuggest = { 1: true };
-
-  // const disableList = [0, 2, 3];
 
   const deleteConsumableUiList = (rowIndex) => {
     let temp = consumableUiList;
@@ -215,10 +220,6 @@ const ServiceModal = ({ loadData }) => {
   const handleShow = () => setShow(true);
 
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   console.log(prescriptionList);
-  // }, [prescriptionList]);
 
   const addConsumableRow = () => {
     // setIsShowSuggestion([...isShowSuggestion, true]);
@@ -266,10 +267,6 @@ const ServiceModal = ({ loadData }) => {
   //     </div>
   //   );
   // };
-
-  // useEffect(() => {
-  //   console.log(singleSelections);
-  // }, [singleSelections]);
 
   // const searchTextBox1 = (data = [], rowIndex, colIndex) => {
   //   return (
@@ -328,7 +325,11 @@ const ServiceModal = ({ loadData }) => {
         <Modal.Body>
           {/* <MedicineForm></MedicineForm> */}
           <>
-            <Form onSubmit={formik.handleSubmit}>
+            <Form
+              onSubmit={formik.handleSubmit}
+              // validated={validated}
+              // noValidate
+            >
               <Row className="mb-3">
                 {/* <Form.Group as={Col} controlId="formGridEmail">
                   <Form.Label>Mã thủ thuật</Form.Label>
@@ -477,6 +478,7 @@ const ServiceModal = ({ loadData }) => {
                             <Typeahead
                               id="basic-typeahead-single"
                               onChange={(e) => {
+                                console.log(e + " Ơ" + rowIndex);
                                 fillData(e, rowIndex);
                                 let tempSelect = singleSelections;
                                 tempSelect[rowIndex] = e;
@@ -489,9 +491,12 @@ const ServiceModal = ({ loadData }) => {
                               // value={singleSelections[rowIndex]}
                               placeholder="Chọn tên thuốc..."
                             />
-                            <Form.Control.Feedback>
-                              Looks good!
+                            {/* <Form.Control.Feedback>
+                              Đạt yêu c
                             </Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">
+                              Nhập lại
+                            </Form.Control.Feedback> */}
                           </td>
                           <td>
                             {/* Lượng */}
@@ -527,30 +532,14 @@ const ServiceModal = ({ loadData }) => {
                                 // );
                                 consumableUiList[rowIndex][4] = e.target.value;
                               }}
-
-                              // {...register(`singleErrorInput${rowIndex}`, {
-                              //   required: "Bắt buộc",
-                              //   min: {
-                              //     value: 1,
-                              //     message: "Lớn hơn 1",
-                              //   },
-                              // })}
                             />
-                            {/* <ErrorMessage
-                              errors={errors}
-                              name={`singleErrorInput${rowIndex}`}
-                              render={({ messages }) =>
-                                messages &&
-                                Object.entries(messages).map(
-                                  ([type, message]) => (
-                                    <p key={type} style={{ color: "red" }}>
-                                      {message}
-                                    </p>
-                                  )
-                                )
-                              }
-                            /> */}
                             {/* Nên thêm 1 cái error message */}
+                            {/* <Form.Control.Feedback>
+                              Đạt yêu c
+                            </Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">
+                              Nhập lại
+                            </Form.Control.Feedback> */}
                           </td>
 
                           <td onClick={() => deleteConsumableUiList(rowIndex)}>
@@ -657,6 +646,11 @@ const ServiceModal = ({ loadData }) => {
                             {/* Số Lượng/SP */}
                             <Form.Control
                               type="number"
+                              required
+                              min={1}
+                              onChange={(e) => {
+                                prescriptionList[rowIndex][4] = e.target.value;
+                              }}
                               // {...register(`Prescript${rowIndex}`, {
                               //   required: "Bắt buộc",
                               //   min: {
@@ -685,6 +679,10 @@ const ServiceModal = ({ loadData }) => {
                             {/* Cachs dung*/}
                             <Form.Control
                               type="text"
+                              required
+                              onChange={(e) => {
+                                prescriptionList[rowIndex][5] = e.target.value;
+                              }}
                               // {...register(`Prescriptusage${rowIndex}`, {
                               //   required: "Bắt buộc",
                               // })}
