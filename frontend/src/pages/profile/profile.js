@@ -4,11 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 function Profile() {
-  const [name, setname] = React.useState("");
-  const [username, setUsername] = React.useState("");
-  const [phone, setphone] = React.useState("");
-  const [email, setemail] = React.useState("");
-  const [address, setaddress] = React.useState("");
+ 
 
  
 
