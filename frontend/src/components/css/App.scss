@@ -1,0 +1,120 @@
+#overallSpinner {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  z-index: 2;
+}
+
+#blurLoading {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.image-container {
+  position: relative;
+  margin-top: 10px;
+}
+
+#image-close {
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#image-close:hover {
+  color: #e74c3c;
+  height: 35px;
+  width: 35px;
+}
+
+.errorMsg {
+  color: #e74c3c;
+  font-size: 13px !important;
+}
+
+#serviceModal {
+  width: 1600px;
+  max-width: 100%;
+}
+
+#customerModal {
+  width: 70%;
+  max-width: 100%;
+}
+
+#medPaperModal {
+  width: 90%;
+  max-width: 100%;
+}
+
+#serviceLeft {
+  // background-color: #3498db;
+  width: 20%;
+  // height: 70%;
+  // display: inline-block;
+  // margin: 0px;
+  float: left;
+}
+
+#serviceMiddle {
+  // background-color: #3498db;
+  width: 55%;
+  // text-align: center;
+
+  // display:inline-block;
+  // margin-left: 14px;
+  margin: auto;
+}
+
+#serviceRight {
+  // background-color: #2ecc71;
+  width: 20%;
+  // height: 70%;
+  float: right;
+}
+
+// .pagination{
+//     display: inline;
+//     margin-bottom: 0px;
+// }
+
+#medCodeContainer {
+  position: absolute;
+  background-color: #fff;
+  border-top: none;
+  border: 1px solid #bdbdbd;
+  border-radius: 0.25rem;
+  width: 80%;
+  max-height: 200px;
+  overflow: scroll;
+  z-index: 1;
+}
+
+#medCodeContainer ul {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+#medCodeContainer ul li:hover {
+  background-color: #b2bec3;
+}
+
+#medCodeContainer ul li {
+  padding: 3px 5px;
+  list-style: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+#pagin {
+  display: flex;
+  justify-content: center;
+}

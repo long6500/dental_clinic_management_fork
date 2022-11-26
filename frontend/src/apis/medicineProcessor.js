@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "./api";
+// import axios from "axios";
 import { addMedicine } from "../redux/reducer/medicineSlice";
 import {
   getMedicineSuccess,
@@ -16,13 +17,14 @@ const medProcessor = {};
 
 export const addMed = async (medicine, navigate) => {
   try {
-    await axios.post("/api/medicine/", medicine)
-    .then(response => {
-      store.dispatch(addMedicine(response.data.data));
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    await axios
+      .post("/api/medicine/", medicine)
+      .then((response) => {
+        store.dispatch(addMedicine(response.data.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     // navigate("/medicine");
   } catch (error) {
     console.log(error);
@@ -40,36 +42,31 @@ medProcessor.addMed = async (medicine, navigate) => {
   }
 };
 
-medProcessor.getAll = async () => {
+medProcessor.getAll = async (keyword, offset, limit) => {
   store.dispatch(setLoading());
-  await axios
-    .get("/api/medicine")
-    .then((response) => {
-      store.dispatch(getMedicineSuccess(response.data.data));
-    })
-    .catch((err) => {
-      Swal.fire({
-        icon: "error",
-        title: "Lây dữ liệu thất bại",
-        text: "Vui lòng kiểm tra lại kết nối mạng",
-      });
-    });
+  // console.log("dau");
+  // const token = localStorage.getItem("token");
+  // console.log("token " + token);
+  const response = await axios.get(
+    `/api/medicine?keyword=${keyword}&offset=${offset}&limit=${limit}`
+  );
+  store.dispatch(getMedicineSuccess(response.data.data));
+  //   console.log(res);
+  // .catch((err) => {
+  //   Swal.fire({
+  //     icon: "error",
+  //     title: "Lây dữ liệu thất bại",
+  //     text: "Vui lòng kiểm tra lại kết nối mạng",
+  //   });
+  // });
+  // console.log(res.data);
   store.dispatch(setNotLoading());
 };
 
-// medProcessor.getAllObj = async () => {
-//   const result = [];
-//   await axios
-//     .get("/api/medicine")
-//     .then((response) => {
-//       result = response.data;
-//     })
-//     .catch((err) => {
-//       console.log("Err: ", err);
-//     });
-//     // console.log(response.data);
-//   return result;
-// };
+medProcessor.getAllObj = async () => {
+  const result = await axios.get("/api/medicine");
+  return result.data.data;
+};
 
 // medProcessor.getAllObj = async () => {
 //   const result = await axios
@@ -78,29 +75,41 @@ medProcessor.getAll = async () => {
 //   return result.data.data;
 // };
 
-medProcessor.getMedicineDetailObj = (id) => {
+medProcessor.getMedicineDetailObj = (id, setExDay) => {
+  // const { id } = props;
   const response = axios
     .get(`api/medicine/${id}`)
     .then((response) => {
-      store.dispatch(getMedDetailSuccess(response.data.data));
+      store.dispatch(getMedDetailSuccess(response.data));
+      // setExDay(new Date(response.data.expiredDay).toISOString().split("T")[0]);
     })
     .catch((err) => {
       console.log("Err: ", err);
     });
 };
 
-medProcessor.updateMedcine = async (med, navigate) => {
-  let tempId = med._id;
-  delete med._id
-  delete med.createdAt
-  delete med.updatedAt
-  delete med.__v
+medProcessor.updateMedcine = async (med, id) => {
+  // let tempId = med._id;
+  console.log(med);
+  // delete med._id;
+  // delete med.createdAt;
+  // delete med.updatedAt;
+  // delete med.__v;
   await axios
-    .put(`api/medicine/${tempId}`, med)
+    .put(`api/medicine/${id}`, med)
     // .then(navigate("/medicine"))
     .catch((err) => {
       console.log("Err: ", err);
     });
+};
+
+medProcessor.changeStatus = async (id, state, navigate) => {
+  const result = await axios.put(`api/medicine/${id}/${state}`);
+  console.log(result);
+  if (result.success !== 1) {
+    Swal.fire("Thất bại", `Cập nhật thất bại tại id=${id}`, "failed");
+  }
+  return result;
 };
 
 export default medProcessor;

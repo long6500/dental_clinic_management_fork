@@ -1,14 +1,45 @@
 const MedicineModel = require("./medicine");
 const HTTPError = require("../../common/httpError");
 
-const getMedicine = async (req, res, next) => {
-  const medicine = await MedicineModel.find({});
+const getMedicine = async (req, res) => {
+  const { keyword, offset, limit } = req.query;
+
+  const offsetNumber = offset && Number(offset) ? Number(offset) : 0;
+  const limitNumber = limit && Number(limit) ? Number(limit) : 5;
+
+  let filter = {};
+  if (keyword) {
+    const regex = new RegExp(`${keyword}`, "i");
+    const regexCond = { $regex: regex };
+    // filter.title = { $regex: regex }
+    filter["$or"] = [{ _id: regexCond }, { name: regexCond }];
+  }
+
+  const [medicine, totalMedicine] = await Promise.all([
+    MedicineModel.find(filter)
+      .skip(offsetNumber * limitNumber)
+      .limit(limitNumber),
+    MedicineModel.countDocuments(filter),
+  ]);
+
+  res.send({ success: 1, data: { data: medicine, total: totalMedicine } });
+};
+
+const getActiveMedicine = async (req, res) => {
+  const medicine = await MedicineModel.find({ status: true });
+  res.send({ success: 1, data: medicine });
+};
+
+const checkName = async (req, res) => {
+  const {name} = req.params;
+  const medicine = await MedicineModel.findOne({name: name});
+  if(medicine != null) res.send({success: 0, data: medicine})
   res.send({ success: 1, data: medicine });
 };
 
 const createMedicine = async (req, res) => {
-  //const senderUser = req.user;
-  //const imgUrl = req.file.path; 
+  const senderUser = req.user;
+  const imgUrl = req.file.path;
   const {
     name,
     imageUrl,
@@ -19,26 +50,31 @@ const createMedicine = async (req, res) => {
     usage,
     expiredDay,
   } = req.body;
+
+  const existMedicine = await MedicineModel.findOne({ 'name': name });
+  if (existMedicine) {
+    throw new HTTPError(400, "Medicine had exist");
+  }
+  
   const medID = await getNext();
   const newMedicine = await MedicineModel.create({
     _id: medID,
     name,
-    //imageUrl: imgUrl,
+    imageUrl: imgUrl,
     quantity,
     price,
     purchasePrice,
     unit,
     usage,
     expiredDay,
-    //createBy: senderUser._id,
+    createBy: senderUser._id,
   });
   res.send({ success: 1, data: newMedicine });
 };
 
 const updateMedicine = async (req, res) => {
-  // const senderUser = req.user;
+  const senderUser = req.user;
   const { medicineId } = req.params;
-  const imgUrl = req.file.path; 
   const {
     name,
     imageUrl,
@@ -51,27 +87,48 @@ const updateMedicine = async (req, res) => {
     status,
   } = req.body;
 
-  const existMedicine = await MedicineModel.findOne({ '_id': medicineId });
+  const existMedicine = await MedicineModel.findOne({ _id: medicineId });
   if (!existMedicine) {
     throw new HTTPError(400, "Not found medicine");
   }
 
-  const updatedMedicine = await MedicineModel.findByIdAndUpdate(
-    medicineId,
-    {
-      name,
-      imageUrl: imgUrl,
-      quantity,
-      price,
-      purchasePrice,
-      unit,
-      usage,
-      expiredDay,
-      status,
-      // modifyBy: senderUser._id,
-    },
-    { new: true }
-  );
+  let imgUrl;
+  let updatedMedicine;
+  if (imageUrl || typeof imageUrl === "string" || imageUrl == "") {
+    updatedMedicine = await MedicineModel.findByIdAndUpdate(
+      medicineId,
+      {
+        name,
+        quantity,
+        price,
+        purchasePrice,
+        unit,
+        usage,
+        expiredDay,
+        status,
+        modifyBy: senderUser._id,
+      },
+      { new: true }
+    );
+  } else {
+    imgUrl = req.file.path;
+    updatedMedicine = await MedicineModel.findByIdAndUpdate(
+      medicineId,
+      {
+        name,
+        imageUrl: imgUrl,
+        quantity,
+        price,
+        purchasePrice,
+        unit,
+        usage,
+        expiredDay,
+        status,
+        modifyBy: senderUser._id,
+      },
+      { new: true }
+    );
+  }
 
   res.send({ success: 1, data: updatedMedicine });
 };
@@ -85,7 +142,7 @@ const getMedicineById = async (req, res) => {
 };
 
 const updateStatus = async (req, res) => {
-  //const senderUser = req.user;
+  const senderUser = req.user;
   const { medicineId, status } = req.params;
 
   const existMedicine = await MedicineModel.findOne({ _id: medicineId });
@@ -97,7 +154,7 @@ const updateStatus = async (req, res) => {
     medicineId,
     {
       status,
-      //modifyBy: senderUser._id,
+      modifyBy: senderUser._id,
     },
     { new: true }
   );
@@ -126,4 +183,6 @@ module.exports = {
   updateMedicine,
   getMedicineById,
   updateStatus,
+  getActiveMedicine,
+  checkName,
 };

@@ -1,15 +1,16 @@
-const { object } = require('joi');
-const Joi = require('joi');
+const { object } = require("joi");
+const Joi = require("joi");
 
 const serviceSchema = Joi.object({
   name: Joi.string().required(),
-  // imageUrl: Joi.string().min(8).required(),
-  time: Joi.date().required(),
+  time: Joi.number().integer().required(),
   price: Joi.number().required(),
-  note: Joi.string(),
+
+  note: Joi.string().allow(null, ''),
   status: Joi.boolean(),
-  consumable: Joi.array().items(Joi.object()),
-  prescription: Joi.array().items(Joi.object()),
+  consumable: Joi.any(),
+  prescription: Joi.any(),
+  imageUrl: Joi.string(),
 });
 
-module.exports = serviceSchema
+module.exports = serviceSchema;
