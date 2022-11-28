@@ -116,7 +116,6 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
   };
 
   useEffect(() => {
-    console.log("cjhay vao dyad");
     if (serviceId) {
       getService();
       getMedicine();

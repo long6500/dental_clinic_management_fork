@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+// import Modal from "react-bootstrap/Modal";
 import { FaPlusCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
@@ -19,6 +19,15 @@ import axios from "../../apis/api";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
+import { Select, Modal, Button as Butt, Input, Form as FormAntd } from "antd";
+// import { Modal, Button as Butt } from "antd";
+// import {
+//   Select,
+//   // Modal,
+//   // Button as Butt,
+//   Input,
+//   Form as FormAntd,
+// } from "formik-antd";
 
 const ServiceModal = ({ loadData }) => {
   const {
@@ -31,6 +40,9 @@ const ServiceModal = ({ loadData }) => {
 
   const [consumableUiList, setConsumableUiList] = useState([]);
   const [numberOfUses, setNumberOfUses] = useState(0);
+  const [singleSelections, setSingleSelections] = useState([]);
+  const [singleSelectionsPre, setSingleSelectionsPre] = useState([]);
+  const [errorList, setErrorList] = useState({});
 
   const [validated, setValidated] = useState(false);
 
@@ -70,7 +82,22 @@ const ServiceModal = ({ loadData }) => {
       // ),
     }),
     onSubmit: async (values) => {
-      console.log("chay vao day");
+      console.log(values);
+
+      // let tempError = { medicineNameError: [] };
+      // singleSelections.forEach((item, index) => {
+      //   if (!item) {
+      //     tempError.medicineNameError[index] = "Bắt buộc";
+      //   }
+      // });
+      // if (tempError.medicineNameError.length > 0) {
+      //   setErrorList(tempError);
+      //   return;
+      // }
+      // if (singleSelections.length === 0) {
+      //   setErrorList({ ...tempError, medicineNameError: ["Bắt buộc"] });
+      //   return;
+      // }
 
       // const form = values.currentTarget;
       // if (form.checkValidity() === false) {
@@ -125,33 +152,19 @@ const ServiceModal = ({ loadData }) => {
     },
   });
 
-  const demo = (e) => {
-    const form = e.currentTarget;
-    if (form.checkValidity() === false) {
-      e.preventDefault();
-    }
-
-    setValidated(true);
-  };
-
   const [meds, setMeds] = useState([]);
 
   const [suggestionList, setSuggestionList] = useState([]);
-  const { Control } = Form;
-  //only MedID
-  // const [selectedMed, setSelectedMed] = useState("");
-  // const [selectedMedObj, setSelectedMedObj] = useState({});
-  // const [isShowSuggestion, setIsShowSuggestion] = useState([]);
-  // const [isShowSuggestion1, setIsShowSuggestion1] = useState([]);
-
-  const [singleSelections, setSingleSelections] = useState([]);
-  const [singleSelectionsPre, setSingleSelectionsPre] = useState([]);
+  // const { Control } = Form;
 
   const fillData = (e, rowIndex) => {
     // let tempList = consumableUiList;
     // console.log(consumableUiList);
+    // console.log(e);
 
-    const searchResult = meds.find((item) => item.name === e[0]);
+    const searchResult = meds.find((item) => item.name === e);
+
+    console.log(searchResult);
 
     if (searchResult) {
       consumableUiList[rowIndex][0] = searchResult._id;
@@ -167,8 +180,10 @@ const ServiceModal = ({ loadData }) => {
       consumableUiList[rowIndex][3] = "";
       // setNumberOfUses(0);
     }
+    // console.log("4");
+
     // setConsumableUiList([...tempList]);
-    console.log(consumableUiList[rowIndex]);
+    // console.log(consumableUiList[rowIndex]);
   };
 
   const fillDataPre = (e, rowIndex) => {
@@ -188,16 +203,38 @@ const ServiceModal = ({ loadData }) => {
     console.log(prescriptionList[rowIndex]);
   };
 
+  // const [tempSuggestionList, setTempSuggestionList] = useState([]);
   const getMedicine = async () => {
     await axios.get(`/api/medicine/activeMedicine`).then((response) => {
       setMeds(response.data);
-      //get Names from list
-      setSuggestionList([...response.data.map((i) => i.name)]);
+
+      let temp = [];
+      temp.push(response.data.map((i) => i.name));
+      for (var i = 0; i < temp[0].length; i++) {
+        suggestionList.push({ value: temp[0][i] });
+      }
+
+      // tempSuggestionList.push(...response.data.map((i) => i.name));
+      // setSuggestionList([...response.data.map((i) => i.name)]);
     });
   };
+
+  const onChangee = (value) => {
+    console.log(`selected ${value}`);
+  };
+
+  const onSearch = (value) => {
+    console.log(value);
+  };
+
   useEffect(() => {
     getMedicine();
   }, []);
+
+  // useEffect(() => {
+  //   console.log(suggestionList);
+  //   // console.log(tempSuggestionList);
+  // }, [suggestionList]);
 
   const deleteConsumableUiList = (rowIndex) => {
     let temp = consumableUiList;
@@ -223,7 +260,7 @@ const ServiceModal = ({ loadData }) => {
 
   const addConsumableRow = () => {
     // setIsShowSuggestion([...isShowSuggestion, true]);
-    setConsumableUiList([...consumableUiList, ["", "", "", "", 2]]);
+    setConsumableUiList([...consumableUiList, ["", "", "", "", ""]]);
   };
 
   const addPrescriptionRow = () => {
@@ -231,80 +268,32 @@ const ServiceModal = ({ loadData }) => {
     setPrescriptionList([...prescriptionList, ["", "", "", "", "", ""]]);
   };
 
-  //searchTextBox for ID
-  // const searchTextBox = (data = [], rowIndex, colIndex) => {
-  //   return (
-  //     <div id="medCodeContainer" hidden={isShowSuggestion[rowIndex]}>
-  //       <ul>
-  //         {data.map((item) => {
-  //           return (
-  //             <li
-  //               onClick={(e) => {
-  //                 isShowSuggestion[rowIndex] = true;
-  //                 setIsShowSuggestion([...isShowSuggestion]);
-  //                 let tempList = consumableUiList;
-  //                 tempList[rowIndex][colIndex] = e.target.textContent;
+  const demo = (e) => {
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+    }
 
-  //                 const searchResult = meds.find(
-  //                   (item) => item.name === e.target.textContent
-  //                 );
-  //                 consumableUiList[rowIndex][colIndex - 1] = searchResult._id;
-  //                 consumableUiList[rowIndex][colIndex] = searchResult.name;
-  //                 consumableUiList[rowIndex][colIndex + 1] =
-  //                   searchResult.quantity;
-  //                 consumableUiList[rowIndex][colIndex + 2] = searchResult.unit;
-  //                 setConsumableUiList(consumableUiList);
+    setValidated(true);
 
-  //                 setConsumableUiList([...tempList]);
-  //                 // setSelectedMed(e.target.textContent);
-  //               }}
-  //             >
-  //               {item.name}
-  //             </li>
-  //           );
-  //         })}
-  //       </ul>
-  //     </div>
-  //   );
-  // };
+    formik.handleSubmit(e);
+  };
 
-  // const searchTextBox1 = (data = [], rowIndex, colIndex) => {
-  //   return (
-  //     <div id="medCodeContainer" hidden={isShowSuggestion1[rowIndex]}>
-  //       <ul>
-  //         {data.map((item) => {
-  //           return (
-  //             <li
-  //               onClick={(e) => {
-  //                 isShowSuggestion1[rowIndex] = true;
-  //                 setIsShowSuggestion1([...isShowSuggestion1]);
-  //                 let tempList = prescriptionList;
-  //                 tempList[rowIndex][colIndex] = e.target.textContent;
-
-  //                 const searchResult = meds.find(
-  //                   (item) => item.name === e.target.textContent
-  //                 );
-  //                 prescriptionList[rowIndex][colIndex - 1] = searchResult._id;
-  //                 prescriptionList[rowIndex][colIndex] = searchResult.name;
-  //                 prescriptionList[rowIndex][colIndex + 1] =
-  //                   searchResult.quantity;
-  //                 prescriptionList[rowIndex][colIndex + 2] = searchResult.unit;
-  //                 setPrescriptionList(prescriptionList);
-  //                 setPrescriptionList([...tempList]);
-  //                 // setSelectedMed(e.target.textContent);
-  //               }}
-  //             >
-  //               {item.name}
-  //             </li>
-  //           );
-  //         })}
-  //       </ul>
-  //     </div>
-  //   );
-  // };
-
+  const handleOkk = (value) => {
+    formik.handleSubmit(value);
+  };
   return (
     <>
+      {/* Btn antd */}
+      {/* <Button
+        type="primary"
+        onClick={handleShow}
+        style={{ marginRight: "20px" }}
+      >
+        <FaPlusCircle></FaPlusCircle> Thêm thủ thuật
+      </Button> */}
+
+      {/* Btn react-bootstrap */}
       <Button
         variant="success"
         onClick={handleShow}
@@ -312,354 +301,372 @@ const ServiceModal = ({ loadData }) => {
       >
         <FaPlusCircle></FaPlusCircle> Thêm thủ thuật
       </Button>
+
       <Modal
-        id="serviceModal"
+        title="Thông tin thủ thuật"
+        centered
+        width={1500}
+        // id="serviceModal"
         // class="modal-dialog modal-xl"
-        show={show}
-        onHide={handleClose}
-        // backdrop="static"
+        open={show}
+        onCancel={handleClose}
+        onOk={handleOkk}
+        footer={null}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>Thông tin thủ thuật</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {/* <MedicineForm></MedicineForm> */}
-          <>
-            <Form
-              onSubmit={formik.handleSubmit}
-              // validated={validated}
-              // noValidate
-            >
-              <Row className="mb-3">
-                {/* <Form.Group as={Col} controlId="formGridEmail">
+        {/* <Form onSubmit={handleSubmit(formik.handleSubmit)}> */}
+        <FormAntd onFinish={formik.handleSubmit}>
+          <Row className="mb-3">
+            {/* <Form.Group as={Col} controlId="formGridEmail">
                   <Form.Label>Mã thủ thuật</Form.Label>
                   <Form.Control type="text" />
                 </Form.Group> */}
-                <Form.Group as={Col}>
-                  <Form.Label>Tên thủ thuật</Form.Label>
-                  <Form.Control
-                    id="name"
-                    // value={formik.values.name}
-                    onChange={formik.handleChange}
-                    placeholder="Nhập tên thủ thuật"
-                  />
-                  {formik.errors.name && (
-                    <p className="errorMsg"> {formik.errors.name} </p>
-                  )}
-                </Form.Group>
-              </Row>
+            <Form.Group as={Col}>
+              <Form.Label>Tên thủ thuật</Form.Label>
+              {/* <Form.Control
+                id="name"
+                // name="name"
+                onChange={formik.handleChange}
+                // onChange={(value) => formik.setFieldValue("name", value)}
+                placeholder="Nhập tên thủ thuật"
+              /> */}
 
+              <Input
+                // id="name"
+                name="name"
+                placeholder="Nhập tên thủ thuật"
+                onChange={formik.handleChange}
+              ></Input>
+
+              {formik.errors.name && (
+                <p className="errorMsg"> {formik.errors.name} </p>
+              )}
+            </Form.Group>
+          </Row>
+
+          <Row className="mb-3">
+            <Form.Group
+              className="mb-3"
+              as={Col}
+              // controlId="formGroupPassword"
+            >
+              <Form.Label column sm={12}>
+                Hình Ảnh
+              </Form.Label>
+              <UploadAndDisplayImage
+                value={formik.values.imageUrl ? formik.values.imageUrl : []}
+                onChange={(value) => {
+                  // console.log(value);
+                  if (value && value.length > 0) {
+                    formik.values.imageUrl = value;
+                  }
+                }}
+              />
+              {formik.errors.imageUrl && (
+                <p className="errorMsg"> {formik.errors.imageUrl} </p>
+              )}
+            </Form.Group>
+
+            <Form.Group
+              as={Col}
+              // controlId="formGridEmail"
+            >
+              <Form.Label column sm={12}>
+                Thời gian (phút)
+              </Form.Label>
+              <Form.Control
+                id="time"
+                type="text"
+                // value={formik.values.time}
+                onChange={formik.handleChange}
+                placeholder="0"
+              />
+              {formik.errors.time && (
+                <p className="errorMsg"> {formik.errors.time} </p>
+              )}
+            </Form.Group>
+          </Row>
+          <Row className="mb-3">
+            <Form.Group className="mb-3" as={Col}>
+              <Form.Label>Giá</Form.Label>
               <Row className="mb-3">
-                <Form.Group
-                  className="mb-3"
-                  as={Col}
-                  // controlId="formGroupPassword"
-                >
-                  <Form.Label column sm={12}>
-                    Hình Ảnh
-                  </Form.Label>
-                  <UploadAndDisplayImage
-                    value={formik.values.imageUrl ? formik.values.imageUrl : []}
-                    onChange={(value) => {
-                      // console.log(value);
-                      if (value && value.length > 0) {
-                        formik.values.imageUrl = value;
-                      }
-                    }}
-                  />
-                  {formik.errors.imageUrl && (
-                    <p className="errorMsg"> {formik.errors.imageUrl} </p>
-                  )}
-                </Form.Group>
-
-                <Form.Group
-                  as={Col}
-                  // controlId="formGridEmail"
-                >
-                  <Form.Label column sm={12}>
-                    Thời gian (phút)
-                  </Form.Label>
+                <Form.Group className="mb-3" as={Col}>
                   <Form.Control
-                    id="time"
+                    id="price"
                     type="text"
-                    // value={formik.values.time}
+                    // value={formik.values.price}
                     onChange={formik.handleChange}
                     placeholder="0"
-                  />
-                  {formik.errors.time && (
-                    <p className="errorMsg"> {formik.errors.time} </p>
+                  />{" "}
+                  {formik.errors.price && (
+                    <p className="errorMsg"> {formik.errors.price} </p>
                   )}
                 </Form.Group>
               </Row>
-              <Row className="mb-3">
-                <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Giá</Form.Label>
-                  <Row className="mb-3">
-                    <Form.Group className="mb-3" as={Col}>
-                      <Form.Control
-                        id="price"
-                        type="text"
-                        // value={formik.values.price}
-                        onChange={formik.handleChange}
-                        placeholder="0"
-                      />{" "}
-                      {formik.errors.price && (
-                        <p className="errorMsg"> {formik.errors.price} </p>
-                      )}
-                    </Form.Group>
-                  </Row>
-                </Form.Group>
+            </Form.Group>
 
-                <Form.Group className="mb-3" as={Col}>
-                  <Form.Label>Ghi chú</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    id="note"
-                    value={formik.values.note}
-                    onChange={formik.handleChange}
-                  />
-                  {formik.errors.note && (
-                    <p className="errorMsg"> {formik.errors.note} </p>
-                  )}
-                </Form.Group>
-              </Row>
+            <Form.Group className="mb-3" as={Col}>
+              <Form.Label>Ghi chú</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                id="note"
+                value={formik.values.note}
+                onChange={formik.handleChange}
+              />
+              {formik.errors.note && (
+                <p className="errorMsg"> {formik.errors.note} </p>
+              )}
+            </Form.Group>
+          </Row>
 
-              {/* ConsumableList */}
-              <Row className="mb-3">
-                <Col>
-                  <Form.Label style={{ marginBottom: "4px" }}>
-                    Sử dụng tiêu hao thuốc
-                  </Form.Label>
-                  <Button
-                    onClick={addConsumableRow}
-                    style={{
-                      marginLeft: "10px",
-                      padding: "12px",
-                      paddingRight: "14px",
-                      paddingLeft: "14px",
-                    }}
-                    variant="success"
-                  >
-                    <FaPlusCircle></FaPlusCircle>
-                  </Button>
-                </Col>
-              </Row>
-              <hr style={{ margin: "0px" }}></hr>
+          {/* ConsumableList */}
+          <Row className="mb-3">
+            <Col>
+              <Form.Label style={{ marginBottom: "4px" }}>
+                Sử dụng tiêu hao thuốc
+              </Form.Label>
+              <Button
+                onClick={addConsumableRow}
+                style={{
+                  marginLeft: "10px",
+                  padding: "12px",
+                  paddingRight: "14px",
+                  paddingLeft: "14px",
+                }}
+                variant="success"
+              >
+                <FaPlusCircle></FaPlusCircle>
+              </Button>
+            </Col>
+          </Row>
+          <hr style={{ margin: "0px" }}></hr>
 
-              <Table>
-                <thead>
-                  <tr>
-                    <th>STT</th>
-                    <th>Mã thuốc</th>
-                    <th>Tên thuốc</th>
-                    <th>Lượng</th>
-                    <th>Đơn vị</th>
-                    <th>Số lần dùng</th>
-                  </tr>
-                </thead>
-                {consumableUiList.length > 0 && (
-                  <tbody>
-                    {consumableUiList.map((row, rowIndex) => {
-                      return (
-                        <tr>
-                          <td style={{ width: "80px" }}>
-                            <Control
-                              type="text"
-                              disabled
-                              value={rowIndex + 1}
-                            />
-                          </td>
-                          <td>
-                            <Form.Control disabled value={row[0]} />
-                          </td>
-                          <td>
-                            {/* Name Service thay bằng TypeHead*/}
-                            <Typeahead
-                              id="basic-typeahead-single"
-                              onChange={(e) => {
-                                console.log(e + " Ơ" + rowIndex);
-                                fillData(e, rowIndex);
-                                let tempSelect = singleSelections;
-                                tempSelect[rowIndex] = e;
+          <Table>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã thuốc</th>
+                <th>Tên thuốc</th>
+                <th>Lượng</th>
+                <th>Đơn vị</th>
+                <th>Số lần dùng</th>
+              </tr>
+            </thead>
+            {consumableUiList.length > 0 && (
+              <tbody>
+                {consumableUiList.map((row, rowIndex) => {
+                  return (
+                    <tr>
+                      <td style={{ width: "80px" }}>
+                        <Form.Control
+                          type="text"
+                          disabled
+                          value={rowIndex + 1}
+                        />
+                      </td>
+                      <td>
+                        <Form.Control disabled value={row[0]} />
+                      </td>
+                      <td>
+                        <Select
+                          style={{ width: "150px" }}
+                          // defaultValue={suggestionList[0].value}
+                          defaultValue={suggestionList[0].value}
+                          // showSearch
+                          placeholder="Select a person"
+                          optionFilterProp="children"
+                          onChange={(e) => {
+                            // onChangee(e);
+                            fillData(e, rowIndex);
+                          }}
+                          // onSearch={(e) => {
+                          //   onSearch(e);
+                          // }}
+                          filterOption={(input, option) =>
+                            (option?.value ?? "")
+                              .toLowerCase()
+                              .includes(input.toLowerCase())
+                          }
+                          options={suggestionList}
+                        />
+                        {/* <Typeahead
+                            id="basic-typeahead-single"
+                            onChange={(e) => {
+                              if (
+                                errorList.medicineNameError &&
+                                errorList.medicineNameError.length > 0
+                              ) {
+                                setErrorList({
+                                  ...errorList,
+                                  medicineNameError: [],
+                                });
+                              }
+                              fillData(e, rowIndex);
+                              let tempSelect = singleSelections;
+                              tempSelect[rowIndex] = e;
+                              setSingleSelections([...tempSelect]);
+                            }}
+                            options={suggestionList}
+                            selected={singleSelections[rowIndex]}
+                            placeholder="Chọn tên thuốc..."
+                            // inputProps={{ required: false }}
+                            // {...register(`Type${rowIndex}`, {
+                            //   required: "Bắt buộc",
+                            // })}
+                          /> */}
+                        {/* {errorList.medicineNameError && (
+                              <span style={{ color: "red" }}>
+                                {errorList.medicineNameError}
+                              </span>
+                            )} */}
+                      </td>
+                      <td>
+                        {/* Lượng */}
+                        <Form.Control type="number" value={row[2]} disabled />
+                      </td>
+                      <td>
+                        {/* Đơn vị */}
+                        <Form.Control
+                          disabled
+                          value={row[3]}
+                          onChange={formik.handleChange}
+                        />
+                      </td>
+                      <td>
+                        {/* Số lần dùng */}
+                        <Form.Control
+                          // id={`consumableArray[${rowIndex}].numberOfUses`}
+                          type="number"
+                          // min="1"
+                          // required
+                          // defaultValue={1}
+                          // value={numberOfUses === 0 ? "" : numberOfUses}
+                          // onChange={formik.handleChange}
+                          onChange={(e) => {
+                            console.log(e.target.value);
+                            // setNumberOfUses(e.target.value);
+                            // setConsumableUiList[rowIndex][4](
+                            //   e.target.value
+                            // );
+                            consumableUiList[rowIndex][4] = e.target.value;
+                          }}
+                        />
+                      </td>
 
-                                setSingleSelections([...tempSelect]);
-                                // console.log(tempSelect);
-                              }}
-                              options={suggestionList}
-                              selected={singleSelections[rowIndex]}
-                              // value={singleSelections[rowIndex]}
-                              placeholder="Chọn tên thuốc..."
-                            />
-                            {/* <Form.Control.Feedback>
-                              Đạt yêu c
-                            </Form.Control.Feedback>
-                            <Form.Control.Feedback type="invalid">
-                              Nhập lại
-                            </Form.Control.Feedback> */}
-                          </td>
-                          <td>
-                            {/* Lượng */}
-                            <Form.Control
-                              type="number"
-                              value={row[2]}
-                              disabled
-                            />
-                          </td>
-                          <td>
-                            {/* Đơn vị */}
-                            <Form.Control
-                              disabled
-                              value={row[3]}
-                              onChange={formik.handleChange}
-                            />
-                          </td>
-                          <td>
-                            {/* Số lần dùng */}
-                            <Form.Control
-                              // id={`consumableArray[${rowIndex}].numberOfUses`}
-                              type="number"
-                              min="1"
-                              required
-                              // defaultValue={1}
-                              // value={numberOfUses === 0 ? "" : numberOfUses}
-                              // onChange={formik.handleChange}
-                              onChange={(e) => {
-                                // console.log(e.target.value);
-                                setNumberOfUses(e.target.value);
-                                // setConsumableUiList[rowIndex][4](
-                                //   e.target.value
-                                // );
-                                consumableUiList[rowIndex][4] = e.target.value;
-                              }}
-                            />
-                            {/* Nên thêm 1 cái error message */}
-                            {/* <Form.Control.Feedback>
-                              Đạt yêu c
-                            </Form.Control.Feedback>
-                            <Form.Control.Feedback type="invalid">
-                              Nhập lại
-                            </Form.Control.Feedback> */}
-                          </td>
+                      <td onClick={() => deleteConsumableUiList(rowIndex)}>
+                        <FaTrashAlt
+                          cursor="pointer"
+                          color="#e74c3c"
+                          style={{ transform: "translateY(7px)" }}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            )}
+          </Table>
 
-                          <td onClick={() => deleteConsumableUiList(rowIndex)}>
-                            <FaTrashAlt
-                              cursor="pointer"
-                              color="#e74c3c"
-                              style={{ transform: "translateY(7px)" }}
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                )}
-              </Table>
+          <Row className="mb-3">
+            <Col>
+              <Form.Label style={{ marginBottom: "4px" }}>
+                Sử dụng cho đơn thuốc
+              </Form.Label>
+              <Button
+                onClick={addPrescriptionRow}
+                style={{
+                  marginLeft: "10px",
+                  padding: "12px",
+                  paddingRight: "14px",
+                  paddingLeft: "14px",
+                }}
+                variant="success"
+              >
+                <FaPlusCircle></FaPlusCircle>
+              </Button>
+            </Col>
+          </Row>
+          <hr style={{ margin: "0px" }}></hr>
+          <Table>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã thuốc</th>
+                <th>Tên thuốc</th>
+                <th>Lượng</th>
+                <th>Đơn vị</th>
+                <th>Số Lượng</th>
+                <th>Cách Dùng</th>
+              </tr>
+            </thead>
+            {prescriptionList.length > 0 && (
+              <tbody>
+                {prescriptionList.map((row, rowIndex) => {
+                  return (
+                    <tr>
+                      <td style={{ width: "80px" }}>
+                        <Form.Control
+                          type="text"
+                          disabled
+                          value={rowIndex + 1}
+                        />
+                      </td>
+                      {/* Chinh sua o day */}
+                      <td>
+                        <Form.Control disabled value={row[0]} />
+                      </td>
+                      <td>
+                        {/* Name Service thay bằng TypeHead*/}
+                        <Typeahead
+                          id="basic-typeahead-single"
+                          onChange={(e) => {
+                            fillDataPre(e, rowIndex);
+                            let tempSelect = singleSelectionsPre;
+                            tempSelect[rowIndex] = e;
+                            setSingleSelectionsPre([...tempSelect]);
+                          }}
+                          options={suggestionList}
+                          // onInputChange={(e) => {
+                          //   fillDataPre(e, rowIndex);
+                          //   let tempSelect = singleSelectionsPre;
+                          //   tempSelect[rowIndex] = e;
+                          //   setSingleSelectionsPre([...tempSelect]);
+                          // }}
+                          selected={singleSelectionsPre[rowIndex]}
+                          placeholder="Chọn tên thuốc..."
+                        />
+                      </td>
 
-              <Row className="mb-3">
-                <Col>
-                  <Form.Label style={{ marginBottom: "4px" }}>
-                    Sử dụng cho đơn thuốc
-                  </Form.Label>
-                  <Button
-                    onClick={addPrescriptionRow}
-                    style={{
-                      marginLeft: "10px",
-                      padding: "12px",
-                      paddingRight: "14px",
-                      paddingLeft: "14px",
-                    }}
-                    variant="success"
-                  >
-                    <FaPlusCircle></FaPlusCircle>
-                  </Button>
-                </Col>
-              </Row>
-              <hr style={{ margin: "0px" }}></hr>
-              <Table>
-                <thead>
-                  <tr>
-                    <th>STT</th>
-                    <th>Mã thuốc</th>
-                    <th>Tên thuốc</th>
-                    <th>Lượng</th>
-                    <th>Đơn vị</th>
-                    <th>Số Lượng</th>
-                    <th>Cách Dùng</th>
-                  </tr>
-                </thead>
-                {prescriptionList.length > 0 && (
-                  <tbody>
-                    {prescriptionList.map((row, rowIndex) => {
-                      return (
-                        <tr>
-                          <td style={{ width: "80px" }}>
-                            <Control
-                              type="text"
-                              disabled
-                              value={rowIndex + 1}
-                            />
-                          </td>
-                          {/* Chinh sua o day */}
-                          <td>
-                            <Form.Control disabled value={row[0]} />
-                          </td>
-                          <td>
-                            {/* Name Service thay bằng TypeHead*/}
-                            <Typeahead
-                              id="basic-typeahead-single"
-                              onChange={(e) => {
-                                fillDataPre(e, rowIndex);
-                                let tempSelect = singleSelectionsPre;
-                                tempSelect[rowIndex] = e;
-                                setSingleSelectionsPre([...tempSelect]);
-                              }}
-                              options={suggestionList}
-                              // onInputChange={(e) => {
-                              //   fillDataPre(e, rowIndex);
-                              //   let tempSelect = singleSelectionsPre;
-                              //   tempSelect[rowIndex] = e;
-                              //   setSingleSelectionsPre([...tempSelect]);
-                              // }}
-                              selected={singleSelectionsPre[rowIndex]}
-                              placeholder="Chọn tên thuốc..."
-                            />
-                          </td>
-
-                          <td>
-                            {/* Lượng */}
-                            <Form.Control
-                              type="number"
-                              value={row[2]}
-                              disabled
-                            />
-                          </td>
-                          <td>
-                            {/* Đơn vị */}
-                            <Form.Control
-                              disabled
-                              value={row[3]}
-                              onChange={formik.handleChange}
-                            />
-                          </td>
-                          <td>
-                            {/* Số Lượng/SP */}
-                            <Form.Control
-                              type="number"
-                              required
-                              min={1}
-                              onChange={(e) => {
-                                prescriptionList[rowIndex][4] = e.target.value;
-                              }}
-                              // {...register(`Prescript${rowIndex}`, {
-                              //   required: "Bắt buộc",
-                              //   min: {
-                              //     value: 1,
-                              //     message: "Lớn hơn 1",
-                              //   },
-                              // })}
-                            />
-                            {/* <ErrorMessage
+                      <td>
+                        {/* Lượng */}
+                        <Form.Control type="number" value={row[2]} disabled />
+                      </td>
+                      <td>
+                        {/* Đơn vị */}
+                        <Form.Control
+                          disabled
+                          value={row[3]}
+                          onChange={formik.handleChange}
+                        />
+                      </td>
+                      <td>
+                        {/* Số Lượng/SP */}
+                        <Form.Control
+                          type="number"
+                          // required
+                          // min={1}
+                          onChange={(e) => {
+                            prescriptionList[rowIndex][4] = e.target.value;
+                          }}
+                          // {...register(`Prescript${rowIndex}`, {
+                          //   required: "Bắt buộc",
+                          //   min: {
+                          //     value: 1,
+                          //     message: "Lớn hơn 1",
+                          //   },
+                          // })}
+                        />
+                        {/* <ErrorMessage
                               errors={errors}
                               name={`Prescript${rowIndex}`}
                               render={({ messages }) =>
@@ -673,21 +680,21 @@ const ServiceModal = ({ loadData }) => {
                                 )
                               }
                             /> */}
-                          </td>
+                      </td>
 
-                          <td>
-                            {/* Cachs dung*/}
-                            <Form.Control
-                              type="text"
-                              required
-                              onChange={(e) => {
-                                prescriptionList[rowIndex][5] = e.target.value;
-                              }}
-                              // {...register(`Prescriptusage${rowIndex}`, {
-                              //   required: "Bắt buộc",
-                              // })}
-                            />
-                            {/* <ErrorMessage
+                      <td>
+                        {/* Cachs dung*/}
+                        <Form.Control
+                          type="text"
+                          required
+                          onChange={(e) => {
+                            prescriptionList[rowIndex][5] = e.target.value;
+                          }}
+                          // {...register(`Prescriptusage${rowIndex}`, {
+                          //   required: "Bắt buộc",
+                          // })}
+                        />
+                        {/* <ErrorMessage
                               errors={errors}
                               name={`Prescriptusage${rowIndex}`}
                               render={({ messages }) =>
@@ -701,41 +708,59 @@ const ServiceModal = ({ loadData }) => {
                                 )
                               }
                             /> */}
-                          </td>
-                          <td onClick={() => deleteprescriptionList(rowIndex)}>
-                            <FaTrashAlt
-                              cursor="pointer"
-                              color="#e74c3c"
-                              style={{ transform: "translateY(7px)" }}
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                )}
-              </Table>
+                      </td>
+                      <td onClick={() => deleteprescriptionList(rowIndex)}>
+                        <FaTrashAlt
+                          cursor="pointer"
+                          color="#e74c3c"
+                          style={{ transform: "translateY(7px)" }}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            )}
+          </Table>
 
-              <Button
-                type="submit"
-                variant="primary"
-                style={{ float: "right" }}
-              >
-                Lưu lại
-              </Button>
-              <Button
-                style={{
-                  float: "right",
-                  marginRight: "10px",
-                  backgroundColor: "gray",
-                }}
-                onClick={handleClose}
-              >
-                Hủy bỏ
-              </Button>
-            </Form>
-          </>
-        </Modal.Body>
+          <Butt
+            size="large"
+            // type="submit"
+            // variant="primary"
+            htmlType="submit"
+            type="primary"
+            style={{
+              // marginTop: "10px",
+              borderRadius: "5px",
+              width: "100px",
+              // fontSize: "16px",
+              // padding: "auto",
+              // float: "right",
+              // display: "inline-block",
+              // textAlign: "center",
+              // position: "relative",
+              // bottom: "10px",
+            }}
+            // onClick={(e) => {
+            //   console.log("1");
+            // }}
+          >
+            Lưu lại
+          </Butt>
+          {/* <Butt
+            style={{
+              // float: "right",
+              // display: "none",
+              marginLeft: "10px",
+              backgroundColor: "gray",
+            }}
+            onClick={handleClose}
+          >
+            Hủy bỏ
+          </Butt> */}
+
+          {/* </Form> */}
+        </FormAntd>
       </Modal>
     </>
   );
