@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const profileController = require('./profile.controller');
 const validateInput = require('../../middlewares/validateInput');
-const { profileSchema }= require('./profile.validation');
+const profileSchema = require('./profile.validation');
 const needAuthenticated = require('../../middlewares/needAuthenticated');
 
 
@@ -26,14 +26,14 @@ router.get(
 
 router.post(
   '/', 
-  //needAuthenticated, 
+  needAuthenticated, 
   //isRole, 
   validateInput(profileSchema, 'body'),
   profileController.createProfile
 );
 
 router.put(
-  '/:customerId', 
+  '/:staffId', 
   //needAuthenticated, 
   //isRole, 
   validateInput(profileSchema, 'body'),
@@ -41,15 +41,15 @@ router.put(
 );
 
 router.get(
-  '/:customerId', 
+  '/:profileId', 
   //needAuthenticated, 
   //isRole, 
   profileController.getProfileById
 );
 
 router.put(
-  '/:customerId/:status', 
-  //needAuthenticated, 
+  '/:staffId/:status', 
+  needAuthenticated, 
   //isRole,
   profileController.updateStatus
 );
