@@ -20,13 +20,15 @@ function Login() {
     },
     validationSchema: Yup.object({
       username: Yup.string()
-        .required("Không được trống")
-        .min(2, "Phải dài hơn 2 kí tự"),
+        .trim("Tên đăng nhập được trống")
+        .required("Tên đăng nhập được trống")
+        .min(2, "Tên đăng nhập phải dài hơn 2 kí tự"),
       password: Yup.string()
-        .required("Không được trống")
+        .trim("Mật khẩu không")
+        .required("Mật khẩu không được trống")
         .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-          "Mật khẩu không đúng định dạng"
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+          "Mật khẩu chứa 1 chữ hoa, 1 chữ số và dài hơn 8 kí tự"
         ),
     }),
 

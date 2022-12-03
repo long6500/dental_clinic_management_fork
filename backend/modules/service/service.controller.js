@@ -1,8 +1,9 @@
-const ServiceModel = require("./service");
-const ConsumableModel = require("../consumable/consumable");
-const PrescriptionModel = require("../prescription/prescription");
-const HTTPError = require("../../common/httpError");
-const MedicineModel = require("../medicine/medicine");
+const ServiceModel = require('./service');
+const ConsumableModel = require('../consumable/consumable');
+const PrescriptionModel = require('../prescription/prescription');
+const HTTPError = require('../../common/httpError');
+const MedicineModel = require('../medicine/medicine');
+
 const getService = async (req, res, next) => {
   const { keyword, offset, limit } = req.query;
 
@@ -181,7 +182,6 @@ const updateService = async (req, res) => {
       });
     });
   }
-
   await PrescriptionModel.deleteMany({ serviceId: serviceId });
   var prescriptionArray;
   if (prescription != null) {
@@ -220,7 +220,6 @@ const getServiceById = async (req, res) => {
     await Promise.all(
       consumableArray.map(async (element, index) => {
         const medicine = await MedicineModel.findById(element.medicineId);
-
         consumableArray[index] = {
           ...consumableArray[index],
           medicineName: medicine.name,
