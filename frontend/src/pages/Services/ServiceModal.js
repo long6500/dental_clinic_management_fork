@@ -414,8 +414,8 @@ const ServiceModal = ({ loadData }) => {
                     <th>STT</th>
                     <th>Mã thuốc</th>
                     <th>Tên thuốc</th>
-                    <th>Lượng</th>
-                    <th>Đơn vị</th>
+                    <th>Lượng(viên/vỉ - ml,mg/lọ)</th>
+                    <th>Công dụng</th>
                     <th>Số lần dùng</th>
                   </tr>
                 </thead>
@@ -555,8 +555,8 @@ const ServiceModal = ({ loadData }) => {
                     <th>STT</th>
                     <th>Mã thuốc</th>
                     <th>Tên thuốc</th>
-                    <th>Lượng</th>
-                    <th>Đơn vị</th>
+                    <th>Lượng(viên/vỉ - ml,mg/lọ)</th>
+                    <th>Công dụng</th>
                     <th>Số Lượng</th>
                     <th>Cách Dùng</th>
                   </tr>

@@ -116,11 +116,18 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
   };
 
   useEffect(() => {
+    // if (serviceId) {
+    getService();
+    getMedicine();
+    // }
+  }, [serviceId]);
+
+  useEffect(() => {
     if (serviceId) {
       getService();
       getMedicine();
     }
-  }, [serviceId]);
+  }, []);
 
   const fillData = (e, rowIndex) => {
     // let tempList = consumableUiList;
