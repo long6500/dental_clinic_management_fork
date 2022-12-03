@@ -1,5 +1,6 @@
 const HTTPError = require("../../common/httpError");
 const ProfileModel = require("./profile");
+
 const UserScheduleModel = require("../user_schedule/user_schedule");
 const ScheduleModel = require("../schedule/schedule");
 const UserModel = require("../auth/user");
@@ -21,13 +22,16 @@ const createAdmin = async (req, res) => {
   const admin = await UserModel.create(user);
   try {
     if ((await ProfileModel.find({ _id: "admin" }).count()) > 0) return null;
+
     const profileAdmin = {
       _id: "admin",
       fullname: "Nguyễn Thành Nam",
       phone: "0974485920",
       email: process.env.EMAIL_ADMIN,
       address: "",
+
       userId: admin[0]._id,
+
     };
     await ProfileModel.create(profileAdmin);
     return;
@@ -35,6 +39,7 @@ const createAdmin = async (req, res) => {
     return err;
   }
 };
+
 
 const checkPhone = async (req, res) => {
   const { phone } = req.params;
@@ -88,6 +93,7 @@ const getProfile = async (req, res, next) => {
   );
 
   res.send({ success: 1, data: { data: fullProfile, total: totalProfile } });
+
 };
 
 const createProfile = async (req, res) => {
@@ -117,6 +123,7 @@ const createProfile = async (req, res) => {
     password: hashPassword,
   });
 
+
   const newProfile = await ProfileModel.create({
     _id: _id,
     fullname,
@@ -142,6 +149,7 @@ const createProfile = async (req, res) => {
       })
     );
   }
+
 
   var scheduleArray;
   if (schedule != null) {
@@ -310,10 +318,12 @@ const getProfileById = async (req, res) => {
   const scheduleArray = JSON.parse(JSON.stringify(schedule));
   const fullProfile = { ...profile._doc, roleArray, scheduleArray };
   res.send({ success: 1, data: fullProfile });
+
 };
 
 const updateStatus = async (req, res) => {
   const senderUser = req.user;
+
   const { staffId, status } = req.params;
 
   const existStaff = await ProfileModel.findOne({ _id: staffId });
@@ -332,6 +342,7 @@ const updateStatus = async (req, res) => {
 
   const updatedStaff = await ProfileModel.findByIdAndUpdate(
     staffId,
+
     {
       status,
       modifyBy: senderUser._id,
@@ -339,7 +350,9 @@ const updateStatus = async (req, res) => {
     { new: true }
   );
 
+
   res.send({ success: 1, data: updatedStaff });
+
 };
 
 const getNext = async () => {
@@ -356,6 +369,7 @@ const getNext = async () => {
   temp += idNumber;
   return "NV_" + temp;
 };
+
 
 const generatePassword = () => {
   const hasNumber = /\d/;
@@ -388,13 +402,16 @@ const generateUsername = async (fullname) => {
   }
 };
 
+
 module.exports = {
   createAdmin,
   getProfile,
   createProfile,
+
   updateProfile,
   updateStatus,
   getProfileById,
   checkEmail,
   checkPhone,
+
 };
