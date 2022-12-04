@@ -77,7 +77,7 @@ function App() {
       <AuthContext.Provider value={{ user: userInfo.data, login, logout }}>
         {/* <LoadingComponent isLoading={isLoading} /> */}
         <Router>
-          {userInfo.data ? <Navbarr /> : <>asdf</>}
+          {userInfo.data ? <Navbarr /> : <></>}
 
           <Routes>
             <Route element={<GuestRoute user={userInfo.data} />}>
@@ -86,36 +86,18 @@ function App() {
             </Route>
 
             <Route element={<PrivateRoute user={userInfo.data} />}>
-              {/* <Route path="/" element={<Navbarr />} /> */}
-              <Route
-                path="/medicine"
-                element={<Medicine itemsPerPage={5} />}
-              ></Route>
-
-
-          <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
-            <Route path="/ChangePassword" element={<Changepassword />} />
-            <Route path="/Profile" element={<Profile />} />
-            <Route path="/Editstaff" element={<Editstaff />} />
-            <Route path="/medicine" element={<Medicine />}></Route>
-            {/* <Route path="/service" element={<Service />}></Route> */}
-            <Route path="/Customer" element={<Customer />}></Route>
-            <Route path="/Staff" element={<Staff />}></Route>
-          </Route>
-        </Routes>
-
-
+              <Route path="/medicine" element={<Medicine />}></Route>
               <Route path="/ChangePassword" element={<Changepassword />} />
               <Route path="/Profile" element={<Profile />} />
-              {/* <Route path="/medicine" element={<Medicine />}></Route> */}
+              <Route path="/Editstaff" element={<Editstaff />} />
+              <Route path="/medicine" element={<Medicine />}></Route>
               {/* <Route path="/service" element={<Service />}></Route> */}
+              <Route path="/Customer" element={<Customer />}></Route>
+              <Route path="/Staff" element={<Staff />}></Route>
               <Route
                 path="/MedicalPaper"
                 element={<ListMedicalPaper />}
               ></Route>
-
-              <Route path="/Customer" element={<Customer />}></Route>
-              <Route path="/Staff" element={<Staff />}></Route>
             </Route>
           </Routes>
         </Router>

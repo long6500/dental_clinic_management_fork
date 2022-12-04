@@ -51,9 +51,10 @@ function Login() {
           });
         }
       } catch (err) {
-        render(
-        <SwalCard text='Tên đăng nhập hoặc mật khẩu sai'></SwalCard>
-        )
+        console.log(err);
+        // render(
+        // <SwalCard text='Tên đăng nhập hoặc mật khẩu sai'></SwalCard>
+        // )
       }
     },
   });

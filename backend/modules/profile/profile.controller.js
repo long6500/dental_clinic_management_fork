@@ -31,7 +31,6 @@ const createAdmin = async (req, res) => {
       address: "",
 
       userId: admin[0]._id,
-
     };
     await ProfileModel.create(profileAdmin);
     return;
@@ -40,6 +39,27 @@ const createAdmin = async (req, res) => {
   }
 };
 
+const curProfile = async (req, res) => {
+  const senderUser = req.user;
+  const profile = await ProfileModel.find({ userId: senderUser });
+
+  if (!profile) {
+    throw new HTTPError(400, "Not found profile");
+  }
+
+  const roleId = await UserRoleModel.find({ userId: profile.userId });
+  const role = roleId.map(async (id) => await RoleModel.findById(id));
+  const roleArray = JSON.parse(JSON.stringify(role));
+
+  const scheduleId = await UserScheduleModel.find({ userId: profile[0]._id });
+  const schedule = scheduleId.map(
+    async (id) => await ScheduleModel.findById(id)
+  );
+  const scheduleArray = JSON.parse(JSON.stringify(schedule));
+  const fullProfile = { ...profile, roleArray, scheduleArray };
+
+  res.send({ success: 1, data: fullProfile });
+};
 
 const checkPhone = async (req, res) => {
   const { phone } = req.params;
@@ -76,13 +96,13 @@ const getProfile = async (req, res, next) => {
     ProfileModel.countDocuments(filter),
   ]);
 
-  let fullProfile=[];
+  let fullProfile = [];
   await Promise.all(
     profile.map(async (element) => {
       const roleid = await UserRoleModel.find({ userId: element.userId });
       const role = await RoleModel.find({
         _id: {
-          "$in": roleid.map((el) => {
+          $in: roleid.map((el) => {
             return el.roleId;
           }),
         },
@@ -93,7 +113,6 @@ const getProfile = async (req, res, next) => {
   );
 
   res.send({ success: 1, data: { data: fullProfile, total: totalProfile } });
-
 };
 
 const createProfile = async (req, res) => {
@@ -123,7 +142,6 @@ const createProfile = async (req, res) => {
     password: hashPassword,
   });
 
-
   const newProfile = await ProfileModel.create({
     _id: _id,
     fullname,
@@ -149,7 +167,6 @@ const createProfile = async (req, res) => {
       })
     );
   }
-
 
   var scheduleArray;
   if (schedule != null) {
@@ -318,7 +335,6 @@ const getProfileById = async (req, res) => {
   const scheduleArray = JSON.parse(JSON.stringify(schedule));
   const fullProfile = { ...profile._doc, roleArray, scheduleArray };
   res.send({ success: 1, data: fullProfile });
-
 };
 
 const updateStatus = async (req, res) => {
@@ -350,9 +366,7 @@ const updateStatus = async (req, res) => {
     { new: true }
   );
 
-
   res.send({ success: 1, data: updatedStaff });
-
 };
 
 const getNext = async () => {
@@ -369,7 +383,6 @@ const getNext = async () => {
   temp += idNumber;
   return "NV_" + temp;
 };
-
 
 const generatePassword = () => {
   const hasNumber = /\d/;
@@ -402,7 +415,6 @@ const generateUsername = async (fullname) => {
   }
 };
 
-
 module.exports = {
   createAdmin,
   getProfile,
@@ -413,5 +425,5 @@ module.exports = {
   getProfileById,
   checkEmail,
   checkPhone,
-
+  curProfile,
 };
