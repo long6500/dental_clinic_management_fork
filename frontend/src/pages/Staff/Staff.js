@@ -40,7 +40,6 @@ function Staff() {
 
         if (response.success === 1) {
           setMeds(response.data.data);
-          console.log(response.data.data);
           setTotal(response.data.total);
         }
       });

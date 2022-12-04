@@ -1,13 +1,13 @@
 import Swal from "sweetalert2";
-function SwalCard({
+function SwalCard(
   icon,
   title,
   text
-}) {
+) {
   return (
     Swal.fire({
-        icon: "error",
-        title: "Thông Báo",
+        icon: icon,
+        title: title,
         text: text,
       })
   );

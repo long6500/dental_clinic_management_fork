@@ -1,6 +1,5 @@
 const HTTPError = require("../../common/httpError");
 const ProfileModel = require("./profile");
-
 const UserScheduleModel = require("../user_schedule/user_schedule");
 const ScheduleModel = require("../schedule/schedule");
 const UserModel = require("../auth/user");
@@ -22,14 +21,12 @@ const createAdmin = async (req, res) => {
   const admin = await UserModel.create(user);
   try {
     if ((await ProfileModel.find({ _id: "admin" }).count()) > 0) return null;
-
     const profileAdmin = {
       _id: "admin",
       fullname: "Nguyễn Thành Nam",
       phone: "0974485920",
       email: process.env.EMAIL_ADMIN,
       address: "",
-
       userId: admin[0]._id,
     };
     await ProfileModel.create(profileAdmin);
@@ -339,7 +336,6 @@ const getProfileById = async (req, res) => {
 
 const updateStatus = async (req, res) => {
   const senderUser = req.user;
-
   const { staffId, status } = req.params;
 
   const existStaff = await ProfileModel.findOne({ _id: staffId });
@@ -358,14 +354,12 @@ const updateStatus = async (req, res) => {
 
   const updatedStaff = await ProfileModel.findByIdAndUpdate(
     staffId,
-
     {
       status,
       modifyBy: senderUser._id,
     },
     { new: true }
   );
-
   res.send({ success: 1, data: updatedStaff });
 };
 
@@ -419,7 +413,6 @@ module.exports = {
   createAdmin,
   getProfile,
   createProfile,
-
   updateProfile,
   updateStatus,
   getProfileById,

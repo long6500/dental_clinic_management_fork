@@ -202,10 +202,9 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
   };
 
   return (
-    <>
-      
+    <>      
       <Modal
-        title="Thêm nhân viên"
+        title="Sửa Nhân Viên"
         open={isVisible}
         onCancel={closeModal}
         width={1000}
@@ -215,7 +214,7 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
           </Button>,
           <Button
             key="submit"
-            type="primary"
+            type="#595959"
             loading={loading}
             onClick={handleOk}
             htmlType="submit"

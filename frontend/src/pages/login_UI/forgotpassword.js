@@ -91,7 +91,7 @@ function Forgotpassword() {
                 <button
                   type="onSubmit"
                   className="btn btn-primary btn-lg"
-                  href="/homepage"
+                  href="/login"
                   styleFor={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                 >
                   Xác Nhận
