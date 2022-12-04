@@ -13,6 +13,7 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -20,11 +21,11 @@ function Login() {
     },
     validationSchema: Yup.object({
       username: Yup.string()
-        .trim("Tên đăng nhập được trống")
+        .trim()
         .required("Tên đăng nhập được trống")
         .min(2, "Tên đăng nhập phải dài hơn 2 kí tự"),
       password: Yup.string()
-        .trim("Mật khẩu không")
+        .trim()
         .required("Mật khẩu không được trống")
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
@@ -43,17 +44,25 @@ function Login() {
             password,
           },
         });
-
-        if (res.success) {
+        console.log(res)
+        if (res.success === 1) {
           login({
             _id: res.data._id,
             token: res.data.token,
           });
+        }if(res.success === 0){
+          console.log(1)
+          // render(
+          //   <SwalCard text='Tên đăng nhập hoặc mật khẩu sai'></SwalCard>
+          //   )
+          alert("sai passs")
         }
       } catch (err) {
-        render(
-        <SwalCard text='Tên đăng nhập hoặc mật khẩu sai'></SwalCard>
-        )
+        console.log(err)
+        // render(
+        // <SwalCard text='Kết nối với máy chủ thất bại'></SwalCard>
+        // )
+        alert("aaaa")
       }
     },
   });

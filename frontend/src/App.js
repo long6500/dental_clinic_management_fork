@@ -90,13 +90,12 @@ function App() {
               <Route
                 path="/medicine"
                 element={<Medicine itemsPerPage={5} />}
-              ></Route>
+            ></Route>
 
 
           <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
             <Route path="/ChangePassword" element={<Changepassword />} />
             <Route path="/Profile" element={<Profile />} />
-            <Route path="/Editstaff" element={<Editstaff />} />
             <Route path="/medicine" element={<Medicine />}></Route>
             {/* <Route path="/service" element={<Service />}></Route> */}
             <Route path="/Customer" element={<Customer />}></Route>
@@ -105,19 +104,6 @@ function App() {
         </Routes>
 
 
-              <Route path="/ChangePassword" element={<Changepassword />} />
-              <Route path="/Profile" element={<Profile />} />
-              {/* <Route path="/medicine" element={<Medicine />}></Route> */}
-              {/* <Route path="/service" element={<Service />}></Route> */}
-              <Route
-                path="/MedicalPaper"
-                element={<ListMedicalPaper />}
-              ></Route>
-
-              <Route path="/Customer" element={<Customer />}></Route>
-              <Route path="/Staff" element={<Staff />}></Route>
-            </Route>
-          </Routes>
         </Router>
       </AuthContext.Provider>
     </>

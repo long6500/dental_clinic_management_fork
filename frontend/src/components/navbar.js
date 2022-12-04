@@ -51,7 +51,7 @@ const Navbarr = () => {
                 Quản lý thủ thuật
               </NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="/rangho">
+              <NavDropdown.Item href="/staff">
                 Quản lý nhân viên
               </NavDropdown.Item>
 
