@@ -18,7 +18,12 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { useFetcher } from "react-router-dom";
 import axios from "../../apis/api";
 
-const MedListPaper = ({ closeMedPaper, openMedPaper, singleSelectionsDoc }) => {
+const MedListPaper = ({
+  closeMedPaper,
+  openMedPaper,
+  singleSelectionsDoc,
+  serListID,
+}) => {
   const [medListA, setMedListA] = useState([]);
   const [medName, setSingleMedName] = useState([]);
   const [medNamelist, setMedNamelist] = useState([]);
@@ -36,7 +41,7 @@ const MedListPaper = ({ closeMedPaper, openMedPaper, singleSelectionsDoc }) => {
   };
 
   const addMedListA = () => {
-    setMedListA([...medListA, ["", "", "", "", ""]]);
+    setMedListA([...medListA, ["", [], "", "", ""]]);
   };
 
   const deleteMedListA = (rowIndex) => {
@@ -51,11 +56,11 @@ const MedListPaper = ({ closeMedPaper, openMedPaper, singleSelectionsDoc }) => {
     // console.log(e[0].unit);
 
     if (e[0]?.name) {
-      medListA[rowIndex][0] = e[0].name;
+      // medListA[rowIndex][0] = e[0].name;
       medListA[rowIndex][2] = e[0].unit;
       setMedListA(medListA);
     } else {
-      medListA[rowIndex][0] = "";
+      // medListA[rowIndex][0] = "";
       medListA[rowIndex][2] = "";
     }
   };
@@ -64,7 +69,6 @@ const MedListPaper = ({ closeMedPaper, openMedPaper, singleSelectionsDoc }) => {
     axios
       .get("/api/medicine/activeMedicine")
       .then((response) => {
-        console.log(response.data);
         // setMedNamelist([
         //   ...response.data.map((u) => ({ id: u._id, name: u.name })),
         // ]);
@@ -76,6 +80,7 @@ const MedListPaper = ({ closeMedPaper, openMedPaper, singleSelectionsDoc }) => {
   };
 
   useEffect(() => {
+    // console.log(serListID);
     loadMedData();
   }, []);
 
@@ -171,18 +176,16 @@ const MedListPaper = ({ closeMedPaper, openMedPaper, singleSelectionsDoc }) => {
                             id="basic-typeahead-single"
                             labelKey="name"
                             onChange={(e) => {
-                              // console.log(e);
-                              // findCusByName(e);
-                              // setSingleCusName(e);
-                              // setSingleCusPhone([]);
+                              row[1] = e;
                               fillMedListA(e, rowIndex);
+
                               let tempSelect = medName;
                               tempSelect[rowIndex] = e;
                               setSingleMedName([...tempSelect]);
                             }}
                             options={medNamelist}
                             placeholder="Nhập thuốc"
-                            selected={medName[rowIndex]}
+                            selected={row[1]}
                           />
                         </td>
                         {/* So Luong */}
