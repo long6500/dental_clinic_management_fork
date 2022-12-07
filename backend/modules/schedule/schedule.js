@@ -13,10 +13,6 @@ const ScheduleSchema = new mongoose.Schema({
         max: 59,
         require: true,
     },
-    start_time_session: {
-        type: String,
-        require: true,
-    },
     end_time_hours: {
         type: Date,
         min: 0,
@@ -27,10 +23,6 @@ const ScheduleSchema = new mongoose.Schema({
         type: Date,
         min: 0,
         max: 59,
-        require: true,
-    },
-    end_time_session: {
-        type: String,
         require: true,
     },
     weekday: {

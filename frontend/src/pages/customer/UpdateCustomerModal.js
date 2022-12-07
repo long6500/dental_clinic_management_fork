@@ -501,7 +501,6 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
                   );
                 })}
               </Row>
-
               <Button
                 type="submit"
                 variant="primary"

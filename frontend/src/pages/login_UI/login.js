@@ -28,7 +28,7 @@ function Login() {
         .trim()
         .required("Mật khẩu không được trống")
         .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+          /^(?=.*[a-z])(?=.*[])(?=.*\d)[a-z\d]{8,}$/,
           "Mật khẩu chứa 1 chữ hoa, 1 chữ số và dài hơn 8 kí tự"
         ),
     }),
@@ -44,24 +44,16 @@ function Login() {
             password,
           },
         });
-        console.log(res)
         if (res.success === 1) {
           login({
             _id: res.data._id,
             token: res.data.token,
           });
-        }if(res.success === 0){
-          console.log(1)
-          // render(
-          //   <SwalCard text='Tên đăng nhập hoặc mật khẩu sai'></SwalCard>
-          //   )
-          alert("sai passs")
         }
       } catch (err) {
-        console.log(err);
-        // render(
-        // <SwalCard text='Tên đăng nhập hoặc mật khẩu sai'></SwalCard>
-        // )
+        render(
+        <SwalCard text='Tên đăng nhập hoặc mật khẩu sai'></SwalCard>
+        )
       }
     },
   });

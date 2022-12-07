@@ -38,23 +38,22 @@ const createAdmin = async (req, res) => {
 
 const curProfile = async (req, res) => {
   const senderUser = req.user;
-  const profile = await ProfileModel.find({ userId: senderUser });
+  const profile = await ProfileModel.findOne({ userId: senderUser });
 
   if (!profile) {
     throw new HTTPError(400, "Not found profile");
   }
 
   const roleId = await UserRoleModel.find({ userId: profile.userId });
-  const role = roleId.map(async (id) => await RoleModel.findById(id));
-  const roleArray = JSON.parse(JSON.stringify(role));
+  const role = await Promise.all(roleId.map(async (id) => await RoleModel.findById(id.roleId)));
+  const roleArray = role.map((r) => r._id)
 
-  const scheduleId = await UserScheduleModel.find({ userId: profile[0]._id });
-  const schedule = scheduleId.map(
-    async (id) => await ScheduleModel.findById(id)
-  );
+  const scheduleId = await UserScheduleModel.find({ userId: profile._id });
+  const schedule = await Promise.all(scheduleId.map(
+    async (id) => await ScheduleModel.findById(id.scheduleId)
+  ));
   const scheduleArray = JSON.parse(JSON.stringify(schedule));
-  const fullProfile = { ...profile, roleArray, scheduleArray };
-
+  const fullProfile = { ...profile._doc, roleArray, scheduleArray };
   res.send({ success: 1, data: fullProfile });
 };
 
@@ -124,9 +123,7 @@ const createProfile = async (req, res) => {
     status,
     role,
     schedule,
-    validate,
   } = req.body;
-  console.log(req.body);
   const _id = await getNext();
 
   const password = generatePassword();
@@ -169,38 +166,30 @@ const createProfile = async (req, res) => {
   if (schedule != null) {
     scheduleArray = JSON.parse(JSON.stringify(schedule));
     await Promise.all(
-      scheduleArray.forEach(async (element) => {
-        const temp = JSON.parse(element);
-
+      scheduleArray.map(async (element) => {
         const existSchedule = await ScheduleModel.find({
-          start_time_hours: temp.start_time_hours,
-          start_time_minutes: temp.start_time_minutes,
-          start_time_session: temp.start_time_session,
-          end_time_hours: temp.end_time_hours,
-          end_time_minutes: temp.end_time_minutes,
-          end_time_session: temp.end_time_session,
-          weekday: temp.weekday,
+          start_time_hours: element.start_time_hours,
+          start_time_minutes: element.start_time_minutes,
+          end_time_hours: element.end_time_hours,
+          end_time_minutes: element.end_time_minutes,
+          weekday: element.weekday,
         });
-
-        if (!existSchedule) {
+        if (existSchedule) {
           const newSchedule = await ScheduleModel.create({
-            start_time_hours: temp.start_time_hours,
-            start_time_minutes: temp.start_time_minutes,
-            start_time_session: temp.start_time_session,
-            end_time_hours: temp.end_time_hours,
-            end_time_minutes: temp.end_time_minutes,
-            end_time_session: temp.end_time_session,
-            weekday: temp.weekday,
+            start_time_hours: element.start_time_hours,
+            start_time_minutes: element.start_time_minutes,
+            end_time_hours: element.end_time_hours,
+            end_time_minutes: element.end_time_minutes,
+            weekday: element.weekday,
           });
-
           await UserScheduleModel.create({
             userId: _id,
-            scheduleId: newSchedule[0]._id,
+            scheduleId: newSchedule._id,
           });
         } else {
           await UserScheduleModel.create({
             userId: _id,
-            scheduleId: existSchedule[0].medicineId,
+            scheduleId: existSchedule._id,
           });
         }
       })
@@ -227,13 +216,14 @@ const updateProfile = async (req, res) => {
     fullname,
     phone,
     email,
+    role,
     address,
     workingDays,
     salary,
     status,
     schedule,
   } = req.body;
-  const existUser = await ServiceModel.findOne({ _id: staffId });
+  const existUser = await ProfileModel.findOne({ _id: staffId });
   if (!existUser) {
     throw new HTTPError(400, "Not found staff");
   }
@@ -260,7 +250,7 @@ const updateProfile = async (req, res) => {
     await Promise.all(
       roleArray.map(async (element) => {
         await UserRoleModel.create({
-          userId: newUser._id,
+          userId: existUser.userId,
           roleId: element,
         });
       })
@@ -271,41 +261,35 @@ const updateProfile = async (req, res) => {
   var scheduleArray;
   if (schedule != null) {
     scheduleArray = JSON.parse(JSON.stringify(schedule));
-    scheduleArray.forEach(async (element) => {
-      const temp = JSON.parse(element);
-
-      const existSchedule = await ScheduleModel.find({
-        start_time_hours: temp.start_time_hours,
-        start_time_minutes: temp.start_time_minutes,
-        start_time_session: temp.start_time_session,
-        end_time_hours: temp.end_time_hours,
-        end_time_minutes: temp.end_time_minutes,
-        end_time_session: temp.end_time_session,
-        weekday: temp.weekday,
-      });
-
-      if (!existSchedule) {
-        const newSchedule = await ScheduleModel.create({
-          start_time_hours: temp.start_time_hours,
-          start_time_minutes: temp.start_time_minutes,
-          start_time_session: temp.start_time_session,
-          end_time_hours: temp.end_time_hours,
-          end_time_minutes: temp.end_time_minutes,
-          end_time_session: temp.end_time_session,
-          weekday: temp.weekday,
+    await Promise.all(
+      scheduleArray.map(async (element) => {
+        const existSchedule = await ScheduleModel.find({
+          start_time_hours: element.start_time_hours,
+          start_time_minutes: element.start_time_minutes,
+          end_time_hours: element.end_time_hours,
+          end_time_minutes: element.end_time_minutes,
+          weekday: element.weekday,
         });
-
-        await UserScheduleModel.create({
-          userId: staffId,
-          scheduleId: newSchedule[0]._id,
-        });
-      } else {
-        await UserScheduleModel.create({
-          userId: staffId,
-          scheduleId: existSchedule[0].medicineId,
-        });
-      }
-    });
+        if (existSchedule) {
+          const newSchedule = await ScheduleModel.create({
+            start_time_hours: element.start_time_hours,
+            start_time_minutes: element.start_time_minutes,
+            end_time_hours: element.end_time_hours,
+            end_time_minutes: element.end_time_minutes,
+            weekday: element.weekday,
+          });
+          await UserScheduleModel.create({
+            userId: existUser._id,
+            scheduleId: newSchedule._id,
+          });
+        } else {
+          await UserScheduleModel.create({
+            userId: existUser._id,
+            scheduleId: existSchedule._id,
+          });
+        }
+      })
+    );
   }
 
   const fullProfile = { ...updatedProfile._doc, roleArray, scheduleArray };
@@ -322,13 +306,13 @@ const getProfileById = async (req, res) => {
   }
 
   const roleId = await UserRoleModel.find({ userId: profile.userId });
-  const role = roleId.map(async (id) => await RoleModel.findById(id));
-  const roleArray = JSON.parse(JSON.stringify(role));
+  const role = await Promise.all(roleId.map(async (id) => await RoleModel.findById(id.roleId)));
+  const roleArray = role.map((r) => r._id)
 
   const scheduleId = await UserScheduleModel.find({ userId: profileId });
-  const schedule = scheduleId.map(
-    async (id) => await ScheduleModel.findById(id)
-  );
+  const schedule = await Promise.all(scheduleId.map(
+    async (id) => await ScheduleModel.findById(id.scheduleId)
+  ));
   const scheduleArray = JSON.parse(JSON.stringify(schedule));
   const fullProfile = { ...profile._doc, roleArray, scheduleArray };
   res.send({ success: 1, data: fullProfile });
@@ -360,14 +344,15 @@ const updateStatus = async (req, res) => {
     },
     { new: true }
   );
+
   res.send({ success: 1, data: updatedStaff });
 };
 
 const getNext = async () => {
   const count = await ProfileModel.find().count();
-  if (count <= 0) return "NV_0000000001";
+  if (count <= 1) return "NV_0000000001";
 
-  const lastService = await ProfileModel.find().sort({ _id: -1 }).limit(1);
+  const lastService = await ProfileModel.find({_id: {$nin: ["admin"]}}).sort({ _id: -1 }).limit(1);
   const nextId = lastService[0]._id;
   const idNumber = parseInt(nextId.split("_")[1]) + 1 + "";
   var temp = "";

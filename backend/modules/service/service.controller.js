@@ -63,7 +63,7 @@ const createService = async (req, res) => {
     consumable,
     prescription,
   } = req.body;
-  //   console.log(typeof consumable[0]);
+
   const _id = await getNext();
   const imgUrl = req.file.path;
   const newService = await ServiceModel.create({

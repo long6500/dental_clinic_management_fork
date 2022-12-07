@@ -20,6 +20,7 @@ import Forgotpassword from "./pages/login_UI/forgotpassword";
 import Customer from "./pages/customer/listCustomer";
 import PrivateRoute from "./components/Route/PrivateRoute";
 import GuestRoute from "./components/Route/GuestRoute";
+import Clinic from "./pages/Clinic/Clinic";
 import axios from "../src/apis/api";
 import React from "react";
 import Staff from "./pages/Staff/Staff";
@@ -89,9 +90,10 @@ function App() {
               <Route path="/medicine" element={<Medicine />}></Route>
               <Route path="/ChangePassword" element={<Changepassword />} />
               <Route path="/Profile" element={<Profile />} />
+              <Route path="/Clinic" element={<Clinic />} />
               <Route path="/Editstaff" element={<Editstaff />} />
               <Route path="/medicine" element={<Medicine />}></Route>
-              {/* <Route path="/service" element={<Service />}></Route> */}
+              <Route path="/service" element={<Service />}></Route>
               <Route path="/Customer" element={<Customer />}></Route>
               <Route path="/Staff" element={<Staff />}></Route>
               <Route
