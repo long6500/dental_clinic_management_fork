@@ -17,18 +17,8 @@ import { useSelector } from "react-redux";
 import UploadAndDisplayImage from "../../components/uploadImage";
 import Button from "react-bootstrap/Button";
 import { Typeahead } from "react-bootstrap-typeahead";
-import { useForm } from "react-hook-form";
-import { ErrorMessage } from "@hookform/error-message";
 
 const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
-    criteriaMode: "all",
-  });
-
   const [suggestionList, setSuggestionList] = useState([]);
 
   // const consumableUiListSuggest = { 1: true };
@@ -264,7 +254,7 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
           <Modal.Title>Thông tin thủ thuật</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmit(formik.handleSubmit)}>
+          <Form onSubmit={formik.handleSubmit}>
             <Row className="mb-3">
               <Form.Group as={Col}>
                 <Form.Label>Mã thủ thuật</Form.Label>
@@ -555,49 +545,11 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                         />
                       </td>
                       <td>
-                        <Form.Control
-                          type="number"
-                          {...register(`Prescript${rowIndex}`, {
-                            required: "Bắt buộc",
-                            min: {
-                              value: 1,
-                              message: "Lớn hơn 1",
-                            },
-                          })}
-                        />
-                        <ErrorMessage
-                          errors={errors}
-                          name={`Prescript${rowIndex}`}
-                          render={({ messages }) =>
-                            messages &&
-                            Object.entries(messages).map(([type, message]) => (
-                              <p key={type} style={{ color: "red" }}>
-                                {message}
-                              </p>
-                            ))
-                          }
-                        />
+                        <Form.Control type="number" />
                       </td>
 
                       <td>
-                        <Form.Control
-                          type="text"
-                          {...register(`Prescriptusage${rowIndex}`, {
-                            required: "Bắt buộc",
-                          })}
-                        />
-                        <ErrorMessage
-                          errors={errors}
-                          name={`Prescriptusage${rowIndex}`}
-                          render={({ messages }) =>
-                            messages &&
-                            Object.entries(messages).map(([type, message]) => (
-                              <p key={type} style={{ color: "red" }}>
-                                {message}
-                              </p>
-                            ))
-                          }
-                        />
+                        <Form.Control type="text" />
                       </td>
                       <td onClick={() => deleteprescriptionList(rowIndex)}>
                         <FaTrashAlt

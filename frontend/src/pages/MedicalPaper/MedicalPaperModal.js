@@ -16,6 +16,7 @@ import Table from "react-bootstrap/Table";
 import ReactPaginate from "react-paginate";
 import CustomerModal from "../customer/CustomerModal";
 import { FaTrashAlt } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 // import "antd/dist/antd.css";
 import { Select, Pagination, Table as TableAntd, Form as FormAntd } from "antd";
@@ -25,6 +26,18 @@ import AdCusSearch from "./AdCusSearch";
 import MedListPaper from "./MedListPaper";
 const MedicalPaperModal = () => {
   // const options = [];
+
+  //Tái khám - default k de gi: null || empty string
+
+  const op = [
+    { id: 0, label: "Chưa thực hiện" },
+    { id: 1, label: "Đang thực hiện" },
+    { id: 2, label: "Hoàn thành" },
+  ];
+
+  const [birthDay, setBirthDay] = useState(null);
+  const [nt, setNt] = useState(new Date());
+
   const [customerId, setCustomerId] = useState([]);
 
   // const [options, setOptions] = useState(["jack", "lucy", "david"]);
@@ -166,8 +179,6 @@ const MedicalPaperModal = () => {
   //PAGINATION
   // We start with an empty list of items.
 
-  const [currentItems, setCurrentItems] = useState([]);
-
   const [selectedCus, setSelectedCus] = useState({});
 
   //fill Data from chonsen SingleSelection - chưa xoá được
@@ -184,22 +195,31 @@ const MedicalPaperModal = () => {
   const [currentItemList, setCurrentItemList] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  // Add currentItems/Service
   const [curDate, setCurDate] = useState(new Date());
+
+  const [serListID, setSerListID] = useState([]);
   const addCurrentItems = (id, name, price) => {
     // console.log(typeof price);
     // console.log(new Date().toISOString().split("T")[0]);
-    let curDate = new Date().toLocaleDateString("en-US");
+    let curDate = new Date().toLocaleDateString("en-GB");
     setTotalPrice(totalPrice + Number(price));
-    setCurrentItemList([...currentItemList, [curDate, name, price, "", ""]]);
+    setCurrentItemList([
+      ...currentItemList,
+      [curDate, name, price, [], op.slice(0, 1)],
+    ]);
+    //get id of service when add service to list
+    if (!serListID.includes(id)) {
+      setSerListID([...serListID, id]);
+    }
   };
 
   const deleteCurrentItems = (rowIndex, price) => {
-    console.log(price);
+    // console.log(price);
     let temp = currentItemList;
     temp.splice(rowIndex, 1);
     setCurrentItemList([...temp]);
     setTotalPrice(totalPrice - price);
+    console.log(temp);
   };
 
   const [changeMoney, setChangeMoney] = useState(0);
@@ -229,21 +249,16 @@ const MedicalPaperModal = () => {
           <Modal.Title style={{ marginRight: "30px" }}>
             Thêm thông tin Phiếu khám
           </Modal.Title>
-          {/* Ngày tạo */}
-          <Modal.Title>
-            {/* <Form.Control
-              style={{ width: "50%" }}
-              type="text"
-              value={new Date().toLocaleDateString("en-US")}
-              // readOnly
-              disabled
-            ></Form.Control> */}
-            Ngày tạo: <span>{new Date().toLocaleDateString("en-US")}</span>
-          </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <FormAntd name="basic">
+          <FormAntd
+            name="basic"
+            // initialValues={{
+            //   // TT: [{ id: 0, label: "Chưa thực hiện" }],
+            //   // currentItemList
+            // }}
+          >
             <div id="serviceLeft">
               <Form.Group className="mb-3">
                 <Form.Control
@@ -308,28 +323,6 @@ const MedicalPaperModal = () => {
                   // pageSizeOptions={[5, 10, 20, 50]}
                 />
               </div>
-
-              {/* <ReactPaginate
-              id="Paginate"
-              nextLabel=">"
-              onPageChange={handlePageClick}
-              pageRangeDisplayed={3}
-              marginPagesDisplayed={2}
-              pageCount={pageCount}
-              previousLabel="<"
-              pageClassName="page-item"
-              pageLinkClassName="page-link"
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page-item"
-              nextLinkClassName="page-link"
-              breakLabel="..."
-              breakClassName="page-item"
-              breakLinkClassName="page-link"
-              containerClassName="pagination"
-              activeClassName="active"
-              renderOnZeroPageCount={null}
-            /> */}
             </div>
 
             <div id="serviceRight" style={{ border: "1px solid #dee2e6" }}>
@@ -504,6 +497,47 @@ const MedicalPaperModal = () => {
               // onSubmit={formik.handleSubmit}
               style={{ border: "1px solid #dee2e6" }}
             > */}
+
+              <Row
+                className="mb-3"
+                style={{
+                  margin: "auto",
+                  padding: "5px",
+                  backgroundColor: "#ecf0f1",
+                }}
+              >
+                <Form.Label column sm={1}>
+                  <b>Ngày</b>
+                </Form.Label>
+                <Col sm={2}>
+                  <div style={{ marginTop: "5px" }}>
+                    <DatePicker
+                      selected={nt}
+                      dateFormat="dd/MM/yyyy"
+                      disabled
+                    />
+                  </div>
+                </Col>
+                <Col sm={1}></Col>
+
+                <Form.Label column sm={1} style={{ width: "10%" }}>
+                  <b>Tái khám</b>
+                </Form.Label>
+                <Col sm={2}>
+                  <div style={{ marginTop: "5px" }}>
+                    <DatePicker
+                      selected={birthDay}
+                      dateFormat="dd/MM/yyyy"
+                      onChange={(e) => {
+                        console.log(birthDay);
+                        setBirthDay(e);
+                      }}
+                      minDate={new Date()}
+                    />
+                  </div>
+                </Col>
+              </Row>
+
               <Row
                 className="mb-3"
                 style={{
@@ -651,6 +685,7 @@ const MedicalPaperModal = () => {
                     closeMedPaper={closeMedpaper}
                     openMedPaper={openMedPaper}
                     singleSelectionsDoc={singleSelectionsDoc}
+                    serListID={serListID}
                   />
                 </Col>
               </Row>
@@ -659,7 +694,7 @@ const MedicalPaperModal = () => {
                 <thead>
                   <tr>
                     <th>
-                      <b>Ngày chuẩn đoán</b>
+                      <b>Ngày</b>
                     </th>
                     <th>
                       <b>Thủ thuật</b>
@@ -683,7 +718,7 @@ const MedicalPaperModal = () => {
                     {currentItemList.map((row, rowIndex) => {
                       return (
                         <tr>
-                          <td>{row[0]}</td>
+                          <td style={{ width: "1%" }}>{row[0]}</td>
                           <td>{row[1]}</td>
                           <td>{row[2]}</td>
                           <td style={{ textAlign: "center" }}>
@@ -697,20 +732,20 @@ const MedicalPaperModal = () => {
                               ]}
                             >
                               <Typeahead
-                                style={{ width: "155px", margin: "auto" }}
+                                style={{ width: "100%", margin: "auto" }}
                                 id="basic-typeahead-single"
                                 labelKey="name"
                                 onChange={(e) => {
-                                  // fillCusDataByName(e);
-                                  console.log(e);
-
+                                  row[3] = e;
+                                  //cần 1 nhịp chay cua cái này thì mới display được
                                   let tempSelect = singleSelectionsKTV;
                                   tempSelect[rowIndex] = e;
                                   setSingleSelectionsKTV([...tempSelect]);
                                 }}
                                 options={customerId}
                                 placeholder="Chọn kĩ thuật viên"
-                                selected={singleSelectionsKTV[rowIndex]}
+                                // selected={singleSelectionsKTV[rowIndex]}
+                                selected={row[3]}
                                 renderMenuItemChildren={(option) => (
                                   <div>
                                     {option.name}
@@ -731,35 +766,70 @@ const MedicalPaperModal = () => {
                                   message: "Nhập trạng thái",
                                 },
                               ]}
+                              initialValue={row[4]}
                             >
                               <Typeahead
-                                style={{ width: "155px", margin: "auto" }}
+                                style={{ width: "100%", margin: "auto" }}
                                 id="basic-typeahead-single"
                                 onChange={(e) => {
-                                  // fillCusDataByName(e);
+                                  row[4] = e;
+
                                   let tempSelect = singleSelectionsStatus;
                                   tempSelect[rowIndex] = e;
                                   setSingleSelectionsStatus([...tempSelect]);
                                 }}
-                                options={[
-                                  { id: 0, label: "Chưa thực hiện" },
-                                  { id: 1, label: "Đang thực hiện" },
-                                  { id: 2, label: "Hoàn thành" },
-                                ]}
-                                placeholder="  Chọn Trạng thái"
-                                selected={singleSelectionsStatus[rowIndex]}
-                                // defaultSelected={[
-                                //   {
-                                //     id: 0,
-                                //     label: "Chưa thực hiện",
+                                options={op}
+                                // defaultSelected={op.slice(0, 1)}
+                                // defaultInputValue={"Chưa thực hiện"}
+                                placeholder="Chọn Trạng thái"
+                                selected={row[4]}
+                                // inputProps={{
+                                //   required: true,
+                                //   // data-error-msg:"Must enter your name?",
+                                //   // onChange="try{setCustomValidity('')}catch(e){};",
+                                //   // x-moz-errormessage="Please enter your name",
+                                //   onInvalid: (e) => {
+                                //     console.log(e.target);
+                                //     e.target.setCustomValidity("Nhập trạng thái");
                                 //   },
-                                // ]}
+                                //   onInput: (e) => {
+                                //     console.log(e.target);
+                                //     e.target.setCustomValidity("");
+                                //   },
+                                //   onChange: (e) => {
+                                //     console.log(e.target);
+                                //     e.target.setCustomValidity("");
+                                //   },
+                                //   onValid: (e) => {
+                                //     console.log(e.target);
+                                //     e.target.setCustomValidity("");
+                                //   },
+                                // }}
+
+                                // data-required-error="Your individual error message in a different language."
                               />
                             </FormAntd.Item>
                           </td>
 
                           <td
-                            onClick={() => deleteCurrentItems(rowIndex, row[2])}
+                            onClick={() => {
+                              //them alert truoc khi xoa
+                              Swal.fire({
+                                title: "Bạn có chắc chắn muốn xoá",
+                                showDenyButton: true,
+                                // showCancelButton: true,
+                                confirmButtonText: "Xoá",
+                                denyButtonText: `Huỷ`,
+                              }).then((result) => {
+                                /* Read more about isConfirmed, isDenied below */
+                                if (result.isConfirmed) {
+                                  // Swal.fire('Saved!', '', 'success')
+                                  deleteCurrentItems(rowIndex, row[2]);
+                                } else if (result.isDenied) {
+                                  // Swal.fire('Changes are not saved', '', 'info')
+                                }
+                              });
+                            }}
                           >
                             <FaTrashAlt cursor="pointer" color="#e74c3c" />
                           </td>
@@ -832,44 +902,50 @@ const MedicalPaperModal = () => {
               <Row className="mb-3" style={{ margin: "5px" }}>
                 {dentalMed.map((den, index) => {
                   return (
-                    <Col>
-                      <Form.Check
-                        inline
-                        name="dentalMedicalHistory"
-                        label={den.name}
-                        // label={`${den.name}`}
-                        value={den._id}
-                        type="checkbox"
-                        id={den._id}
-                        checked={
-                          selectedCus.dentalMedicalHistory &&
-                          selectedCus.dentalMedicalHistory.includes(den._id)
-                            ? true
-                            : false
-                        }
-                        onChange={(e) => {
-                          const targetState = e.target.checked;
-                          let tempCus = { ...selectedCus };
-                          if (targetState) {
-                            tempCus = {
-                              ...tempCus,
-                              dentalMedicalHistory: [
-                                ...tempCus.dentalMedicalHistory,
-                                den._id,
-                              ],
-                            };
-                          } else {
-                            const deletePos =
-                              tempCus.dentalMedicalHistory.indexOf(den._id);
-                            deletePos !== -1 &&
-                              tempCus.dentalMedicalHistory.splice(deletePos, 1);
+                    <>
+                      <Col>
+                        <Form.Check
+                          inline
+                          name="dentalMedicalHistory"
+                          label={den.name}
+                          // label={`${den.name}`}
+                          value={den._id}
+                          type="checkbox"
+                          id={den._id}
+                          checked={
+                            selectedCus.dentalMedicalHistory &&
+                            selectedCus.dentalMedicalHistory.includes(den._id)
+                              ? true
+                              : false
                           }
-                          setSelectedCus({ ...tempCus });
-                        }}
-                        // onChange={formik.handleChange}
-                        style={{ width: "162px" }}
-                      />
-                    </Col>
+                          onChange={(e) => {
+                            const targetState = e.target.checked;
+                            let tempCus = { ...selectedCus };
+                            if (targetState) {
+                              tempCus = {
+                                ...tempCus,
+                                dentalMedicalHistory: [
+                                  ...tempCus.dentalMedicalHistory,
+                                  den._id,
+                                ],
+                              };
+                            } else {
+                              const deletePos =
+                                tempCus.dentalMedicalHistory.indexOf(den._id);
+                              deletePos !== -1 &&
+                                tempCus.dentalMedicalHistory.splice(
+                                  deletePos,
+                                  1
+                                );
+                            }
+                            setSelectedCus({ ...tempCus });
+                          }}
+                          // onChange={formik.handleChange}
+                          style={{ width: "162px" }}
+                          // style={{ width: "200%" }}
+                        />
+                      </Col>
+                    </>
                   );
                 })}
               </Row>
@@ -886,7 +962,6 @@ const MedicalPaperModal = () => {
                   <Form.Control id="gc" type="text" as="textarea" rows={3} />
                 </Col>
               </Row>
-
               {/* </Form> */}
             </div>
           </FormAntd>

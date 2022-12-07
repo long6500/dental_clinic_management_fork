@@ -98,6 +98,7 @@ function App() {
                 path="/MedicalPaper"
                 element={<ListMedicalPaper />}
               ></Route>
+              <Route path="/service" element={<Service />}></Route>
             </Route>
           </Routes>
         </Router>
