@@ -8,8 +8,10 @@ import { Space, TimePicker } from "antd";
 import { Checkbox } from "antd";
 import dayjs from "dayjs";
 import { FaRedoAlt, FaEdit } from "react-icons/fa";
+import moment from "moment"
+import Swal from "sweetalert2";
 const { TextArea } = Input;
-function ModaladdStaff(props) {
+function ModaladdStaff({loadData}) {
   const [form] = Form.useForm();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,28 +26,66 @@ function ModaladdStaff(props) {
   const [disabled6, setDisabled6] = useState(false);
   const [disabled7, setDisabled7] = useState(false);
   const [disabledcn, setDisabledcn] = useState(false);
+
+  const [value2, setValue2] = useState([]);
+  const [value3, setValue3] = useState([]);
+  const [value4, setValue4] = useState([]);
+  const [value5, setValue5] = useState([]);
+  const [value6, setValue6] = useState([]);
+  const [value7, setValue7] = useState([]);
+  const [valuecn, setValuecn] = useState([]);
   const format = "HH:mm";
+
+  const disPlay = () => {
+    Swal.fire(
+      "Thành Công",
+      `Thêm thành công`,
+      "success"
+    );
+  }
+  
 
   const toggleDisablet2 = () => {
     setDisabled2(!disabled2);
+    if(disabled2){
+      removeSchedule('monday');
+    }
   };
   const toggleDisablet3 = () => {
     setDisabled3(!disabled3);
+    if(disabled3){
+      removeSchedule('tuesday');
+    }
   };
   const toggleDisablet4 = () => {
     setDisabled4(!disabled4);
+    if(disabled4){
+      removeSchedule('wednesday');
+    }
   };
   const toggleDisablet5 = () => {
     setDisabled5(!disabled5);
+    if(disabled5){
+      removeSchedule('thursday');
+    }
   };
   const toggleDisablet6 = () => {
     setDisabled6(!disabled6);
+    if(disabled6){
+      removeSchedule('friday');
+    }
   };
   const toggleDisablet7 = () => {
     setDisabled7(!disabled7);
+    if(disabled7){
+      removeSchedule('saturday');
+    }
   };
   const toggleDisabletcn = () => {
     setDisabledcn(!disabledcn);
+    if(disabledcn){
+      removeSchedule('sunday');
+    }
   };
 
   let options = [];
@@ -64,17 +104,33 @@ function ModaladdStaff(props) {
     getRole();
   }, []);
 
-  const reset = () =>{
-    formik.values.fullname ="";
-    formik.values.address ="";
-    formik.values.phone ="";
-    formik.values.competence= [];
-    formik.values.email ="";
+  const reset = () => {
+    formik.values.fullname = "";
+    formik.values.address = "";
+    formik.values.phone = "";
+    formik.values.competence = [];
+    formik.values.email = "";
     formik.values.numberOfWorkdays = 0;
-    formik.values.salary =0;
-    formik.values.schedule =[];
-    console.log(formik.values.competence)
-  }
+    formik.values.salary = 0;
+    formik.values.schedule = [];
+    setDisabled2(false);
+    setValue2([]);
+    setDisabled3(false);
+    setValue3([]);
+    setDisabled4(false);
+    setValue4([]);
+    setDisabled5(false);
+    setValue5([]);
+    setDisabled6(false);
+    setValue6([])
+    setValue7([]);
+    setDisabled7(false)
+    setDisabledcn(false);
+    setValuecn([]);
+    
+  };
+  const a="Bắt Đầu";
+  const b="Kết Thúc"
 
   const formik = useFormik({
     initialValues: {
@@ -88,10 +144,12 @@ function ModaladdStaff(props) {
       schedule: [],
     },
     validationSchema: Yup.object({
-      fullname: Yup.string().trim()
+      fullname: Yup.string()
+        .trim()
         .required("Không được trống")
         .min(2, "Phải dài hơn 2 kí tự"),
-      phone: Yup.string().trim()
+      phone: Yup.string()
+        .trim()
         .required("Không được trống")
         .typeError("Không phải là dạng số")
         .matches(
@@ -124,11 +182,10 @@ function ModaladdStaff(props) {
       competence: Yup.array()
         .required("Không được trống")
         .min(1, "Không được trống"),
-      schedule: Yup.array()
-        .required("Không được trống")
-        .min(1, "Không được trống"),
+      
       address: Yup.string().trim(),
-      email: Yup.string().trim()
+      email: Yup.string()
+        .trim()
         .required("Không được trống")
         .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Email sai định dạng")
         .test(
@@ -150,6 +207,8 @@ function ModaladdStaff(props) {
             });
           }
         ),
+        schedule: Yup.array()
+        .min(1, "Không được trống"),
       numberOfWorkdays: Yup.number()
         .typeError("Không phải là dạng số")
         .required("Không được để trống")
@@ -162,7 +221,6 @@ function ModaladdStaff(props) {
         .positive("Phải là số dương")
         .integer("Phải là số nguyên dương"),
     }),
- 
 
     onSubmit: async (values) => {
       const {
@@ -175,8 +233,6 @@ function ModaladdStaff(props) {
         salary,
         schedule,
       } = values;
-      console.log(values);
-      console.log(formik.values.competence )
       try {
         const res = await axios({
           url: "/api/profile",
@@ -196,9 +252,10 @@ function ModaladdStaff(props) {
         if (res.success) {
           setTimeout(() => {
             reset();
-           
-            // setLoading(false);
-            // setOpen(false);
+            loadData();
+            disPlay();
+            setLoading(false);
+            setOpen(false);
           }, 3000);
         }
       } catch (err) {
@@ -216,8 +273,18 @@ function ModaladdStaff(props) {
     return -1;
   }
 
+  const removeSchedule = (weekday) => {
+    const index = findIndexByProperty(
+      formik.values.schedule,
+      "weekday",
+      weekday
+    );
+    if (index > -1) {
+      formik.values.schedule.splice(index, 1);
+    }
+  }
+
   const pushSchedule = (e, weekday) => {
-    console.log(e)
     let scheduleTemp = {
       start_time_hours: e[0]._d.getHours(),
       start_time_minutes: e[0]._d.getMinutes(),
@@ -230,18 +297,47 @@ function ModaladdStaff(props) {
       "weekday",
       weekday
     );
-    if(index>-1){
+    if (index > -1) {
       formik.values.schedule[index] = scheduleTemp;
-    }else{
+    } else {
       formik.values.schedule.push(scheduleTemp);
     }
-    console.log(formik.values.schedule)
+
+    let startTime = moment();
+    startTime.hours(e[0]._d.getHours());
+    startTime.minutes(e[0]._d.getMinutes());
+    let endTime = moment();
+    endTime.hours(e[1]._d.getHours());
+    endTime.minutes(e[1]._d.getMinutes());
+    switch (weekday) {
+      case "monday":
+        setValue2([startTime,endTime]);
+        break;
+      case "tuesday":
+        setValue3([startTime,endTime]);
+        break;
+      case "wednesday":
+        setValue4([startTime,endTime]);
+        break;
+      case "thursday":
+        setValue5([startTime,endTime]);
+        break;
+      case "friday":
+        setValue6([startTime,endTime]);
+        break;
+      case "saturday":
+        setValue7([startTime,endTime]);
+        break;
+      case "sunday":
+        setValuecn([startTime,endTime]);
+        break;
+      default:
+    }
   };
 
   const handleOk = () => {
     formik.handleSubmit();
-    if(Object.keys(formik.errors).length !== 0) return;
-    console.log(Object.keys(formik.errors).length)
+    if (Object.keys(formik.errors).length !== 1) return;
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -255,14 +351,21 @@ function ModaladdStaff(props) {
   const handleCancel = () => {
     setOpen(false);
   };
-  
 
   return (
     <>
       <Button
         variant="success"
         onClick={showModal}
-        style={{ marginRight: "20px", backgroundColor: "#139C49" ,color:"white"}}
+        style={{
+          marginRight: "20px",
+          backgroundColor: "#14A44D",
+          color: "white",
+          borderRadius:"5px",
+          width:"180px",
+          height:"38px"
+          
+        }}
       >
         <FaPlusCircle></FaPlusCircle> Thêm nhân viên
       </Button>
@@ -270,11 +373,15 @@ function ModaladdStaff(props) {
       <Modal
         title="Thêm nhân viên"
         open={open}
-        // onOk={handleOk}
+        onOk={handleOk}
         onCancel={handleCancel}
         width={1000}
         footer={[
-          <Button key="back" onClick={handleCancel} style={{ backgroundColor: "#808080",borderRadius:"5px"}}>
+          <Button
+            key="back"
+            onClick={handleCancel}
+            style={{ backgroundColor: "#808080", borderRadius: "5px",width:"80px",color:"white" }}
+          >
             Hủy
           </Button>,
           <Button
@@ -283,17 +390,16 @@ function ModaladdStaff(props) {
             loading={loading}
             onClick={handleOk}
             htmlType="submit"
-            style={{borderRadius:"5px"}}
+            style={{ borderRadius: "5px",width:"120px" }}
           >
             Lưu lại
           </Button>,
         ]}
         // footer={null}
       >
-        <Form form = {form} >
+        <Form form={form}>
           <div className="container">
             <div className="row">
-              
               <div
                 className="col-6 form-group "
                 style={{ marginBottom: "20px" }}
@@ -378,7 +484,7 @@ function ModaladdStaff(props) {
               <div className="col-6 form-group" style={{ marginTop: "20px" }}>
                 <label>Số ngày công</label>
                 <Input
-                  type="text"
+                  type="number"
                   id="numberOfWorkdays"
                   name="numberOfWorkdays"
                   value={formik.values.numberOfWorkdays}
@@ -387,7 +493,6 @@ function ModaladdStaff(props) {
 
                 {formik.errors.numberOfWorkdays && (
                   <div className="errorMsg">
-                
                     {formik.errors.numberOfWorkdays}
                   </div>
                 )}
@@ -395,7 +500,7 @@ function ModaladdStaff(props) {
               <div className="col-6 form-group" style={{ marginTop: "20px" }}>
                 <label>Lương</label>
                 <Input
-                  type="text"
+                  type="number"
                   id="salary"
                   name="salary"
                   value={formik.values.salary}
@@ -409,23 +514,24 @@ function ModaladdStaff(props) {
             </div>
           </div>
           <div className="mt-4 container">
-            
-             {/* {formik.errors.schedule && (
+            {/* {formik.errors.schedule && (
                   <div className="errorMsg"> {formik.errors.schedule} </div>
                 )} */}
             <div className="row" style={{ display: "flex", marginTop: "10px" }}>
-            <div className="row" style={{marginBottom:"15px"}}>
+              <div className="row" style={{ marginBottom: "15px" }}>
                 <div className="col-md-2" style={{ textAlign: "center" }}>
-                <span className="font-medium text-lg" style={{ fontSize: "15px" }}>
-              Lịch làm việc:
-            </span>
+                  <span
+                    className="font-medium text-lg"
+                    style={{ fontSize: "15px" }}
+                  >
+                    Lịch làm việc:
+                  </span>
                 </div>
-                <div className="col-md-2" style={{ textAlign: "end" }}>
-                </div>
+                <div className="col-md-2" style={{ textAlign: "end" }}></div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
-                {formik.errors.schedule && (
-                  <div className="errorMsg"> {formik.errors.schedule} </div>
-                )}
+                  {formik.errors.schedule && (
+                    <div className="errorMsg"> {formik.errors.schedule} </div>
+                  )}
                 </div>
               </div>
               <div className="row">
@@ -433,7 +539,7 @@ function ModaladdStaff(props) {
                   <p className="font-weight-bold">Thứ 2:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet2}></Checkbox>
+                  <Checkbox onClick={toggleDisablet2} checked={disabled2}></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -442,7 +548,7 @@ function ModaladdStaff(props) {
                       TimePicker
                       id="schedule"
                       name="schedule"
-                      defaultValue={dayjs("12:08", format)}
+                      value={value2.length < 1 ? [null, null]: value2}
                       disabled={!disabled2}
                       status="success"
                       format={format}
@@ -460,7 +566,7 @@ function ModaladdStaff(props) {
                   <p className="font-weight-bold">Thứ 3:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet3}></Checkbox>
+                  <Checkbox onClick={toggleDisablet3} checked={disabled3}></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -471,7 +577,7 @@ function ModaladdStaff(props) {
                       id="schedule"
                       name="schedule"
                       TimePicker
-                      defaultValue={dayjs("12:08", format)}
+                      value={value3.length < 1 ? [null, null]: value3}
                       format={format}
                       onChange={(e) => {
                         pushSchedule(e, "tuesday");
@@ -487,7 +593,7 @@ function ModaladdStaff(props) {
                   <p className="font-weight-bold">Thứ 4:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet4}></Checkbox>
+                  <Checkbox onClick={toggleDisablet4} checked={disabled4}></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -498,10 +604,10 @@ function ModaladdStaff(props) {
                       id="schedule"
                       name="schedule"
                       TimePicker
-                      defaultValue={dayjs("12:08", format)}
+                      value={value4.length < 1 ? [null, null]: value4}
                       format={format}
                       onChange={(e) => {
-                        pushSchedule(e, "tednesday");
+                        pushSchedule(e, "wednesday");
                       }}
                     />
                   </Space>
@@ -514,7 +620,7 @@ function ModaladdStaff(props) {
                   <p className="font-weight-bold">Thứ 5:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet5}></Checkbox>
+                  <Checkbox onClick={toggleDisablet5} checked={disabled5}></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -525,7 +631,7 @@ function ModaladdStaff(props) {
                       id="schedule"
                       name="schedule"
                       TimePicker
-                      defaultValue={dayjs("12:08", format)}
+                      value={value5.length < 1 ? [null, null]: value5}
                       format={format}
                       onChange={(e) => {
                         pushSchedule(e, "thursday");
@@ -541,7 +647,7 @@ function ModaladdStaff(props) {
                   <p className="font-weight-bold">Thứ 6:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet6}></Checkbox>
+                  <Checkbox onClick={toggleDisablet6} checked={disabled6}></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -552,8 +658,7 @@ function ModaladdStaff(props) {
                       id="schedule"
                       name="schedule"
                       TimePicker
-                      // value={formik.values.schedule}
-                      defaultValue={dayjs("12:08", format)}
+                      value={value6.length < 1 ? [null, null]: value6}
                       format={format}
                       onChange={(e) => {
                         pushSchedule(e, "friday");
@@ -569,7 +674,7 @@ function ModaladdStaff(props) {
                   <p className="font-weight-bold">Thứ 7:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet7}></Checkbox>
+                  <Checkbox onClick={toggleDisablet7} checked={disabled7}></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -580,7 +685,7 @@ function ModaladdStaff(props) {
                       id="schedule"
                       name="schedule"
                       TimePicker
-                      defaultValue={dayjs("12:08", format)}
+                      value={value7.length < 1 ? [null, null]: value7}
                       format={format}
                       onChange={(e) => {
                         pushSchedule(e, "saturday");
@@ -596,7 +701,7 @@ function ModaladdStaff(props) {
                   <p className="font-weight-bold">Chủ Nhật:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisabletcn}></Checkbox>
+                  <Checkbox onClick={toggleDisabletcn} checked={disabledcn}></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -607,7 +712,7 @@ function ModaladdStaff(props) {
                       id="schedule"
                       name="schedule"
                       TimePicker
-                      defaultValue={dayjs("12:08", format)}
+                      value={valuecn.length < 1 ? [null, null]: valuecn}
                       format={format}
                       onChange={(e) => {
                         pushSchedule(e, "sunday");
@@ -618,28 +723,7 @@ function ModaladdStaff(props) {
               </div>
             </div>
             <div className="footer" style={{ marginBottom: "20px" }}>
-              {/* <Button
-                htmlType="submit"
-                loading={loading}
-                type="primary"
-                style={{ float: "right" }}
-                key="submit"
-                onClick={handleOk}
-                form="myForm"
-              >
-                Xác nhận
-              </Button>
-              <Button
-                style={{
-                  float: "right",
-                  marginRight: "10px",
-                  backgroundColor: "gray",
-                }}
-                onClick={handleCancel}
-                key="back"
-              >
-                Hủy
-              </Button> */}
+             
             </div>
           </div>
         </Form>

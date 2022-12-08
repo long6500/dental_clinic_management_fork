@@ -263,7 +263,7 @@ function Staff() {
             </Nav>
             <Form className="d-flex">
               <ModaladdStaff loadData={loadData} />
-              <Button type="primary" style={{ marginRight: "20px" }}>
+              <Button type="primary" onClick={loadData} style={{ marginRight: "20px",borderRadius:"5px",width:"100px",height:"38px" }}>
                 <FaRedoAlt /> Tải lại
               </Button>
             </Form>

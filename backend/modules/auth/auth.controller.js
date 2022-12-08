@@ -92,7 +92,9 @@ const login = async (req, res) => {
     });
 
     if (!existUser) {
-        throw new HTTPError(400, 'Username or Password incorrect');
+        // throw new HTTPError(400, 'Username or Password incorrect');
+        res.send({success: 0,data: null})
+        return
     }
 
     const matchPassword = await bcrypt.compare(password, existUser.password);

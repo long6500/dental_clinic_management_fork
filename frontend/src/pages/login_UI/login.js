@@ -28,8 +28,8 @@ function Login() {
         .trim()
         .required("Mật khẩu không được trống")
         .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-          "Mật khẩu chứa 1 chữ hoa, 1 chữ số và dài hơn 8 kí tự"
+          /^(?=.*[a-z])(?=.*)(?=.*\d)[a-z\d]{8,}$/,
+          "Mật khẩu chứa ít nhất 1 chữ số và dài hơn 8 kí tự"
         ),
     }),
 

@@ -23,10 +23,9 @@ import GuestRoute from "./components/Route/GuestRoute";
 import axios from "../src/apis/api";
 import React from "react";
 import Staff from "./pages/Staff/Staff";
+import Decentralization from "./pages/decentralization/Decentralization";
 
-import Editstaff from "./pages/Staff/EditStaff";
 
-import ListMedicalPaper from "./pages/MedicalPaper/ListMedicalPaper";
 
 export const AuthContext = React.createContext();
 function App() {
@@ -77,7 +76,7 @@ function App() {
       <AuthContext.Provider value={{ user: userInfo.data, login, logout }}>
         {/* <LoadingComponent isLoading={isLoading} /> */}
         <Router>
-          {userInfo.data ? <Navbarr /> : <>asdf</>}
+          {userInfo.data ? <Navbarr /> : <></>}
 
           <Routes>
             <Route element={<GuestRoute user={userInfo.data} />}>
@@ -91,7 +90,7 @@ function App() {
                 path="/medicine"
                 element={<Medicine itemsPerPage={5} />}
             ></Route>
-
+             <Route path="/Decentralization" element={<Decentralization />} />
 
           <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
             <Route path="/ChangePassword" element={<Changepassword />} />

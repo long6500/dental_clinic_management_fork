@@ -24,7 +24,13 @@ const getRole = async (req, res) => {
     res.send({ success: 1, data: roles });
 }
 
+const getAllRole = async (req, res) => {
+    const roles = await RoleModel.find();
+    res.send({ success: 1, data: roles });
+}
+
 module.exports = {
     createRole,
     getRole,
+    getAllRole,
 }

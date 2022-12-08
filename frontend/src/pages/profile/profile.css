@@ -45,3 +45,11 @@ body {
 .col-md-5{
     width: 50%;
 }
+
+
+.ant-select-selection-overflow-item{
+    font-size: large;
+}
+.ant-select-selection-item{
+    font-weight: 500;
+}

@@ -15,7 +15,8 @@ function Forgotpassword() {
     validationSchema: Yup.object({
         email: Yup.string()
         .required("Không được trống")
-        .min(2, "Phải dài hơn 2 kí tự"),
+        .min(2, "Phải dài hơn 2 kí tự")
+        .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Email sai định dạng"),
      
     }),
 
@@ -66,14 +67,14 @@ function Forgotpassword() {
           <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
             <form onSubmit={formik.handleSubmit}>
               <div className="divider d-flex align-items-center my-4">
-                <p className="text-center fw-bold mx-3 mb-0">Quên Mật Khẩu</p>
+                <p className="text-center fw-bold mx-3 mb-0" style={{fontSize:"23px"}}>Quên Mật Khẩu</p>
               </div>
               {/* Email input */}
               <div className="form-outline mb-4">
-              <label>Tên đăng nhập</label><br></br>
+              <label>Email</label><br></br>
                 <input
                   className="input_forgotpass "
-                  placeholder="Nhập tên đăng nhập"
+                  placeholder="Nhập email của bạn"
                   id="email"
                   name="email"
                   value={formik.values.email}

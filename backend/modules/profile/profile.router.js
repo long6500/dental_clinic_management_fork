@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const profileController = require('./profile.controller');
 const validateInput = require('../../middlewares/validateInput');
-const profileSchema = require('./profile.validation');
+const {ProfileSchema,ProfileInforSchema} = require('./profile.validation');
 const needAuthenticated = require('../../middlewares/needAuthenticated');
 
+router.get("/curProfile", needAuthenticated, profileController.curProfile);
 
 router.get(
   '/',
@@ -28,15 +29,23 @@ router.post(
   '/', 
   needAuthenticated, 
   //isRole, 
-  validateInput(profileSchema, 'body'),
+  validateInput(ProfileSchema, 'body'),
   profileController.createProfile
 );
 
 router.put(
-  '/:staffId', 
-  //needAuthenticated, 
+  '/editProfile/:staffId', 
+  needAuthenticated, 
   //isRole, 
-  validateInput(profileSchema, 'body'),
+  validateInput(ProfileInforSchema, 'body'),
+  profileController.editProfileByUser
+);
+
+router.put(
+  '/:staffId', 
+  needAuthenticated, 
+  //isRole, 
+  validateInput(ProfileSchema, 'body'),
   profileController.updateProfile
 );
 
