@@ -13,7 +13,6 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -28,7 +27,7 @@ function Login() {
         .trim()
         .required("Mật khẩu không được trống")
         .matches(
-          /^(?=.*[a-z])(?=.*[])(?=.*\d)[a-z\d]{8,}$/,
+          /^(?=.*[a-z])(?=.*\d)[a-z\d]{8,}$/,
           "Mật khẩu chứa 1 chữ hoa, 1 chữ số và dài hơn 8 kí tự"
         ),
     }),
@@ -51,9 +50,7 @@ function Login() {
           });
         }
       } catch (err) {
-        render(
-        <SwalCard text='Tên đăng nhập hoặc mật khẩu sai'></SwalCard>
-        )
+        render(<SwalCard text="Tên đăng nhập hoặc mật khẩu sai"></SwalCard>);
       }
     },
   });

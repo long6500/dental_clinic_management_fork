@@ -17,6 +17,7 @@ import {
 import { Typeahead } from "react-bootstrap-typeahead";
 import { useFetcher } from "react-router-dom";
 import axios from "../../apis/api";
+import Swal from "sweetalert2";
 
 const MedListPaper = ({
   closeMedPaper,
@@ -116,7 +117,9 @@ const MedListPaper = ({
               <Col sm={3}>
                 <Button
                   variant="success"
-                  onClick={handleShow}
+                  onClick={() => {
+                    console.log("lay thuoc tu thu thuat");
+                  }}
                   style={{
                     marginRight: "20px",
                     width: "80%",
@@ -124,7 +127,7 @@ const MedListPaper = ({
                   }}
                   disabled={singleSelectionsDoc.length < 1 ? true : false}
                 >
-                  Thuốc thủ tục <FaPlusCircle></FaPlusCircle>
+                  Thuốc thủ thuật<FaPlusCircle></FaPlusCircle>
                 </Button>
               </Col>
               <Col sm={3}>
@@ -201,7 +204,21 @@ const MedListPaper = ({
                           <Form.Control type="text" />
                         </td>
                         {/* Btn Delete */}
-                        <td onClick={() => deleteMedListA(rowIndex)}>
+                        <td
+                          onClick={() => {
+                            Swal.fire({
+                              title: "Bạn có chắc chắn muốn xoá",
+                              showDenyButton: true,
+                              confirmButtonText: "Xoá",
+                              denyButtonText: `Huỷ`,
+                            }).then((result) => {
+                              if (result.isConfirmed) {
+                                deleteMedListA(rowIndex);
+                              } else if (result.isDenied) {
+                              }
+                            });
+                          }}
+                        >
                           <FaTrashAlt
                             size={20}
                             cursor="pointer"

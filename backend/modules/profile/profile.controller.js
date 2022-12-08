@@ -36,6 +36,23 @@ const createAdmin = async (req, res) => {
   }
 };
 
+const getDoctor = async (req, res) => {
+  const role = await RoleModel.findOne({ name: "Bác sĩ" });
+  const userId = await UserRoleModel.find({ roleId: role._id });
+  const userIdArray = userId.map((u) => u.userId);
+  const doctor = await ProfileModel.find({ userId: { $in: userIdArray } });
+  res.send({ success: 1, data: doctor });
+};
+
+const getTechStaff = async (req, res) => {
+  const role = await RoleModel.findOne({ name: "Kỹ thuật viên" });
+
+  const userId = await UserRoleModel.find({ roleId: role._id });
+  const userIdArray = userId.map((u) => u.userId);
+  const techStaff = await ProfileModel.find({ userId: { $in: userIdArray } });
+  res.send({ success: 1, data: techStaff });
+};
+
 const curProfile = async (req, res) => {
   const senderUser = req.user;
   const profile = await ProfileModel.findOne({ userId: senderUser });
@@ -45,13 +62,15 @@ const curProfile = async (req, res) => {
   }
 
   const roleId = await UserRoleModel.find({ userId: profile.userId });
-  const role = await Promise.all(roleId.map(async (id) => await RoleModel.findById(id.roleId)));
-  const roleArray = role.map((r) => r._id)
+  const role = await Promise.all(
+    roleId.map(async (id) => await RoleModel.findById(id.roleId))
+  );
+  const roleArray = role.map((r) => r._id);
 
   const scheduleId = await UserScheduleModel.find({ userId: profile._id });
-  const schedule = await Promise.all(scheduleId.map(
-    async (id) => await ScheduleModel.findById(id.scheduleId)
-  ));
+  const schedule = await Promise.all(
+    scheduleId.map(async (id) => await ScheduleModel.findById(id.scheduleId))
+  );
   const scheduleArray = JSON.parse(JSON.stringify(schedule));
   const fullProfile = { ...profile._doc, roleArray, scheduleArray };
   res.send({ success: 1, data: fullProfile });
@@ -306,13 +325,15 @@ const getProfileById = async (req, res) => {
   }
 
   const roleId = await UserRoleModel.find({ userId: profile.userId });
-  const role = await Promise.all(roleId.map(async (id) => await RoleModel.findById(id.roleId)));
-  const roleArray = role.map((r) => r._id)
+  const role = await Promise.all(
+    roleId.map(async (id) => await RoleModel.findById(id.roleId))
+  );
+  const roleArray = role.map((r) => r._id);
 
   const scheduleId = await UserScheduleModel.find({ userId: profileId });
-  const schedule = await Promise.all(scheduleId.map(
-    async (id) => await ScheduleModel.findById(id.scheduleId)
-  ));
+  const schedule = await Promise.all(
+    scheduleId.map(async (id) => await ScheduleModel.findById(id.scheduleId))
+  );
   const scheduleArray = JSON.parse(JSON.stringify(schedule));
   const fullProfile = { ...profile._doc, roleArray, scheduleArray };
   res.send({ success: 1, data: fullProfile });
@@ -352,7 +373,9 @@ const getNext = async () => {
   const count = await ProfileModel.find().count();
   if (count <= 1) return "NV_0000000001";
 
-  const lastService = await ProfileModel.find({_id: {$nin: ["admin"]}}).sort({ _id: -1 }).limit(1);
+  const lastService = await ProfileModel.find({ _id: { $nin: ["admin"] } })
+    .sort({ _id: -1 })
+    .limit(1);
   const nextId = lastService[0]._id;
   const idNumber = parseInt(nextId.split("_")[1]) + 1 + "";
   var temp = "";
@@ -404,4 +427,6 @@ module.exports = {
   checkEmail,
   checkPhone,
   curProfile,
+  getDoctor,
+  getTechStaff,
 };
