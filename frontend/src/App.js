@@ -76,7 +76,7 @@ function App() {
       <AuthContext.Provider value={{ user: userInfo.data, login, logout }}>
         {/* <LoadingComponent isLoading={isLoading} /> */}
         <Router>
-          {userInfo.data ? <Navbarr /> : <></>}
+          {userInfo.data ? <Navbarr user={userInfo.data}/> : <></>}
 
           <Routes>
             <Route element={<GuestRoute user={userInfo.data} />}>

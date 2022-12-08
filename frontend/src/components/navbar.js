@@ -4,12 +4,14 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import "bootstrap/dist/css/bootstrap.css";
 import Button from "react-bootstrap/Button";
-import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import axios from "../../src/apis/api";
+import React, { useState, useEffect, Component } from "react";
+
 // import ModalD from "../Modal/Modal";
 
-const Navbarr = () => {
+const Navbarr = ({ user }) => {
   const logout = () => {
     localStorage.removeItem("token");
   };
@@ -68,12 +70,12 @@ const Navbarr = () => {
           {/* </Navbar.Form> */}
 
           <Nav>
-            <NavDropdown title="Tên user" id="basic-nav-dropdown">
+            <NavDropdown title={user.username} id="basic-nav-dropdown">
               <NavDropdown.Item href="/pathological1">Ghi chú</NavDropdown.Item>
               <NavDropdown.Item href="/Profile">
                 Thông tin chung
               </NavDropdown.Item>
-              <NavDropdown.Item href="/pathological1">
+              <NavDropdown.Item href="/Changepassword">
                 Đổi mật khẩu
               </NavDropdown.Item>
               <NavDropdown.Item href="/pathological1">

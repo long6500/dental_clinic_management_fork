@@ -1,18 +1,18 @@
 import "./changpassword.css";
 import React from "react";
 // import axios from "../apis/api";
-
+import Swal from "sweetalert2";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
+import axios from "../../apis/api";
 function Changepassword() {
   
   const formik = useFormik({
     
     initialValues: {
       password: "",
-      newpassword: "",
-      confirmpassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
     
     validationSchema: Yup.object({
@@ -23,26 +23,58 @@ function Changepassword() {
           "Mật khẩu không đúng định dạng"
         ),
 
-      newpassword: Yup.string()
+      newPassword: Yup.string()
+        .required("Không được trống")
+        .matches(
+          /^(?=.*[a-z])(?=.*)(?=.*\d)[a-z\d]{8,}$/,
+          "Mật khẩu không đúng định dạng"
+        ),
+        
+      confirmPassword: Yup.string()
         .required("Không được trống")
         .matches(
           /^(?=.*[a-z])(?=.*)(?=.*\d)[a-z\d]{8,}$/,
           "Mật khẩu không đúng định dạng"
         )
-        .oneOf([Yup.ref("password")], "Mật khẩu mới không được trùng với mật khẩu cũ"),
-      confirmpassword: Yup.string()
-        .required("Không được trống")
-        .matches(
-          /^(?=.*[a-z])(?=.*)(?=.*\d)[a-z\d]{8,}$/,
-          "Mật khẩu không đúng định dạng"
-        )
-        .oneOf([Yup.ref("newpassword")], "Không đúng với mật khẩu mới")
+        .oneOf([Yup.ref("newPassword")], "Không đúng với mật khẩu mới")
     }),
 
     onSubmit: async (values) => {
-      console.log(values);
+      const { password, newPassword, confirmPassword } = values;
+      try {
+        const res = await axios({
+          url: "api/auth/changePassword",
+          method: "Post",
+          data: {
+            password,
+            newPassword,
+            confirmPassword
+          },
+        });
+
+        if (res.success) {
+          disPlay();
+          setTimeout(() => {
+            localStorage.removeItem("token")
+            window.location.href = "/login"
+          }, 3000);
+        }
+      } catch (err) {
+        Swal.fire(
+          "Thất Bại",
+          `Đổi mật khẩu thất bại`,
+          "error"
+        );
+      }
     },
   });
+  const disPlay = () => {
+    Swal.fire(
+      "Thành Công",
+      `Đổi mật khẩu thành công`,
+      "success"
+    );
+  }
 
   return (
     <section className="vh-100">
@@ -70,7 +102,7 @@ function Changepassword() {
                   name="password"
                   value={formik.values.password}
                   onChange={formik.handleChange}
-                  type="password"
+                  type="text"
                 />
                 {formik.errors.password && (
                   <p className="errorMsg"> {formik.errors.password} </p>
@@ -82,16 +114,16 @@ function Changepassword() {
                   Mật khẩu mới
                 </label>
                 <input
-                  type="password"
+                  type="text"
                   className="input_forgotpass "
                   placeholder="Nhập mật khẩu mới"
-                  id="newpassword"
-                  name="newpassword"
-                  value={formik.values.newpassword}
+                  id="newPassword"
+                  name="newPassword"
+                  value={formik.values.newPassword}
                   onChange={formik.handleChange}
                 />
-                {formik.errors.newpassword && (
-                  <p className="errorMsg"> {formik.errors.newpassword} </p>
+                {formik.errors.newPassword && (
+                  <p className="errorMsg"> {formik.errors.newPassword} </p>
                 )}
               </div>
               <div className="form-outline mb-3">
@@ -99,16 +131,16 @@ function Changepassword() {
                   Nhập lại mật khẩu mới
                 </label>
                 <input
-                  type="password"
+                  type="confirmPassword"
                   className="input_forgotpass "
                   placeholder="Xác nhận mật khẩu mới"
-                  id="confirmpassword"
-                  name="confirmpassword"
-                  value={formik.values.confirmpassword}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formik.values.confirmPassword}
                   onChange={formik.handleChange}
                 />
-                {formik.errors.password && (
-                  <p className="errorMsg"> {formik.errors.confirmpassword} </p>
+                {formik.errors.confirmPassword && (
+                  <p className="errorMsg"> {formik.errors.confirmPassword} </p>
                 )}
               </div>
 
