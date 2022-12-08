@@ -73,29 +73,6 @@ const ServiceModal = ({ loadData }) => {
       // ),
     }),
     onSubmit: async (values) => {
-      // let tempError = { medicineNameError: [] };
-      // singleSelections.forEach((item, index) => {
-      //   if (!item) {
-      //     tempError.medicineNameError[index] = "Bắt buộc";
-      //   }
-      // });
-      // if (tempError.medicineNameError.length > 0) {
-      //   setErrorList(tempError);
-      //   return;
-      // }
-      // if (singleSelections.length === 0) {
-      //   setErrorList({ ...tempError, medicineNameError: ["Bắt buộc"] });
-      //   return;
-      // }
-
-      // const form = values.currentTarget;
-      // if (form.checkValidity() === false) {
-      //   values.preventDefault();
-      // }
-
-      // setValidated(true);
-      console.log("1");
-
       let formData = new FormData();
       formData.append("name", values.name);
       formData.append("imageUrl", values.imageUrl[0]);
@@ -120,27 +97,12 @@ const ServiceModal = ({ loadData }) => {
         formData.append("prescription[]", JSON.stringify(tempOb));
       }
 
-      // for (var pair of formData.values()) {
-      //   console.log(typeof pair);
-      // }
-
-      // values.name = "";
-      // values.imageUrl = null;
-      // values.time = 0;
-      // values.price = 0;
-      // values.note = "";
       setConsumableUiList([]);
       setPrescriptionList([]);
-      // form.resetFields();
+
       handleClose();
       await serviceProcessor.addService(formData);
-
       loadData();
-
-      // for (const value of formData.values()) {
-      //   console.log(value);
-      // }
-      // await loadData();
     },
   });
 
@@ -637,13 +599,6 @@ const ServiceModal = ({ loadData }) => {
                                   prescriptionList[rowIndex][4] =
                                     e.target.value;
                                 }}
-                                // {...register(`Prescript${rowIndex}`, {
-                                //   required: "Bắt buộc",
-                                //   min: {
-                                //     value: 1,
-                                //     message: "Lớn hơn 1",
-                                //   },
-                                // })}
                               />
                             </FormAntd.Item>
                           </td>
