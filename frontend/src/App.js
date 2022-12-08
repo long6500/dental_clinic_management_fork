@@ -24,10 +24,9 @@ import Clinic from "./pages/Clinic/Clinic";
 import axios from "../src/apis/api";
 import React from "react";
 import Staff from "./pages/Staff/Staff";
+import Decentralization from "./pages/decentralization/Decentralization";
 
-import Editstaff from "./pages/Staff/EditStaff";
 
-import ListMedicalPaper from "./pages/MedicalPaper/ListMedicalPaper";
 
 export const AuthContext = React.createContext();
 function App() {
@@ -78,7 +77,7 @@ function App() {
       <AuthContext.Provider value={{ user: userInfo.data, login, logout }}>
         {/* <LoadingComponent isLoading={isLoading} /> */}
         <Router>
-          {userInfo.data ? <Navbarr /> : <></>}
+          {userInfo.data ? <Navbarr user={userInfo.data}/> : <></>}
 
           <Routes>
             <Route element={<GuestRoute user={userInfo.data} />}>
@@ -87,21 +86,23 @@ function App() {
             </Route>
 
             <Route element={<PrivateRoute user={userInfo.data} />}>
-              <Route path="/medicine" element={<Medicine />}></Route>
-              <Route path="/ChangePassword" element={<Changepassword />} />
-              <Route path="/Profile" element={<Profile />} />
-              <Route path="/Clinic" element={<Clinic />} />
-              <Route path="/Editstaff" element={<Editstaff />} />
-              <Route path="/service" element={<Service />}></Route>
-              <Route path="/Customer" element={<Customer />}></Route>
-              <Route path="/Staff" element={<Staff />}></Route>
+              {/* <Route path="/" element={<Navbarr />} /> */}
               <Route
-                path="/MedicalPaper"
-                element={<ListMedicalPaper />}
-              ></Route>
-              <Route path="/service" element={<Service />}></Route>
-            </Route>
-          </Routes>
+                path="/medicine"
+                element={<Medicine itemsPerPage={5} />}
+            ></Route>
+             <Route path="/Decentralization" element={<Decentralization />} />
+
+          <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
+            <Route path="/ChangePassword" element={<Changepassword />} />
+            <Route path="/Profile" element={<Profile />} />
+            <Route path="/medicine" element={<Medicine />}></Route>
+            {/* <Route path="/service" element={<Service />}></Route> */}
+            <Route path="/Customer" element={<Customer />}></Route>
+            <Route path="/Staff" element={<Staff />}></Route>
+          </Route>
+        </Routes>
+
         </Router>
       </AuthContext.Provider>
     </>

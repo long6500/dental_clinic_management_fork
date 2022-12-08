@@ -36,6 +36,29 @@ const createAdmin = async (req, res) => {
   }
 };
 
+const curProfile = async (req, res) => {
+  const senderUser = req.user;
+  const profile = await ProfileModel.findOne({ userId: senderUser._id });
+
+  if (!profile) {
+    throw new HTTPError(400, "Not found profile");
+  }
+
+  const roleId = await UserRoleModel.find({ userId: profile.userId });
+  const role = await Promise.all(roleId.map(async (id) => await RoleModel.findById(id.roleId)));
+  const roleArray = role.map((r) => r._id)
+
+  const scheduleId = await UserScheduleModel.find({ userId: profile._id });
+  const schedule = await Promise.all(scheduleId.map(
+    async (id) => await ScheduleModel.findById(id.scheduleId)
+  ));
+  const scheduleArray = JSON.parse(JSON.stringify(schedule));
+  const fullProfile = { ...profile._doc, roleArray, scheduleArray, username: senderUser.username };
+  res.send({ success: 1, data: fullProfile });
+};
+
+};
+
 const getDoctor = async (req, res) => {
   const role = await RoleModel.findOne({ name: "Bác sĩ" });
   const userId = await UserRoleModel.find({ roleId: role._id });
@@ -51,29 +74,6 @@ const getTechStaff = async (req, res) => {
   const userIdArray = userId.map((u) => u.userId);
   const techStaff = await ProfileModel.find({ userId: { $in: userIdArray } });
   res.send({ success: 1, data: techStaff });
-};
-
-const curProfile = async (req, res) => {
-  const senderUser = req.user;
-  const profile = await ProfileModel.findOne({ userId: senderUser });
-
-  if (!profile) {
-    throw new HTTPError(400, "Not found profile");
-  }
-
-  const roleId = await UserRoleModel.find({ userId: profile.userId });
-  const role = await Promise.all(
-    roleId.map(async (id) => await RoleModel.findById(id.roleId))
-  );
-  const roleArray = role.map((r) => r._id);
-
-  const scheduleId = await UserScheduleModel.find({ userId: profile._id });
-  const schedule = await Promise.all(
-    scheduleId.map(async (id) => await ScheduleModel.findById(id.scheduleId))
-  );
-  const scheduleArray = JSON.parse(JSON.stringify(schedule));
-  const fullProfile = { ...profile._doc, roleArray, scheduleArray };
-  res.send({ success: 1, data: fullProfile });
 };
 
 const checkPhone = async (req, res) => {
@@ -315,6 +315,45 @@ const updateProfile = async (req, res) => {
   res.send({ success: 1, data: fullProfile });
 };
 
+const editProfileByUser = async (req, res) => {
+  const senderUser = req.user;
+  const { staffId } = req.params;
+  const {
+    fullname,
+    phone,
+    email,
+    address,
+  } = req.body;
+  const existUser = await ProfileModel.findOne({ _id: staffId });
+  if (!existUser) {
+    throw new HTTPError(400, "Not found staff");
+  }
+
+  const updatedProfile = await ProfileModel.findByIdAndUpdate(
+    staffId,
+    {
+      fullname,
+      phone,
+      email,
+      address,
+      modifyBy: senderUser._id,
+    },
+    { new: true }
+  );
+
+  const roleId = await UserRoleModel.find({ userId: updatedProfile.userId });
+  const role = await Promise.all(roleId.map(async (id) => await RoleModel.findById(id.roleId)));
+  const roleArray = role.map((r) => r._id)
+
+  const scheduleId = await UserScheduleModel.find({ userId: updatedProfile._id });
+  const schedule = await Promise.all(scheduleId.map(
+    async (id) => await ScheduleModel.findById(id.scheduleId)
+  ));
+  const scheduleArray = JSON.parse(JSON.stringify(schedule));
+  const fullProfile = { ...updatedProfile._doc, roleArray, scheduleArray, username: senderUser.username };
+  res.send({ success: 1, data: fullProfile });
+}
+
 const getProfileById = async (req, res) => {
   const { profileId } = req.params;
 
@@ -325,15 +364,14 @@ const getProfileById = async (req, res) => {
   }
 
   const roleId = await UserRoleModel.find({ userId: profile.userId });
-  const role = await Promise.all(
-    roleId.map(async (id) => await RoleModel.findById(id.roleId))
-  );
-  const roleArray = role.map((r) => r._id);
+  const role = await Promise.all(roleId.map(async (id) => await RoleModel.findById(id.roleId)));
+  const roleArray = role.map((r) => r._id)
 
   const scheduleId = await UserScheduleModel.find({ userId: profileId });
-  const schedule = await Promise.all(
-    scheduleId.map(async (id) => await ScheduleModel.findById(id.scheduleId))
-  );
+  const schedule = await Promise.all(scheduleId.map(
+    async (id) => await ScheduleModel.findById(id.scheduleId)
+  ));
+
   const scheduleArray = JSON.parse(JSON.stringify(schedule));
   const fullProfile = { ...profile._doc, roleArray, scheduleArray };
   res.send({ success: 1, data: fullProfile });
@@ -376,6 +414,7 @@ const getNext = async () => {
   const lastService = await ProfileModel.find({ _id: { $nin: ["admin"] } })
     .sort({ _id: -1 })
     .limit(1);
+    
   const nextId = lastService[0]._id;
   const idNumber = parseInt(nextId.split("_")[1]) + 1 + "";
   var temp = "";
@@ -427,6 +466,7 @@ module.exports = {
   checkEmail,
   checkPhone,
   curProfile,
+  editProfileByUser
   getDoctor,
   getTechStaff,
 };

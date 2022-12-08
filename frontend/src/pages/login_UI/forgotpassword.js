@@ -3,52 +3,53 @@ import React from "react";
 import axios from "../../apis/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Swal from "sweetalert2";
 
 function Forgotpassword() {
-  
-  const [error, setError] = React.useState("");
 
-  const formik =  useFormik({
+  const disPlay = () => {
+    Swal.fire(
+      "Thành Công",
+      `Đổi mật khẩu thành công`,
+      "success"
+    );
+  }
+
+  const formik = useFormik({
     initialValues: {
       email: "",
     },
     validationSchema: Yup.object({
-        email: Yup.string()
+      email: Yup.string()
         .required("Không được trống")
-        .min(2, "Phải dài hơn 2 kí tự"),
-     
+        .min(2, "Phải dài hơn 2 kí tự")
+        .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "Email sai định dạng"),
     }),
 
-   onSubmit: async  (values) => {
-    console.log(values)
-    const { username } = values;
-    try {
-      console.log({ username})
-      const res = await axios({
-        url: '',
-        method: 'Get',
-        data: {
-          username
-          
+    onSubmit: async (values) => {
+      const { email } = values;
+      try {
+        const res = await axios({
+          url: "api/auth/forgotPassword",
+          method: "Post",
+          data: {
+            email,
+          },
+        });
+
+        if (res.success) {
+          disPlay();
+          setTimeout(() => {
+            window.location.href = "/login"
+          }, 3000);
         }
-      });
-
-      if (res.data.success) {
-          const user = {
-              username: res.data.data.username,
-              _id: res.data.data._id,
-              
-          }
-          setError("Successfull")
-          localStorage.setItem('user', JSON.stringify(user));
-      } else {
-        console.log("sai mk")
+      } catch (err) {
+        Swal.fire(
+          "Thất Bại",
+          `Email không tồn tại`,
+          "error"
+        );
       }
-
-  } catch (err) {
-    console.log("sai")
-    setError(err);
-  }
     },
   });
 
@@ -66,33 +67,37 @@ function Forgotpassword() {
           <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
             <form onSubmit={formik.handleSubmit}>
               <div className="divider d-flex align-items-center my-4">
-                <p className="text-center fw-bold mx-3 mb-0">Quên Mật Khẩu</p>
+                <p
+                  className="text-center fw-bold mx-3 mb-0"
+                  style={{ fontSize: "23px" }}
+                >
+                  Quên Mật Khẩu
+                </p>
               </div>
               {/* Email input */}
               <div className="form-outline mb-4">
-              <label>Tên đăng nhập</label><br></br>
+                <label>Email</label>
+                <br></br>
                 <input
                   className="input_forgotpass "
-                  placeholder="Nhập tên đăng nhập"
+                  placeholder="Nhập email của bạn"
                   id="email"
                   name="email"
                   value={formik.values.email}
                   onChange={formik.handleChange}
                 />
-               {formik.errors.email && (
+                {formik.errors.email && (
                   <p className="errorMsg"> {formik.errors.email} </p>
                 )}
-               
               </div>
               {/* Password input */}
-             
-              
+
               <div className="text-center text-lg-start mt-4 pt-2">
                 <button
                   type="onSubmit"
                   className="btn btn-primary btn-lg"
                   href="/login"
-                  styleFor={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                  style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                 >
                   Xác Nhận
                 </button>

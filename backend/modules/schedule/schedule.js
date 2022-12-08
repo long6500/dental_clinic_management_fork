@@ -14,13 +14,13 @@ const ScheduleSchema = new mongoose.Schema({
         require: true,
     },
     end_time_hours: {
-        type: Date,
+        type: Number,
         min: 0,
         max: 23,
         require: true,
     },
     end_time_minutes: {
-        type: Date,
+        type: Number,
         min: 0,
         max: 59,
         require: true,
