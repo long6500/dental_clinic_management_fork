@@ -10,6 +10,8 @@ router.get("/", needAuthenticated, profileController.getProfile);
 
 router.get("/curProfile", needAuthenticated, profileController.curProfile);
 
+router.get("/getTechStaff", needAuthenticated, profileController.getTechStaff);
+
 router.get("/", needAuthenticated, profileController.getProfile);
 
 router.get(
@@ -39,6 +41,8 @@ router.put(
   validateInput(profileSchema, "body"),
   profileController.updateProfile
 );
+
+router.get("/getDoctor", needAuthenticated, profileController.getDoctor);
 
 router.get(
   "/:profileId",

@@ -39,6 +39,8 @@ const MedicalPaperModal = () => {
   const [nt, setNt] = useState(new Date());
 
   const [customerId, setCustomerId] = useState([]);
+  const [docList, setDocList] = useState([]);
+  const [techStaff, setTechStaff] = useState([]);
 
   // const [options, setOptions] = useState(["jack", "lucy", "david"]);
   const [singleSelections, setSingleSelections] = useState([]);
@@ -50,11 +52,49 @@ const MedicalPaperModal = () => {
   const [dentalMed, setDentalMed] = useState([]);
   const [opac, setOpac] = useState(1);
 
+  const loadTechStaffData = () => {
+    axios
+      .get("/api/profile/getTechStaff")
+      .then((response) => {
+        console.log(response.data);
+        setTechStaff([
+          // ...customerId,
+          ...response.data.map((item) => ({
+            name: item.fullname,
+            id: item._id,
+          })),
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const loadDocData = () => {
+    console.log(1);
+
+    axios
+      .get("/api/profile/getDoctor")
+      .then((response) => {
+        console.log(response.data);
+        setDocList([
+          // ...customerId,
+          ...response.data.map((item) => ({
+            name: item.fullname,
+            id: item._id,
+          })),
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const loadCustomerData = () => {
     axios
       .get("/api/customer/allCustomer")
       .then((response) => {
-        // console.log(response.data);
+        console.log(response.data);
         setCustomerId([
           // ...customerId,
           ...response.data.map((item) => ({
@@ -74,7 +114,8 @@ const MedicalPaperModal = () => {
       .get("/api/profile/curProfile")
       .then((response) => {
         // console.log(response.data);
-        setCurUser(response.data[0]);
+        // setCurUser(response.data[0]);
+        setCurUser(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -107,16 +148,22 @@ const MedicalPaperModal = () => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    // console.log(options);
     loadServiceTable();
     loadSystemMed();
     loadDentalMed();
     loadCustomerData();
     loadCurProfile();
-    // setTimeout(() => {
-    //   console.log(customerId);
-    // }, 1000);
-  }, [offset, total, searchMeds, limit]);
+    loadDocData();
+    loadTechStaffData();
+  }, []);
+
+  // useEffect(() => {
+  //   loadServiceTable();
+  //   loadSystemMed();
+  //   loadDentalMed();
+  //   loadCustomerData();
+  //   loadCurProfile();
+  // }, [offset, total, searchMeds, limit]);
 
   const onChangePage = (current, pageSize) => {
     // console.log(current, pageSize);
@@ -442,13 +489,9 @@ const MedicalPaperModal = () => {
               <hr style={{ marginTop: "8px", marginBottom: "4px" }} />
               <div
                 style={{
-                  // textAlign: "center",
-                  display: "flex",
-                  // marginRight: "15px",
-                  // width: "auto",
-                  // height: "auto",
+                  textAlign: "center",
                   // alignItems: "center",
-                  justifyContent: "center",
+                  // justifyContent: "center",
                 }}
               >
                 <Button
@@ -456,15 +499,55 @@ const MedicalPaperModal = () => {
                   variant="primary"
                   // onClick={handleShow}
                   style={{
+                    width: "50%",
                     marginBottom: "8px",
-                    display: "inline",
-                    marginLeft: "auto",
+                    display: "inline-block",
+                    // marginLeft: "auto",
                     // marginRight: "auto",
                   }}
                 >
                   Lưu lại
                 </Button>
+              </div>
+              <div
+                style={{
+                  textAlign: "center",
+                }}
+              >
                 <Button
+                  type="submit"
+                  // variant="primary"
+                  style={{
+                    backgroundColor: "#2ecc71",
+                    width: "50%",
+                    marginBottom: "8px",
+                    display: "inline",
+                  }}
+                >
+                  In Phiếu thu
+                </Button>
+              </div>
+              <div
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                <Button
+                  type="submit"
+                  variant="primary"
+                  style={{
+                    backgroundColor: "#e67e22",
+                    width: "52%",
+                    marginBottom: "8px",
+                    display: "inline",
+                  }}
+                >
+                  In đơn thuốc
+                </Button>
+              </div>
+            </div>
+
+            {/* <Button
                   variant="primary"
                   // onClick={handleShow}
                   style={{
@@ -488,9 +571,7 @@ const MedicalPaperModal = () => {
                   }}
                 >
                   Thanh toán
-                </Button>
-              </div>
-            </div>
+                </Button> */}
 
             <div id="serviceMiddle">
               {/* <Form
@@ -606,7 +687,7 @@ const MedicalPaperModal = () => {
                         // console.log(e);
                         setSingleSelectionsDoc(e);
                       }}
-                      options={customerId}
+                      options={docList}
                       placeholder="Chọn tên bác sỹ..."
                       selected={singleSelectionsDoc}
                       renderMenuItemChildren={(option) => (
@@ -742,7 +823,7 @@ const MedicalPaperModal = () => {
                                   tempSelect[rowIndex] = e;
                                   setSingleSelectionsKTV([...tempSelect]);
                                 }}
-                                options={customerId}
+                                options={techStaff}
                                 placeholder="Chọn kĩ thuật viên"
                                 // selected={singleSelectionsKTV[rowIndex]}
                                 selected={row[3]}
@@ -925,7 +1006,7 @@ const MedicalPaperModal = () => {
                               tempCus = {
                                 ...tempCus,
                                 dentalMedicalHistory: [
-                                  ...tempCus.dentalMedicalHistory,
+                                  ...tempCus.dentalMeKHdicalHistory,
                                   den._id,
                                 ],
                               };

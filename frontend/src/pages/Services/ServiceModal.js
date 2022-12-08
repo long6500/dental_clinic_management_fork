@@ -223,11 +223,6 @@ const ServiceModal = ({ loadData }) => {
     getMedicine();
   }, []);
 
-  // useEffect(() => {
-  //   console.log(suggestionList);
-  //   // console.log(tempSuggestionList);
-  // }, [suggestionList]);
-
   const deleteConsumableUiList = (rowIndex) => {
     let temp = consumableUiList;
     temp.splice(rowIndex, 1);
@@ -274,7 +269,7 @@ const ServiceModal = ({ loadData }) => {
         // class="modal-dialog modal-xl"
         show={show}
         onHide={handleClose}
-        backdrop="static"
+        // backdrop="static"
       >
         <Modal.Header closeButton>
           <Modal.Title>Thông tin thủ thuật</Modal.Title>
