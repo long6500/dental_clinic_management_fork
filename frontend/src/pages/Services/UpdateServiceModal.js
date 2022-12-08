@@ -72,7 +72,7 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
   const addPrescriptionRow = () => {
     // setIsShowSuggestion1([...isShowSuggestion1, true]);
 
-    setPrescriptionList([...prescriptionList, ["", "", "", "", "", ""]]);
+    setPrescriptionList([...prescriptionList, ["", [], "", "", "", ""]]);
   };
 
   const getService = async () => {
@@ -85,7 +85,7 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
           setCurrService(response.data);
           // setCurrService({ ...currService, ...response.data.data });
           // console.log(response.data.consumableArray);
-          setConsumableUiList(response.data.consumableArray);
+          // setConsumableUiList(response.data.consumableArray);
           setConsumableUiList([
             ...response.data.consumableArray.map((item) => [
               item.medicineId,
@@ -93,6 +93,16 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
               item.medicineQuantity,
               item.medicineUnit,
               item.numberOfUses,
+            ]),
+          ]);
+          setPrescriptionList([
+            ...response.data.prescriptionArray.map((item) => [
+              item.medicineId,
+              [item.medicineName],
+              item.medicineQuantity,
+              item.medicineUnit,
+              item.quantity,
+              item.usage,
             ]),
           ]);
         })
@@ -113,13 +123,6 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
       getMedicine();
     }
   }, [serviceId, isVisible]);
-
-  // useEffect(() => {
-  //   if (serviceId) {
-  //     getService();
-  //     getMedicine();
-  //   }
-  // }, []);
 
   const fillData = (e, rowIndex) => {
     const searchResult = meds.find((item) => item.name === e[0]);
@@ -177,7 +180,6 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
       note: Yup.string(),
     }),
     onSubmit: async (values) => {
-      console.log(values.name);
       let formData = new FormData();
 
       formData.append("name", values.name);
@@ -189,10 +191,19 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
       //append consumableUiList - Su dung tieu hao thuoc into formData
       for (var i = 0; i < consumableUiList.length; i++) {
         const tempOb = {
-          userId: consumableUiList[i][0],
+          medicineId: consumableUiList[i][0],
           numberOfUses: consumableUiList[i][4],
         };
         formData.append("consumable[]", JSON.stringify(tempOb));
+      }
+
+      for (var i = 0; i < prescriptionList.length; i++) {
+        const tempOb = {
+          medicineId: prescriptionList[i][0],
+          quantity: prescriptionList[i][4],
+          usage: prescriptionList[i][5],
+        };
+        formData.append("prescription[]", JSON.stringify(tempOb));
       }
 
       // handleClose();
@@ -486,6 +497,8 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                   <th>Lượng</th>
                   <th>Đơn vị</th>
                   <th>Số lần dùng</th>
+                  <th>Cách sử dụng</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -500,21 +513,35 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                         />
                       </td>
                       <td>
-                        <Form.Control disabled value={row.medicineId} />
+                        <Form.Control disabled value={row[0]} />
                       </td>
                       <td>
-                        <Typeahead
-                          id="basic-typeahead-single"
-                          onChange={(e) => {
-                            fillDataPre(e, rowIndex);
-                            let tempSelect = singleSelectionsPre;
-                            tempSelect[rowIndex] = e;
-                            setSingleSelectionsPre([...tempSelect]);
-                          }}
-                          options={suggestionList}
-                          selected={singleSelectionsPre[rowIndex]}
-                          placeholder="Chọn tên thuốc..."
-                        />
+                        <FormAntd.Item
+                          name={`selectPreu${rowIndex}`}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Nhập tên thuốc",
+                            },
+                          ]}
+                          initialValue={row[1]}
+                        >
+                          <Typeahead
+                            id="basic-typeahead-single"
+                            onChange={(e) => {
+                              fillDataPre(e, rowIndex);
+
+                              row[1] = e;
+                              let tempSelect = singleSelectionsPre;
+                              tempSelect[rowIndex] = e;
+                              setSingleSelectionsPre([...tempSelect]);
+                            }}
+                            options={suggestionList}
+                            // selected={singleSelectionsPre[rowIndex]}
+                            selected={row[1]}
+                            placeholder="Chọn tên thuốc..."
+                          />
+                        </FormAntd.Item>
                       </td>
                       <td>
                         <Form.Control type="number" value={row[2]} disabled />
@@ -527,11 +554,33 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                         />
                       </td>
                       <td>
-                        <Form.Control type="number" />
+                        <FormAntd.Item
+                          name={`usePreu${rowIndex}`}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Nhập số lần dùng",
+                            },
+                          ]}
+                          initialValue={row[4]}
+                        >
+                          <Form.Control type="number" min="1" />
+                        </FormAntd.Item>
                       </td>
 
                       <td>
-                        <Form.Control type="text" />
+                        <FormAntd.Item
+                          name={`usagePreu${rowIndex}`}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Nhập cách dùng",
+                            },
+                          ]}
+                          initialValue={row[5]}
+                        >
+                          <Form.Control type="text" />
+                        </FormAntd.Item>
                       </td>
                       <td onClick={() => deleteprescriptionList(rowIndex)}>
                         <FaTrashAlt

@@ -1,8 +1,8 @@
-const ServiceModel = require('./service');
-const ConsumableModel = require('../consumable/consumable');
-const PrescriptionModel = require('../prescription/prescription');
-const HTTPError = require('../../common/httpError');
-const MedicineModel = require('../medicine/medicine');
+const ServiceModel = require("./service");
+const ConsumableModel = require("../consumable/consumable");
+const PrescriptionModel = require("../prescription/prescription");
+const HTTPError = require("../../common/httpError");
+const MedicineModel = require("../medicine/medicine");
 
 const getService = async (req, res, next) => {
   const { keyword, offset, limit } = req.query;
@@ -166,7 +166,6 @@ const updateService = async (req, res) => {
       { new: true }
     );
   }
-
   await ConsumableModel.deleteMany({ serviceId: serviceId });
   var consumableArray;
   if (consumable != null) {
@@ -175,7 +174,7 @@ const updateService = async (req, res) => {
       const temp = JSON.parse(element);
 
       await ConsumableModel.create({
-        serviceId: _id,
+        serviceId: serviceId,
         medicineId: temp.medicineId,
         numberOfUses: temp.numberOfUses,
         createBy: senderUser._id,
@@ -190,7 +189,7 @@ const updateService = async (req, res) => {
       const temp = JSON.parse(element);
 
       await PrescriptionModel.create({
-        serviceId: _id,
+        serviceId: serviceId,
         medicineId: temp.medicineId,
         quantity: temp.quantity,
         usage: temp.usage,
@@ -215,7 +214,6 @@ const getServiceById = async (req, res) => {
   const prescription = await PrescriptionModel.find({ serviceId: serviceId });
   let consumableArray = JSON.parse(JSON.stringify(consumable));
   let prescriptionArray = JSON.parse(JSON.stringify(prescription));
-
   if (consumableArray.length > 0) {
     await Promise.all(
       consumableArray.map(async (element, index) => {
