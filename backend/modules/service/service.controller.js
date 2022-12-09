@@ -187,7 +187,7 @@ const updateService = async (req, res) => {
     prescriptionArray = JSON.parse(JSON.stringify(prescription));
     prescriptionArray.forEach(async (element) => {
       const temp = JSON.parse(element);
-
+      console.log(temp);
       await PrescriptionModel.create({
         serviceId: serviceId,
         medicineId: temp.medicineId,
@@ -292,6 +292,23 @@ const getNext = async () => {
   }
   temp += idNumber;
   return "DV_" + temp;
+};
+
+const getMedicineByService = async (req, res) => {
+  const { serListId } = req.body;
+
+  let serList = [];
+  if (serListId != null) {
+    const serListArray = JSON.parse(JSON.stringify(serListId));
+    serListArray.forEach((element) => {
+      serList.push(element.serID);
+    });
+  }
+
+  const medicine = await PrescriptionModel.find({
+    serviceId: { $in: serList },
+  });
+  res.send({ success: 1, data: medicine });
 };
 
 module.exports = {
