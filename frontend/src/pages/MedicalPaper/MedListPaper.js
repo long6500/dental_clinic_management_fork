@@ -25,8 +25,15 @@ const MedListPaper = ({
   singleSelectionsDoc,
   serListID,
 }) => {
+  const [form] = FormAntd.useForm();
+
+  const [vv, setVV] = useState();
+
   const [medListA, setMedListA] = useState([]);
+
+  //dem 1 nhip
   const [medName, setSingleMedName] = useState([]);
+  //for options typeahead
   const [medNamelist, setMedNamelist] = useState([]);
 
   const [show, setShow] = useState(false);
@@ -35,6 +42,32 @@ const MedListPaper = ({
     openMedPaper();
     setShow(false);
   };
+
+  // const isFormValid = () => {
+  //   form.getFieldsError().some(({ errors }) => errors.length > 0);
+  // };
+
+  const isnotFormValidd = () => {
+    const temp = form.getFieldsError().map((item) => item.errors.length > 0);
+    return temp;
+  };
+
+  const checkClose = (e) => {
+    //chay khi length = 0 || length > 1 va dien du lieu
+    //dk laf medListA.length > 1 && chua dien du lieu
+    let tem = isnotFormValidd();
+    console.log(tem);
+    // console.log(form.getFieldsError());
+
+    console.log(tem.includes(true));
+
+    // console.log(e);
+    if ((medListA.length >= 1 && !tem.includes(true)) || medListA.length < 1) {
+      openMedPaper();
+      setShow(false);
+    }
+  };
+
   const handleShow = () => {
     closeMedPaper();
     setShow(true);
@@ -42,17 +75,27 @@ const MedListPaper = ({
   };
 
   const addMedListA = () => {
-    setMedListA([...medListA, ["", [], "", "", ""]]);
+    setMedListA([...medListA, [[], "", "", ""]]);
   };
 
+  useEffect(() => {
+    console.log(medListA);
+  }, [medListA]);
+
   const deleteMedListA = (rowIndex) => {
+    //reset lai so luong
+    // console.log(medListA[rowIndex]);
+
+    // console.log(medListA[rowIndex][1]);
+    medListA[rowIndex][1] = "";
+
     let temp = medListA;
     temp.splice(rowIndex, 1);
     setMedListA([...temp]);
   };
 
   const fillMedListA = (e, rowIndex) => {
-    console.log(e);
+    // console.log(e);
     // const searchResult = medNamelist.find((item) => item.name === e[0].name);
     // console.log(e[0].unit);
 
@@ -66,8 +109,8 @@ const MedListPaper = ({
     }
   };
 
-  const loadMedData = () => {
-    axios
+  const loadMedData = async () => {
+    await axios
       .get("/api/medicine/activeMedicine")
       .then((response) => {
         // setMedNamelist([
@@ -80,10 +123,33 @@ const MedListPaper = ({
       });
   };
 
+  const [pre, setPre] = useState({});
+
+  //get prescription meds from selected services
+  const getMedFromSer = async () => {
+    await axios
+      .post(`/api/service/prescription`, pre)
+      .then((response) => {
+        setMedListA([
+          ...medListA,
+          ...response.data.map((i) => [[i.medicineId], "", "", ""]),
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   useEffect(() => {
-    // console.log(serListID);
     loadMedData();
   }, []);
+
+  //
+  useEffect(() => {
+    console.log(serListID);
+    // set serListID vao pre
+    setPre({ serListId: serListID });
+  }, [serListID]);
 
   return (
     <>
@@ -96,17 +162,23 @@ const MedListPaper = ({
         <FaBookMedical></FaBookMedical> Đơn thuốc
       </Button>
 
-      <Modal id="MedListPaper" size="lg" show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Đơn thuốc</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <FormAntd name="basic">
+      <Modal
+        id="MedListPaper"
+        size="lg"
+        show={show}
+        onHide={handleClose}
+        backdrop="static"
+      >
+        <FormAntd name="basic" form={form}>
+          <Modal.Header closeButton>
+            <Modal.Title>Đơn thuốc</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
             <Row className="mb-3" style={{ margin: "5px" }}>
-              <Form.Label column sm={2}>
+              <Form.Label column sm={1}>
                 Bác sỹ kê đơn
               </Form.Label>
-              <Col sm={4}>
+              <Col sm={3}>
                 <Form.Control
                   id="phone"
                   type="text"
@@ -114,14 +186,15 @@ const MedListPaper = ({
                   value={`${singleSelectionsDoc[0]?.id} - ${singleSelectionsDoc[0]?.name}`}
                 />
               </Col>
-              <Col sm={3}>
+              <Col sm={3} style={{ width: "22%" }}>
                 <Button
                   variant="success"
                   onClick={() => {
-                    console.log("lay thuoc tu thu thuat");
+                    // console.log(pre);
+                    getMedFromSer();
                   }}
                   style={{
-                    marginRight: "20px",
+                    // marginRight: "20px",
                     width: "80%",
                     maxWidth: "100%",
                   }}
@@ -130,18 +203,33 @@ const MedListPaper = ({
                   Thuốc thủ thuật<FaPlusCircle></FaPlusCircle>
                 </Button>
               </Col>
-              <Col sm={3}>
+              <Col sm={3} style={{ width: "22%" }}>
                 <Button
                   variant="success"
                   onClick={addMedListA}
                   style={{
-                    marginRight: "20px",
+                    // marginRight: "20px",
                     width: "70%",
                     maxWidth: "100%",
                   }}
                   disabled={singleSelectionsDoc.length < 1 ? true : false}
                 >
                   Thuốc khác <FaPlusCircle></FaPlusCircle>
+                </Button>
+              </Col>
+              <Col sm={2} style={{ width: "22%" }}>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  // onClick={checkClose}
+                  style={{
+                    // marginRight: "20px",
+                    width: "70%",
+                    maxWidth: "100%",
+                  }}
+                  disabled={singleSelectionsDoc.length < 1 ? true : false}
+                >
+                  Nhập thuốc
                 </Button>
               </Col>
             </Row>
@@ -154,7 +242,7 @@ const MedListPaper = ({
                   <th>Số lượng</th>
                   <th>Đơn vị</th>
                   <th>Cách dùng</th>
-                  <th>s</th>
+                  <th></th>
                 </tr>
               </thead>
               {medListA.length > 0 && (
@@ -174,26 +262,58 @@ const MedListPaper = ({
                         </td>
                         {/* Ten thuoc */}
                         <td style={{ width: "30%" }}>
-                          <Typeahead
-                            // clearButton
-                            id="basic-typeahead-single"
-                            labelKey="name"
-                            onChange={(e) => {
-                              row[1] = e;
-                              fillMedListA(e, rowIndex);
+                          <FormAntd.Item
+                            name={`TK${rowIndex}`}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Nhập tên thuốc",
+                              },
+                            ]}
+                          >
+                            <Typeahead
+                              // clearButton
+                              id="basic-typeahead-single"
+                              labelKey="name"
+                              onChange={(e) => {
+                                row[0] = e;
+                                fillMedListA(e, rowIndex);
 
-                              let tempSelect = medName;
-                              tempSelect[rowIndex] = e;
-                              setSingleMedName([...tempSelect]);
-                            }}
-                            options={medNamelist}
-                            placeholder="Nhập thuốc"
-                            selected={row[1]}
-                          />
+                                let tempSelect = medName;
+                                tempSelect[rowIndex] = e;
+                                setSingleMedName([...tempSelect]);
+                              }}
+                              options={medNamelist}
+                              placeholder="Nhập thuốc"
+                              selected={row[0]}
+                            />
+                          </FormAntd.Item>
                         </td>
                         {/* So Luong */}
                         <td style={{ width: "12%" }}>
-                          <Form.Control />
+                          <FormAntd.Item
+                            name={`SL${rowIndex}`}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Nhập số lượng",
+                              },
+                            ]}
+                          >
+                            <Form.Control
+                              type="number"
+                              min="1"
+                              onChange={(e) => {
+                                const temp = e.target.value;
+                                row[1] = temp;
+
+                                let tempSelect = medName;
+                                tempSelect[rowIndex] = e;
+                                setSingleMedName([...tempSelect]);
+                              }}
+                              value={row[1]}
+                            />
+                          </FormAntd.Item>
                         </td>
                         {/* Don vi */}
                         <td style={{ width: "12%" }}>
@@ -201,7 +321,12 @@ const MedListPaper = ({
                         </td>
                         {/* Cach dung */}
                         <td style={{ width: "30%" }}>
-                          <Form.Control type="text" />
+                          <Form.Control
+                            type="text"
+                            onChange={(e) => {
+                              row[3] = e.target.value;
+                            }}
+                          />
                         </td>
                         {/* Btn Delete */}
                         <td
@@ -232,8 +357,8 @@ const MedListPaper = ({
                 </tbody>
               )}
             </Table>
-          </FormAntd>
-        </Modal.Body>
+          </Modal.Body>
+        </FormAntd>
       </Modal>
     </>
   );

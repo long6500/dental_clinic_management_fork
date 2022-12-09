@@ -26,17 +26,21 @@ import AdCusSearch from "./AdCusSearch";
 import MedListPaper from "./MedListPaper";
 const MedicalPaperModal = () => {
   // const options = [];
+  const [pk, setPK] = useState({});
+
+  const [note, setNote] = useState();
 
   //Tái khám - default k de gi: null || empty string
+  const [birthDay, setBirthDay] = useState(null);
+
+  //ngay hien tai cua phieu kham
+  const [nt, setNt] = useState(new Date());
 
   const op = [
     { id: 0, label: "Chưa thực hiện" },
     { id: 1, label: "Đang thực hiện" },
     { id: 2, label: "Hoàn thành" },
   ];
-
-  const [birthDay, setBirthDay] = useState(null);
-  const [nt, setNt] = useState(new Date());
 
   const [customerId, setCustomerId] = useState([]);
   const [docList, setDocList] = useState([]);
@@ -52,11 +56,23 @@ const MedicalPaperModal = () => {
   const [dentalMed, setDentalMed] = useState([]);
   const [opac, setOpac] = useState(1);
 
+  // const addPK = () =>{
+  //   setPK({
+  //     doctorId:
+  //     customerId:
+  //     reExamination:
+  //     medicalService
+  //     systemicMedicalHistory
+  //     dentalMedicalHistory
+  //     note
+  //   })
+  // }
+
   const loadTechStaffData = () => {
     axios
       .get("/api/profile/getTechStaff")
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setTechStaff([
           // ...customerId,
           ...response.data.map((item) => ({
@@ -71,12 +87,10 @@ const MedicalPaperModal = () => {
   };
 
   const loadDocData = () => {
-    console.log(1);
-
     axios
       .get("/api/profile/getDoctor")
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setDocList([
           // ...customerId,
           ...response.data.map((item) => ({
@@ -94,7 +108,7 @@ const MedicalPaperModal = () => {
     axios
       .get("/api/customer/allCustomer")
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setCustomerId([
           // ...customerId,
           ...response.data.map((item) => ({
@@ -147,6 +161,16 @@ const MedicalPaperModal = () => {
   const [limit, setLimit] = useState(5);
   const [total, setTotal] = useState(0);
 
+  // useEffect(() => {
+  //   loadServiceTable();
+  //   loadSystemMed();
+  //   loadDentalMed();
+  //   loadCustomerData();
+  //   loadCurProfile();
+  //   loadDocData();
+  //   loadTechStaffData();
+  // }, []);
+
   useEffect(() => {
     loadServiceTable();
     loadSystemMed();
@@ -155,15 +179,7 @@ const MedicalPaperModal = () => {
     loadCurProfile();
     loadDocData();
     loadTechStaffData();
-  }, []);
-
-  // useEffect(() => {
-  //   loadServiceTable();
-  //   loadSystemMed();
-  //   loadDentalMed();
-  //   loadCustomerData();
-  //   loadCurProfile();
-  // }, [offset, total, searchMeds, limit]);
+  }, [offset, total, searchMeds]);
 
   const onChangePage = (current, pageSize) => {
     // console.log(current, pageSize);
@@ -230,8 +246,6 @@ const MedicalPaperModal = () => {
 
   //fill Data from chonsen SingleSelection - chưa xoá được
   const fillCusDataByName = async (e) => {
-    // console.log(e[0].name);
-    // setSingleSelections(e);
     const response = await axios.get(`api/customer/${e[0].id}`);
 
     console.log(response.data);
@@ -252,21 +266,53 @@ const MedicalPaperModal = () => {
     setTotalPrice(totalPrice + Number(price));
     setCurrentItemList([
       ...currentItemList,
-      [curDate, name, price, [], op.slice(0, 1)],
+      [curDate, name, price, [], op.slice(0, 1), id],
     ]);
-    //get id of service when add service to list
-    if (!serListID.includes(id)) {
-      setSerListID([...serListID, id]);
+
+    let temp = [];
+    serListID.map((i) => {
+      temp.push(i.serID);
+    });
+    // console.log(temp);
+
+    //get id of service when add service to list - can lay serID cua ca chuoi so sanh
+    // if () {
+    if (!temp.includes(id)) {
+      //add moi
+      setSerListID([...serListID, { serID: id, count: 1 }]);
+    } else {
+      //neu co roi thi count+1
+      let t = serListID.find((obj) => {
+        return obj.serID === id;
+      });
+      t.count += 1;
     }
   };
 
-  const deleteCurrentItems = (rowIndex, price) => {
+  const deleteCurrentItems = (rowIndex, price, id) => {
     // console.log(price);
     let temp = currentItemList;
     temp.splice(rowIndex, 1);
     setCurrentItemList([...temp]);
     setTotalPrice(totalPrice - price);
-    console.log(temp);
+
+    //xoa id khoi serListID
+    let tID = [];
+    serListID.map((i) => {
+      tID.push(i.serID);
+    });
+    if (tID.includes(id)) {
+      let t = serListID.find((obj) => {
+        return obj.serID === id;
+      });
+      // if (t.count > 1) {
+      t.count -= 1;
+      // }
+      if (t.count === 0) {
+        let pos = tID.indexOf(id);
+        serListID.splice(pos, 1);
+      }
+    }
   };
 
   const [changeMoney, setChangeMoney] = useState(0);
@@ -547,32 +593,6 @@ const MedicalPaperModal = () => {
               </div>
             </div>
 
-            {/* <Button
-                  variant="primary"
-                  // onClick={handleShow}
-                  style={{
-                    marginBottom: "8px",
-                    display: "inline",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                  }}
-                >
-                  In
-                </Button>
-
-                <Button
-                  variant="primary"
-                  // onClick={handleShow}
-                  style={{
-                    marginBottom: "8px",
-                    display: "inline",
-                    // marginLeft: "auto",
-                    marginRight: "auto",
-                  }}
-                >
-                  Thanh toán
-                </Button> */}
-
             <div id="serviceMiddle">
               {/* <Form
               // onSubmit={formik.handleSubmit}
@@ -683,8 +703,7 @@ const MedicalPaperModal = () => {
                       id="basic-typeahead-single"
                       labelKey="name"
                       onChange={(e) => {
-                        // fillCusDataByName(e);
-                        // console.log(e);
+                        //
                         setSingleSelectionsDoc(e);
                       }}
                       options={docList}
@@ -860,34 +879,8 @@ const MedicalPaperModal = () => {
                                   setSingleSelectionsStatus([...tempSelect]);
                                 }}
                                 options={op}
-                                // defaultSelected={op.slice(0, 1)}
-                                // defaultInputValue={"Chưa thực hiện"}
                                 placeholder="Chọn Trạng thái"
                                 selected={row[4]}
-                                // inputProps={{
-                                //   required: true,
-                                //   // data-error-msg:"Must enter your name?",
-                                //   // onChange="try{setCustomValidity('')}catch(e){};",
-                                //   // x-moz-errormessage="Please enter your name",
-                                //   onInvalid: (e) => {
-                                //     console.log(e.target);
-                                //     e.target.setCustomValidity("Nhập trạng thái");
-                                //   },
-                                //   onInput: (e) => {
-                                //     console.log(e.target);
-                                //     e.target.setCustomValidity("");
-                                //   },
-                                //   onChange: (e) => {
-                                //     console.log(e.target);
-                                //     e.target.setCustomValidity("");
-                                //   },
-                                //   onValid: (e) => {
-                                //     console.log(e.target);
-                                //     e.target.setCustomValidity("");
-                                //   },
-                                // }}
-
-                                // data-required-error="Your individual error message in a different language."
                               />
                             </FormAntd.Item>
                           </td>
@@ -905,7 +898,7 @@ const MedicalPaperModal = () => {
                                 /* Read more about isConfirmed, isDenied below */
                                 if (result.isConfirmed) {
                                   // Swal.fire('Saved!', '', 'success')
-                                  deleteCurrentItems(rowIndex, row[2]);
+                                  deleteCurrentItems(rowIndex, row[2], row[5]);
                                 } else if (result.isDenied) {
                                   // Swal.fire('Changes are not saved', '', 'info')
                                 }
@@ -1040,7 +1033,15 @@ const MedicalPaperModal = () => {
                   <b>Ghi chú</b>
                 </Form.Label>
                 <Col sm={10}>
-                  <Form.Control id="gc" type="text" as="textarea" rows={3} />
+                  <Form.Control
+                    id="gc"
+                    type="text"
+                    as="textarea"
+                    rows={3}
+                    onChange={(e) => {
+                      setNote(e.target.value);
+                    }}
+                  />
                 </Col>
               </Row>
               {/* </Form> */}

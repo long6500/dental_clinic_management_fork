@@ -28,6 +28,8 @@ import {
 } from "antd";
 
 const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
+  const [form] = FormAntd.useForm();
+
   const [suggestionList, setSuggestionList] = useState([]);
 
   const [isShowSuggestion, setIsShowSuggestion] = useState([]);
@@ -119,6 +121,7 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
 
   useEffect(() => {
     if (serviceId) {
+      // form.resetFields();
       getService();
       getMedicine();
     }
@@ -217,6 +220,7 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
 
       await serviceProcessor.updateService(formData, serviceId);
       loadData();
+      form.resetFields();
       resetData();
     },
   });
@@ -254,7 +258,12 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
         </Modal.Header>
         <Modal.Body>
           {/* <Form onSubmit={formik.handleSubmit}> */}
-          <FormAntd name="basic" onFinish={formik.handleSubmit}>
+          <FormAntd
+            form={form}
+            name="basic"
+            onFinish={formik.handleSubmit}
+            autoComplete="off"
+          >
             <Row className="mb-3">
               <Form.Group as={Col}>
                 <Form.Label>Mã thủ thuật</Form.Label>
@@ -537,7 +546,6 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                               setSingleSelectionsPre([...tempSelect]);
                             }}
                             options={suggestionList}
-                            // selected={singleSelectionsPre[rowIndex]}
                             selected={row[1]}
                             placeholder="Chọn tên thuốc..."
                           />
@@ -547,14 +555,10 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                         <Form.Control type="number" value={row[2]} disabled />
                       </td>
                       <td>
-                        <Form.Control
-                          disabled
-                          value={row[3]}
-                          onChange={formik.handleChange}
-                        />
+                        <Form.Control disabled value={row[3]} />
                       </td>
                       <td>
-                        <FormAntd.Item
+                        {/* <FormAntd.Item
                           name={`usePreu${rowIndex}`}
                           rules={[
                             {
@@ -562,10 +566,25 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                               message: "Nhập số lần dùng",
                             },
                           ]}
-                          initialValue={row[4]}
-                        >
-                          <Form.Control type="number" min="1" />
-                        </FormAntd.Item>
+                          // initialValue={row[4]}
+                          // preserve={false}
+                        > */}
+                        <Form.Control
+                          value={row[4]}
+                          // defaultValue={row[4]}
+                          type="number"
+                          min="1"
+                          required
+                          onChange={(e) => {
+                            row[4] = e.target.value;
+
+                            //bước đệm
+                            let tempSelect = singleSelectionsPre;
+                            tempSelect[rowIndex] = e;
+                            setSingleSelectionsPre([...tempSelect]);
+                          }}
+                        />
+                        {/* </FormAntd.Item> */}
                       </td>
 
                       <td>
@@ -577,9 +596,22 @@ const UpdateServiceModal = ({ serviceId, isVisible, closeModal, loadData }) => {
                               message: "Nhập cách dùng",
                             },
                           ]}
-                          initialValue={row[5]}
+                          // initialValue={row[5]}
                         >
-                          <Form.Control type="text" />
+                          <Form.Control
+                            value={row[5]}
+                            // defaultValue={row[5]}
+                            type="text"
+                            onChange={(e) => {
+                              // console.log(row[5]);
+                              row[5] = e.target.value;
+
+                              //bước đệm
+                              let tempSelect = singleSelectionsPre;
+                              tempSelect[rowIndex] = e;
+                              setSingleSelectionsPre([...tempSelect]);
+                            }}
+                          />
                         </FormAntd.Item>
                       </td>
                       <td onClick={() => deleteprescriptionList(rowIndex)}>
