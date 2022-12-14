@@ -7,11 +7,25 @@ const serviceSchema = require("./service.validation");
 const validateInput = require("../../middlewares/validateInput");
 const fileUploader = require("../../middlewares/cloudinary.config");
 
+router.post(
+  "/prescription",
+  needAuthenticated,
+  // isRole,
+  serviceController.getMedicineByService
+);
+
 router.get(
   "/",
   needAuthenticated,
   // isRole,
   serviceController.getService
+);
+
+router.get(
+  "/prescription",
+  needAuthenticated,
+  // isRole,
+  serviceController.getMedicineByService
 );
 
 router.get(

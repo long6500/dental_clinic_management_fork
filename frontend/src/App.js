@@ -20,12 +20,12 @@ import Forgotpassword from "./pages/login_UI/forgotpassword";
 import Customer from "./pages/customer/listCustomer";
 import PrivateRoute from "./components/Route/PrivateRoute";
 import GuestRoute from "./components/Route/GuestRoute";
+import Clinic from "./pages/Clinic/Clinic";
 import axios from "../src/apis/api";
 import React from "react";
 import Staff from "./pages/Staff/Staff";
 import Decentralization from "./pages/decentralization/Decentralization";
-
-
+import DashBoard from "./pages/dashBoard/dashBoard";
 
 export const AuthContext = React.createContext();
 function App() {
@@ -61,7 +61,7 @@ function App() {
     localStorage.removeItem("token");
     setUserInfo({ status: "success", data: null });
   };
-  
+
   React.useEffect(() => {
     verifyUserInfo();
   }, []);
@@ -71,13 +71,12 @@ function App() {
 
   if (userInfo.status === "error") return <div>Error</div>;
 
+
   return (
     <>
       <AuthContext.Provider value={{ user: userInfo.data, login, logout }}>
-        {/* <LoadingComponent isLoading={isLoading} /> */}
         <Router>
-          {userInfo.data ? <Navbarr user={userInfo.data}/> : <></>}
-
+          {userInfo.data ? <Navbarr user={userInfo.data} /> : <></>}
           <Routes>
             <Route element={<GuestRoute user={userInfo.data} />}>
               <Route path="/Login" element={<Login />} />
@@ -85,24 +84,21 @@ function App() {
             </Route>
 
             <Route element={<PrivateRoute user={userInfo.data} />}>
-              {/* <Route path="/" element={<Navbarr />} /> */}
+              <Route path="/DashBoard" element={<DashBoard />} />
+              <Route path="/Decentralization" element={<Decentralization />} />
+              <Route path="/clinic" element={<Clinic />} />
               <Route
                 path="/medicine"
                 element={<Medicine itemsPerPage={5} />}
-            ></Route>
-             <Route path="/Decentralization" element={<Decentralization />} />
-
-          <Route path="/medicine" element={<Medicine  itemsPerPage={5}/>}></Route>
-            <Route path="/ChangePassword" element={<Changepassword />} />
-            <Route path="/Profile" element={<Profile />} />
-            <Route path="/medicine" element={<Medicine />}></Route>
-            {/* <Route path="/service" element={<Service />}></Route> */}
-            <Route path="/Customer" element={<Customer />}></Route>
-            <Route path="/Staff" element={<Staff />}></Route>
-          </Route>
-        </Routes>
-
-
+              ></Route>
+              <Route path="/ChangePassword" element={<Changepassword />} />
+              <Route path="/Profile" element={<Profile />} />
+              <Route path="/medicine" element={<Medicine />}></Route>
+              <Route path="/service" element={<Service />}></Route>
+              <Route path="/Customer" element={<Customer />}></Route>
+              <Route path="/Staff"   element={<Staff user={userInfo.data}/>}></Route>
+            </Route>
+          </Routes>
         </Router>
       </AuthContext.Provider>
     </>

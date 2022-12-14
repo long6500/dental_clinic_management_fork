@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const HTTPError = require('../../common/httpError');
 const sendEmail = require('../../common/sendEmail');
 const ProfileModel = require('../profile/profile');
+const UserRoleModel = require('../user_role/user_role');
+const RoleModel = require('../role/role');
 
 const generatePassword = () => {
     const hasNumber = /\d/;
@@ -93,7 +95,6 @@ const login = async (req, res) => {
 
     if (!existUser) {
         throw new HTTPError(400, 'Username or Password incorrect');
-        return
     }
 
     const matchPassword = await bcrypt.compare(password, existUser.password);
@@ -106,6 +107,13 @@ const login = async (req, res) => {
         throw new HTTPError(400, 'Tài khoản của bạn đã hết hạn');
     }
 
+    const roleId = await UserRoleModel.find({userId: existUser._id});
+    let role = [];
+    await Promise.all(roleId.map(async (element) => {
+        const roleTemp = await RoleModel.findById(element.roleId);
+        role.push(roleTemp);
+    }))
+
     const userId = existUser._id;
     const token = jwt.sign({
         userId,
@@ -117,16 +125,11 @@ const login = async (req, res) => {
         success: 1, data: {
             _id: userId,
             username: username,
+            role,
             token
         }
     });
 }
-
-const verify = async (req, res) => {
-    const { user } = req;
-
-    res.send({ success: 1, data: user });
-};
 
 const changePassword = async (req, res) => {
     const senderUser = req.user;
@@ -154,6 +157,24 @@ const changePassword = async (req, res) => {
         }
     });
 }
+
+const verify = async (req, res) => {
+    const { user } = req;
+    const roleId = await UserRoleModel.find({userId: user._id});
+
+    let role = [];
+    await Promise.all(roleId.map(async (element) => {
+        const roleTemp = await RoleModel.findById(element.roleId);
+        role.push(roleTemp);
+    }))
+    res.send({ success: 1, data: {
+        _id: user._id,
+        username: user.username,
+        role,
+    } });
+};
+
+
 
 module.exports = {
     //register,

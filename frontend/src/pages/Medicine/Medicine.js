@@ -23,7 +23,7 @@ import axios from "../../apis/api";
 import { Pagination, Table } from "antd";
 // import "antd/dist/antd.css";
 
-const Medicine = ({ itemsPerPage }) => {
+const Medicine = () => {
   const [medId, setMedID] = useState("");
   const [isShowUpdate, setIsShowUpdate] = useState(false);
   const [searchMeds, setSearchMeds] = useState("");
@@ -46,25 +46,19 @@ const Medicine = ({ itemsPerPage }) => {
         `/api/medicine?keyword=${searchMeds}&offset=${offset}&limit=${limit}`
       )
       .then((response) => {
-        // response.success === 1 &&
-        //   setMeds(response.data.data) &&
-        // setTotal(response.data.total);
 
         if (response.success === 1) {
           setMeds(response.data.data);
           setTotal(response.data.total);
         }
-        // console.log(response.data.total);
       });
   };
 
   useEffect(() => {
     loadData();
-    // console.log(total);
   }, [offset, total, searchMeds, limit]);
 
   const onChangePage = (current, pageSize) => {
-    // console.log(current, pageSize);
     setOffset(current - 1);
     setLimit(pageSize);
   };
@@ -113,12 +107,10 @@ const Medicine = ({ itemsPerPage }) => {
       sorter: (a, b) => a.name.length - b.name.length,
     },
     {
-      title: "Cách sử dụng",
-      dataIndex: "usage",
+      title: "Tác dụng",
+      dataIndex: "effect",
       align: "center",
       width: "380px",
-      // tableLayout: "fixed",
-      // wordWrap: "break-word",
       ellipsis: true,
     },
     {
@@ -156,7 +148,7 @@ const Medicine = ({ itemsPerPage }) => {
         />
       ),
       name: med.name,
-      usage: med.usage,
+      effect: med.effect,
       status: med.status ? (
         <AiOutlineCheck color="#009432" size={25} />
       ) : (
