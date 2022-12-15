@@ -1,14 +1,14 @@
-require('dotenv').config();
-require('express-async-errors');
+require("dotenv").config();
+require("express-async-errors");
 
-const express = require('express');
-const mongoose = require('mongoose');
+const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 
-const clinicRouter = require('./modules/clinic/clinic.router');
-const clinicController = require('./modules/clinic/clinic.controller');
+const clinicRouter = require("./modules/clinic/clinic.router");
+const clinicController = require("./modules/clinic/clinic.controller");
 
-const medicineRouter = require('./modules/medicine/medicine.router');
+const medicineRouter = require("./modules/medicine/medicine.router");
 
 const permissionController = require('./modules/permission/permission.controller');
 const permissionRouter = require('./modules/permission/permission.router');
@@ -22,17 +22,17 @@ const serviceRouter = require('./modules/service/service.router');
 const functionController = require('./modules/function/function.controller');
 const functionRouter = require('./modules/function/function.router');
 
-const profileRouter = require('./modules/profile/profile.router');
-const profileController = require('./modules/profile/profile.controller');
+const profileRouter = require("./modules/profile/profile.router");
+const profileController = require("./modules/profile/profile.controller");
 
-const systemicMedicalHistoryController = require('./modules/systemic_medical_history/systemic_medical_history.controller');
-const dentalMedicalHistoryController = require('./modules/dental_medical_history/dental_medical_history.controller');
-const systemicMedicalHistoryRouter = require('./modules/systemic_medical_history/systemic_medical_history.router');
-const dentalMedicalHistoryRouter = require('./modules/dental_medical_history/dental_medical_history.router');
+const systemicMedicalHistoryController = require("./modules/systemic_medical_history/systemic_medical_history.controller");
+const dentalMedicalHistoryController = require("./modules/dental_medical_history/dental_medical_history.controller");
+const systemicMedicalHistoryRouter = require("./modules/systemic_medical_history/systemic_medical_history.router");
+const dentalMedicalHistoryRouter = require("./modules/dental_medical_history/dental_medical_history.router");
 
-const customerRouter = require('./modules/customer/customer.router');
+const customerRouter = require("./modules/customer/customer.router");
 
-const medicalPaperRouter = require('./modules/medical_paper/medical_paper.router');
+const medicalPaperRouter = require("./modules/medical_paper/medical_paper.router");
 
 mongoose.connect(process.env.MONGODB_URL, err => {
     if (err) {
@@ -78,14 +78,13 @@ app.use('*', (req, res, next) => {
 })
 
 app.use(function (err, req, res, next) {
-    console.log(err);
-    res.status(err.status || 500).send({ success: 0, message: err.message });
-})
-
+  console.log(err);
+  res.status(err.status || 500).send({ success: 0, message: err.message });
+});
 
 app.listen(process.env.PORT || 8080, (err) => {
-    if (err) {
-        return console.log('Server Error', err);
-    }
-    console.log('Server started');
-})
+  if (err) {
+    return console.log("Server Error", err);
+  }
+  console.log("Server started");
+});

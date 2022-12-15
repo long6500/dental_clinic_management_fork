@@ -185,14 +185,13 @@ const ServiceModal = ({ loadData }) => {
     getMedicine();
   }, []);
 
-  useEffect(() => {
-    console.log(consumableUiList);
-  }, [consumableUiList]);
-
   const deleteConsumableUiList = (rowIndex) => {
+    console.log(consumableUiList);
     let temp = consumableUiList;
     temp.splice(rowIndex, 1);
+    //setConsumableUiList(temp) k hoat dong
     setConsumableUiList([...temp]);
+    // setConsumableUiList(temp);
   };
 
   //prescriptionList
@@ -446,7 +445,7 @@ const ServiceModal = ({ loadData }) => {
                       </td>
                       <td>
                         {/* Số lần dùng */}
-                        <FormAntd.Item
+                        {/* <FormAntd.Item
                           name={`useCon${rowIndex}`}
                           rules={[
                             {
@@ -454,9 +453,9 @@ const ServiceModal = ({ loadData }) => {
                               message: "Nhập số lần dùng",
                             },
                           ]}
-                          // initialValue={row[4]}
-                        >
-                          {/* <Form.Control
+                          initialValue={row[4]}
+                        > */}
+                        {/* <Form.Control
                                 type="number"
                                 min="1"
                                 // required
@@ -469,19 +468,21 @@ const ServiceModal = ({ loadData }) => {
                                 }}
                                 value={row[4]}
                               /> */}
-                          <InputNumber
-                            // required
-                            // name={`numberIn${rowIndex}`}
-                            min={1}
-                            max={10}
-                            // defaultValue={row[4]}
-                            onChange={(e) => {
-                              let temp = consumableUiList;
-                              temp[rowIndex][4] = e;
-                              setConsumableUiList([...temp]);
-                            }}
-                          />
-                        </FormAntd.Item>
+                        <InputNumber
+                          required
+                          name={`numberIn${rowIndex}`}
+                          min={1}
+                          max={10}
+                          value={row[4]}
+                          // defaultValue={1}
+                          onChange={(e) => {
+                            // console.log(e);
+                            let temp = consumableUiList;
+                            temp[rowIndex][4] = e;
+                            setConsumableUiList([...temp]);
+                          }}
+                        />
+                        {/* </FormAntd.Item> */}
                       </td>
 
                       <td onClick={() => deleteConsumableUiList(rowIndex)}>
