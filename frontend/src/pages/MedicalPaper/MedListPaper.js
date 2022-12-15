@@ -78,20 +78,12 @@ const MedListPaper = ({
     setMedListA([...medListA, [[], "", "", ""]]);
   };
 
-  useEffect(() => {
-    console.log(medListA);
-  }, [medListA]);
-
   const deleteMedListA = (rowIndex) => {
-    //reset lai so luong
-    // console.log(medListA[rowIndex]);
-
-    // console.log(medListA[rowIndex][1]);
-    medListA[rowIndex][1] = "";
-
     let temp = medListA;
     temp.splice(rowIndex, 1);
     setMedListA([...temp]);
+    // console.log(medListA);
+    // asdasd
   };
 
   const fillMedListA = (e, rowIndex) => {
@@ -113,10 +105,11 @@ const MedListPaper = ({
     await axios
       .get("/api/medicine/activeMedicine")
       .then((response) => {
-        // setMedNamelist([
-        //   ...response.data.map((u) => ({ id: u._id, name: u.name })),
-        // ]);
-        setMedNamelist(response.data);
+        setMedNamelist([
+          ...response.data.map((u) => ({ id: u._id, name: u.name })),
+        ]);
+        // console.log(response.data);
+        // setMedNamelist(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -127,6 +120,7 @@ const MedListPaper = ({
 
   //get prescription meds from selected services
   const getMedFromSer = async () => {
+    console.log(pre);
     await axios
       .post(`/api/service/prescription`, pre)
       .then((response) => {
@@ -141,13 +135,13 @@ const MedListPaper = ({
   };
 
   useEffect(() => {
+    setPre({ serListId: serListID });
     loadMedData();
   }, []);
 
   //
   useEffect(() => {
     console.log(serListID);
-    // set serListID vao pre
     setPre({ serListId: serListID });
   }, [serListID]);
 
@@ -168,6 +162,7 @@ const MedListPaper = ({
         show={show}
         onHide={handleClose}
         backdrop="static"
+        // aria-labelledby="st-lg-modal"
       >
         <FormAntd name="basic" form={form}>
           <Modal.Header closeButton>
@@ -241,13 +236,14 @@ const MedListPaper = ({
                   <th>Tên thuốc</th>
                   <th>Số lượng</th>
                   <th>Đơn vị</th>
-                  <th>Cách dùng</th>
+                  <th>Cách dùngs</th>
                   <th></th>
                 </tr>
               </thead>
-              {medListA.length > 0 && (
-                <tbody>
-                  {medListA.map((row, rowIndex) => {
+              {/* {medListA.length > 0 && ( */}
+              <tbody>
+                {medListA.length > 0 &&
+                  medListA.map((row, rowIndex) => {
                     return (
                       <tr style={{ textAlign: "center" }}>
                         <td style={{ width: "1%" }}>
@@ -270,14 +266,19 @@ const MedListPaper = ({
                                 message: "Nhập tên thuốc",
                               },
                             ]}
+                            initialValue={row[0]}
                           >
                             <Typeahead
                               // clearButton
                               id="basic-typeahead-single"
                               labelKey="name"
                               onChange={(e) => {
+                                // let temp = medListA;
+                                // temp[rowIndex][0] = e;
+                                // setMedListA(temp);
+
                                 row[0] = e;
-                                fillMedListA(e, rowIndex);
+                                // fillMedListA(e, rowIndex);
 
                                 let tempSelect = medName;
                                 tempSelect[rowIndex] = e;
@@ -286,12 +287,13 @@ const MedListPaper = ({
                               options={medNamelist}
                               placeholder="Nhập thuốc"
                               selected={row[0]}
+                              // selected={medName[rowIndex]}
                             />
                           </FormAntd.Item>
                         </td>
                         {/* So Luong */}
                         <td style={{ width: "12%" }}>
-                          <FormAntd.Item
+                          {/* <FormAntd.Item
                             name={`SL${rowIndex}`}
                             rules={[
                               {
@@ -299,21 +301,20 @@ const MedListPaper = ({
                                 message: "Nhập số lượng",
                               },
                             ]}
-                          >
-                            <Form.Control
-                              type="number"
-                              min="1"
-                              onChange={(e) => {
-                                const temp = e.target.value;
-                                row[1] = temp;
-
-                                let tempSelect = medName;
-                                tempSelect[rowIndex] = e;
-                                setSingleMedName([...tempSelect]);
-                              }}
-                              value={row[1]}
-                            />
-                          </FormAntd.Item>
+                            initialValue={row[1]}
+                          > */}
+                          <Form.Control
+                            required
+                            type="number"
+                            min="1"
+                            onChange={(e) => {
+                              let temp = medListA;
+                              temp[rowIndex][1] = e.target.value;
+                              setMedListA([...temp]);
+                            }}
+                            value={row[1]}
+                          />
+                          {/* </FormAntd.Item> */}
                         </td>
                         {/* Don vi */}
                         <td style={{ width: "12%" }}>
@@ -322,10 +323,14 @@ const MedListPaper = ({
                         {/* Cach dung */}
                         <td style={{ width: "30%" }}>
                           <Form.Control
+                            required
                             type="text"
                             onChange={(e) => {
-                              row[3] = e.target.value;
+                              let temp = medListA;
+                              temp[rowIndex][3] = e.target.value;
+                              setMedListA([...temp]);
                             }}
+                            value={row[3]}
                           />
                         </td>
                         {/* Btn Delete */}
@@ -339,6 +344,7 @@ const MedListPaper = ({
                             }).then((result) => {
                               if (result.isConfirmed) {
                                 deleteMedListA(rowIndex);
+                                // setVV("asd");
                               } else if (result.isDenied) {
                               }
                             });
@@ -354,8 +360,8 @@ const MedListPaper = ({
                       </tr>
                     );
                   })}
-                </tbody>
-              )}
+              </tbody>
+              {/* )} */}
             </Table>
           </Modal.Body>
         </FormAntd>

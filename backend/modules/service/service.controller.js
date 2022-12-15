@@ -298,9 +298,17 @@ const getMedicineByService = async (req, res) => {
     });
   }
 
-  const medicine = await PrescriptionModel.find({
+  const prescription = await PrescriptionModel.find({
     serviceId: { $in: serList },
   });
+
+  let medicine = [];
+  await Promise.all(
+    prescription.map(async (element) => {
+      const temp = await MedicineModel.findById(element.medicineId);
+      medicine.push({ ...element, name: temp.name });
+    })
+  );
   res.send({ success: 1, data: medicine });
 };
 
