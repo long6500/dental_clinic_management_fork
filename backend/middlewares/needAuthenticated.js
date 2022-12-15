@@ -22,7 +22,7 @@ async function needAuthenticated(req, res, next) {
     }
 
     req.user = existUser;
-
+    
     next(); 
 }
 

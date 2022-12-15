@@ -83,8 +83,14 @@ const createMedicalPaper = async (req, res) => {
     throw new HTTPError(400, "Not found profile");
   }
 
-  const { customerId, doctorId, reExamination, status, medicalService } =
-    req.body;
+  const {
+    customerId,
+    doctorId,
+    reExamination,
+    status,
+    note,
+    medicalService,
+  } = req.body;
   const medicalId = await getNext();
 
   let medicalServiceArray;
@@ -107,6 +113,7 @@ const createMedicalPaper = async (req, res) => {
     customerId,
     doctorId,
     reExamination,
+    note,
     status,
     createBy: profile[0]._id,
   });

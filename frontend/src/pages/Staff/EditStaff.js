@@ -8,8 +8,12 @@ import { Space, TimePicker } from "antd";
 import { Checkbox } from "antd";
 import dayjs from "dayjs";
 import { FaRedoAlt, FaEdit } from "react-icons/fa";
+
+import Swal from "sweetalert2";
+import moment from "moment";
+
 const { TextArea } = Input;
-function Editstaff({ empId, isVisible, closeModal, loadData }) {
+function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState([]);
@@ -23,50 +27,143 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
   const [disabledcn, setDisabledcn] = useState(false);
   const format = "HH:mm";
 
+  const [value2, setValue2] = useState([]);
+  const [value3, setValue3] = useState([]);
+  const [value4, setValue4] = useState([]);
+  const [value5, setValue5] = useState([]);
+  const [value6, setValue6] = useState([]);
+  const [value7, setValue7] = useState([]);
+  const [valuecn, setValuecn] = useState([]);
+
+  const [profile, setProfile] = useState({});
+  const [empPhone, setempPhone] = useState("");
+  const [empEmail, setempEmail] = useState("");
+
   const toggleDisablet2 = () => {
+    setDisabled2([]);
+    if (disabled2) {
+      removeSchedule("monday");
+    }
     setDisabled2(!disabled2);
   };
   const toggleDisablet3 = () => {
+    setValue3([]);
+    if (disabled3) {
+      removeSchedule("tuesday");
+    }
     setDisabled3(!disabled3);
   };
   const toggleDisablet4 = () => {
+    setValue4([]);
+    if (disabled4) {
+      removeSchedule("wednesday");
+    }
     setDisabled4(!disabled4);
   };
   const toggleDisablet5 = () => {
+    setValue5([]);
+    if (disabled5) {
+      removeSchedule("thursday");
+    }
     setDisabled5(!disabled5);
   };
   const toggleDisablet6 = () => {
+    setValue6([]);
+    if (disabled6) {
+      removeSchedule("friday");
+    }
     setDisabled6(!disabled6);
   };
   const toggleDisablet7 = () => {
+    setValue7([]);
+    if (disabled7) {
+      removeSchedule("saturday");
+    }
     setDisabled7(!disabled7);
   };
   const toggleDisabletcn = () => {
+    setValuecn([]);
+    if (disabledcn) {
+      removeSchedule("sunday");
+    }
     setDisabledcn(!disabledcn);
   };
 
   let options = [];
   const getRole = async () => {
     await axios.get(`/api/role/`).then(async (response) => {
-      console.log(response.data);
+      // console.log(response.data);
       setRole(response.data);
     });
   };
-  const [profile, setProfile] = useState({});
 
   const getProfile = async () => {
     await axios.get(`/api/profile/${empId}`).then(async (response) => {
       console.log(response.data);
       setProfile(response.data);
+      setempPhone(response.data.phone);
+      setempEmail(response.data.email);
+      response.data.scheduleArray.map((schedule) => {
+        let startTime = moment();
+        startTime.hours(schedule.start_time_hours);
+        startTime.minutes(schedule.start_time_minutes);
+        let endTime = moment();
+        endTime.hours(schedule.end_time_hours);
+        endTime.minutes(schedule.end_time_minutes);
+        switch (schedule.weekday) {
+          case "monday":
+            setDisabled2(true);
+            setValue2([startTime, endTime]);
+            break;
+          case "tuesday":
+            setDisabled3(true);
+            setValue3([startTime, endTime]);
+            break;
+          case "wednesday":
+            setDisabled4(true);
+            setValue4([startTime, endTime]);
+            break;
+          case "thursday":
+            setDisabled5(true);
+            setValue5([startTime, endTime]);
+            break;
+          case "friday":
+            setDisabled6(true);
+            setValue6([startTime, endTime]);
+            break;
+          case "saturday":
+            setDisabled7(true);
+            setValue7([startTime, endTime]);
+            break;
+          case "sunday":
+            setDisabledcn(true);
+            setValuecn([startTime, endTime]);
+            break;
+          default:
+        }
+      });
     });
   };
 
   useEffect(() => {
-    // console.log("editStaff");
-    console.log(empId);
+    // console.log(empId);
     if (empId) {
       getRole();
       getProfile();
+      setValue2([]);
+      setValue3([]);
+      setValue4([]);
+      setValue5([]);
+      setValue6([]);
+      setValue7([]);
+      setValuecn([]);
+      setDisabled2(false);
+      setDisabled3(false);
+      setDisabled4(false);
+      setDisabled5(false);
+      setDisabled6(false);
+      setDisabled7(false);
+      setDisabledcn(false);
     }
   }, [empId]);
 
@@ -82,9 +179,10 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
       phone: profile.phone,
       competence: profile.roleArray,
       address: profile.address,
-      email: profile.email ,
-      numberOfWorkdays: null,
-      salary: null,
+      email: profile.email,
+      numberOfWorkdays: profile.workingDays,
+      salary: profile.salary,
+      schedule: profile.scheduleArray,
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -94,10 +192,12 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
       phone: Yup.string()
         .required("Không được trống")
         .typeError("Không phải là dạng số")
+
         .matches(
           /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
           "Số điện thoại phải chữ số và có 10 số"
         )
+
         .test(
           "Số điện thoại độc nhất",
           "Số điện thoại đang được sử dụng", // <- key, message
@@ -106,8 +206,9 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
               axios
                 .get(`/api/profile/checkPhone/${value}`)
                 .then((res) => {
-                  if (res.success === 1) resolve(true);
-                  else resolve(false);
+                  if (res.success === 1 || empPhone === value) {
+                    resolve(true);
+                  } else resolve(false);
                 })
                 .catch((error) => {
                   if (
@@ -119,8 +220,7 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
             });
           }
         ),
-      //     openTime: yup.date().required(validateMessage.required),
-      // closeTime: yup.date().min(yup.ref('openTime'), 'Giờ đóng max phải lớn hơn giờ mở').required(validateMessage.required),
+
       competence: Yup.array()
         .required("Không được trống")
         .min(1, "Không được trống"),
@@ -136,8 +236,9 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
               axios
                 .get(`/api/profile/checkEmail/${value}`)
                 .then((res) => {
-                  if (res.success === 1) resolve(true);
-                  else resolve(false);
+                  if (res.success === 1 || empEmail === value) {
+                    resolve(true);
+                  } else resolve(false);
                 })
                 .catch((error) => {
                   if (error.response.data.content === "Email đã bị lấy") {
@@ -158,38 +259,60 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
         .required("Không được để trống")
         .positive("Phải là số dương")
         .integer("Phải là số nguyên dương"),
+      schedule: Yup.array().min(1, "Không được trống"),
     }),
 
     onSubmit: async (values) => {
-      const { fullname, phone, competence, address, email } = values;
+      const {
+        fullname,
+        phone,
+        competence,
+        address,
+        email,
+        numberOfWorkdays,
+        salary,
+        schedule,
+      } = values;
       try {
         const res = await axios({
-          url: "/api/profile",
-          method: "post",
+          url: `api/profile/${empId}`,
+          method: "put",
           data: {
             fullname,
             phone,
             role: competence,
             address,
             email,
+            workingDays: numberOfWorkdays,
+            salary,
+            schedule,
           },
         });
 
         if (res.success) {
-          console.log(values);
+          loadData();
+          setLoading(true);
+          setTimeout(() => {
+            setLoading(false);
+            closeModal();
+            disPlay();
+          }, 3000);
         }
       } catch (err) {}
       console.log(values);
     },
   });
+  const disPlay = () => {
+    Swal.fire("Thành Công", `Sửa thành công ${empId}`, "success");
+  };
 
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
-    if (Object.keys(formik.errors).length > 0) return;
     formik.handleSubmit();
+    if (Object.keys(formik.errors).length !== 1) return;
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -201,23 +324,130 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
     setIsModalOpen(false);
   };
 
+  function findIndexByProperty(data, key, value) {
+    for (var i = 0; i < data.length; i++) {
+      if (data[i][key] === value) {
+        return i;
+      }
+    }
+    return -1;
+  }
+  const removeSchedule = (weekday) => {
+    const index = findIndexByProperty(
+      formik.values.schedule,
+      "weekday",
+      weekday
+    );
+    if (index > -1) {
+      formik.values.schedule.splice(index, 1);
+    }
+  };
+
+  const pushSchedule = (e, weekday) => {
+    let scheduleTemp = {
+      start_time_hours: e[0]._d.getHours(),
+      start_time_minutes: e[0]._d.getMinutes(),
+      end_time_hours: e[1]._d.getHours(),
+      end_time_minutes: e[1]._d.getMinutes(),
+      weekday: weekday,
+    };
+    const index = findIndexByProperty(
+      formik.values.schedule,
+      "weekday",
+      weekday
+    );
+    if (index > -1) {
+      formik.values.schedule[index] = scheduleTemp;
+    } else {
+      formik.values.schedule.push(scheduleTemp);
+    }
+    let startTime = moment();
+    startTime.hours(e[0]._d.getHours());
+    startTime.minutes(e[0]._d.getMinutes());
+    let endTime = moment();
+    endTime.hours(e[1]._d.getHours());
+    endTime.minutes(e[1]._d.getMinutes());
+    switch (weekday) {
+      case "monday":
+        setValue2([startTime, endTime]);
+        break;
+      case "tuesday":
+        setValue3([startTime, endTime]);
+        break;
+      case "wednesday":
+        setValue4([startTime, endTime]);
+        break;
+      case "thursday":
+        setValue5([startTime, endTime]);
+        break;
+      case "friday":
+        setValue6([startTime, endTime]);
+        break;
+      case "saturday":
+        setValue7([startTime, endTime]);
+        break;
+      case "sunday":
+        setValuecn([startTime, endTime]);
+        break;
+      default:
+    }
+  };
+  console.log(userAB)
+  const [disabledEdit, setDisabledEdit] = useState(false);
+  var temp = false;
+  for (let i = 0; i < userAB.role.length; i++) {
+    if (
+      userAB.role[i].name.includes("Bác sĩ") ||
+      userAB.role[i].name.includes("Kỹ thuật viên") ||
+      userAB.role[i].name.includes("Lễ tân")
+    ) {
+      var temp = false;
+    }else{
+      var temp = true;
+    }
+  }
+  console.log(temp)
+  const disableInput = (temp) => {
+       if(temp = false){
+        setDisabledEdit(!disabledEdit)
+       }else{
+        setDisabledEdit(disabledEdit)
+       }
+  } 
+
   return (
-    <>      
+    <>
       <Modal
         title="Sửa Nhân Viên"
         open={isVisible}
         onCancel={closeModal}
         width={1000}
         footer={[
-          <Button key="back" onClick={closeModal}>
+          <Button
+            key="back"
+            onClick={closeModal}
+            style={{
+              backgroundColor: "#7F7F7F",
+              width: "80px",
+              color: "white,",
+              borderRadius: "5px",
+            }}
+          >
             Hủy
           </Button>,
+          
           <Button
             key="submit"
             type="#595959"
             loading={loading}
             onClick={handleOk}
             htmlType="submit"
+            style={{
+              backgroundColor: "#386BC0",
+              width: "120px",
+              borderRadius: "5px",
+              color: "white",
+            }}
           >
             Lưu lại
           </Button>,
@@ -227,16 +457,28 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
         <Form onSubmit={formik.handleSubmit}>
           <div className="container">
             <div className="row">
-              <div className="col-12 form-group">
+              <div
+                className="col-12 form-group"
+                style={{ marginBottom: "20px" }}
+              >
                 <label>Mã nhân viên</label>
+                <span
+                    style={{
+                      display: "inline",
+                      marginBottom: "0px",
+                      color: "red",
+                    }}
+                  >
+                    {" "}
+                    *
+                  </span>
                 <Input
                   rows={2}
                   type="text"
                   id="employeeCode"
                   name="employeeCode"
-                  // disabled
-                  readOnly
-                  value={profile._id}
+                  disabled = "true"
+                  value={empId}
                   onChange={formik.handleChange}
                 />
               </div>
@@ -245,6 +487,16 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                 style={{ marginBottom: "20px" }}
               >
                 <label>Tên nhân viên</label>
+                <span
+                    style={{
+                      display: "inline",
+                      marginBottom: "0px",
+                      color: "red",
+                    }}
+                  >
+                    {" "}
+                    *
+                  </span>
                 <Input
                   type="text"
                   id="fullname"
@@ -259,6 +511,16 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
               </div>
               <div className="col-6 form-group">
                 <label>Điện thoại</label>
+                <span
+                    style={{
+                      display: "inline",
+                      marginBottom: "0px",
+                      color: "red",
+                    }}
+                  >
+                    {" "}
+                    *
+                  </span>
                 <Input
                   type="text"
                   id="phone"
@@ -273,6 +535,16 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
               </div>
               <div className="col-6 form-group">
                 <label>Chức vụ</label>
+                <span
+                    style={{
+                      display: "inline",
+                      marginBottom: "0px",
+                      color: "red",
+                    }}
+                  >
+                    {" "}
+                    *
+                  </span>
                 <Select
                   mode="multiple"
                   allowClear
@@ -285,7 +557,7 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                   onChange={(value) => {
                     formik.setFieldValue("competence", value);
                   }}
-                  // value={formik.values.competence}
+                  value={formik.values.competence}
                   options={options}
                 />
 
@@ -298,6 +570,16 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                 style={{ marginBottom: "20px" }}
               >
                 <label>Email</label>
+                <span
+                    style={{
+                      display: "inline",
+                      marginBottom: "0px",
+                      color: "red",
+                    }}
+                  >
+                    {" "}
+                    *
+                  </span>
                 <Input
                   type="text"
                   id="email"
@@ -323,6 +605,16 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
               </div>
               <div className="col-6 form-group" style={{ marginTop: "20px" }}>
                 <label>Số ngày công</label>
+                <span
+                    style={{
+                      display: "inline",
+                      marginBottom: "0px",
+                      color: "red",
+                    }}
+                  >
+                    {" "}
+                    *
+                  </span>
                 <Input
                   type="text"
                   id="numberOfWorkdays"
@@ -340,6 +632,16 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
               </div>
               <div className="col-6 form-group" style={{ marginTop: "20px" }}>
                 <label>Lương</label>
+                <span
+                    style={{
+                      display: "inline",
+                      marginBottom: "0px",
+                      color: "red",
+                    }}
+                  >
+                    {" "}
+                    *
+                  </span>
                 <Input
                   type="text"
                   id="salary"
@@ -355,26 +657,47 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
             </div>
           </div>
           <div className="mt-4 container">
-            <span className="font-medium text-lg" style={{ fontSize: "15px" }}>
-              Lịch làm việc:
-            </span>
             <div className="row" style={{ display: "flex", marginTop: "10px" }}>
+              <div className="row" style={{ marginBottom: "15px" }}>
+                <div className="col-md-2" style={{ textAlign: "center" }}>
+                  <span
+                    className="font-medium text-lg"
+                    style={{ fontSize: "15px" }}
+                  >
+                    Lịch làm việc:
+                  </span>
+                </div>
+                <div className="col-md-2" style={{ textAlign: "end" }}></div>
+                <div className="col-md-8" style={{ textAlign: "center" }}>
+                  {formik.errors.schedule && (
+                    <div className="errorMsg"> {formik.errors.schedule} </div>
+                  )}
+                </div>
+              </div>
               <div className="row">
                 <div className="col-md-2" style={{ textAlign: "center" }}>
                   <p className="font-weight-bold">Thứ 2:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet2}></Checkbox>
+                  <Checkbox
+                    onClick={toggleDisablet2}
+                    checked={disabled2}
+                  ></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
                     <TimePicker.RangePicker
                       size="large"
                       TimePicker
-                      defaultValue={dayjs("12:08", format)}
+                      id="schedule"
+                      name="schedule"
+                      value={value2.length < 1 ? [null, null] : value2}
                       format={format}
                       disabled={!disabled2}
                       status="success"
+                      onChange={(e) => {
+                        pushSchedule(e, "monday");
+                      }}
                     />
                   </Space>
                 </div>
@@ -386,14 +709,25 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                   <p className="font-weight-bold">Thứ 3:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet3}></Checkbox>
+                  <Checkbox
+                    onClick={toggleDisablet3}
+                    checked={disabled3}
+                  ></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
                     <TimePicker.RangePicker
-                      size="large"
                       disabled={!disabled3}
+                      size="large"
                       status="success"
+                      id="schedule"
+                      name="schedule"
+                      TimePicker
+                      value={value3.length < 1 ? [null, null] : value3}
+                      format={format}
+                      onChange={(e) => {
+                        pushSchedule(e, "tuesday");
+                      }}
                     />
                   </Space>
                 </div>
@@ -405,7 +739,10 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                   <p className="font-weight-bold">Thứ 4:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet4}></Checkbox>
+                  <Checkbox
+                    onClick={toggleDisablet4}
+                    checked={disabled4}
+                  ></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -413,6 +750,14 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                       size="large"
                       disabled={!disabled4}
                       status="success"
+                      id="schedule"
+                      name="schedule"
+                      TimePicker
+                      value={value4.length < 1 ? [null, null] : value4}
+                      format={format}
+                      onChange={(e) => {
+                        pushSchedule(e, "wednesday");
+                      }}
                     />
                   </Space>
                 </div>
@@ -424,7 +769,10 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                   <p className="font-weight-bold">Thứ 5:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet5}></Checkbox>
+                  <Checkbox
+                    onClick={toggleDisablet5}
+                    checked={disabled5}
+                  ></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -432,6 +780,14 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                       size="large"
                       disabled={!disabled5}
                       status="success"
+                      id="schedule"
+                      name="schedule"
+                      TimePicker
+                      value={value5.length < 1 ? [null, null] : value5}
+                      format={format}
+                      onChange={(e) => {
+                        pushSchedule(e, "thursday");
+                      }}
                     />
                   </Space>
                 </div>
@@ -443,7 +799,10 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                   <p className="font-weight-bold">Thứ 6:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet6}></Checkbox>
+                  <Checkbox
+                    onClick={toggleDisablet6}
+                    checked={disabled6}
+                  ></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -451,6 +810,15 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                       size="large"
                       disabled={!disabled6}
                       status="success"
+                      id="schedule"
+                      name="schedule"
+                      TimePicker
+                      // value={formik.values.schedule}
+                      value={value6.length < 1 ? [null, null] : value6}
+                      format={format}
+                      onChange={(e) => {
+                        pushSchedule(e, "friday");
+                      }}
                     />
                   </Space>
                 </div>
@@ -462,7 +830,10 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                   <p className="font-weight-bold">Thứ 7:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisablet7}></Checkbox>
+                  <Checkbox
+                    onClick={toggleDisablet7}
+                    checked={disabled7}
+                  ></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -470,6 +841,14 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                       size="large"
                       disabled={!disabled7}
                       status="success"
+                      id="schedule"
+                      name="schedule"
+                      TimePicker
+                      value={value7.length < 1 ? [null, null] : value7}
+                      format={format}
+                      onChange={(e) => {
+                        pushSchedule(e, "saturday");
+                      }}
                     />
                   </Space>
                 </div>
@@ -481,7 +860,10 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                   <p className="font-weight-bold">Chủ Nhật:</p>
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
-                  <Checkbox onClick={toggleDisabletcn}></Checkbox>
+                  <Checkbox
+                    onClick={toggleDisabletcn}
+                    checked={disabledcn}
+                  ></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>
                   <Space direction="vertical">
@@ -489,6 +871,14 @@ function Editstaff({ empId, isVisible, closeModal, loadData }) {
                       size="large"
                       disabled={!disabledcn}
                       status="success"
+                      id="schedule"
+                      name="schedule"
+                      TimePicker
+                      value={valuecn.length < 1 ? [null, null] : valuecn}
+                      format={format}
+                      onChange={(e) => {
+                        pushSchedule(e, "sunday");
+                      }}
                     />
                   </Space>
                 </div>

@@ -14,7 +14,7 @@ import Editstaff from "./EditStaff";
 import Swal from "sweetalert2";
 import CustomToast from "../../components/CustomToast";
 
-function Staff() {
+function Staff({user}) {
   const [meds, setMeds] = useState([]);
   const [searchEmployee, setsearchEmployee] = useState("");
 
@@ -246,6 +246,8 @@ function Staff() {
     };
   });
 
+  console.log(user)
+
   return (
     <>
       <Navbar>
@@ -262,8 +264,8 @@ function Staff() {
               </h4>
             </Nav>
             <Form className="d-flex">
-              <ModaladdStaff loadData={loadData} />
-              <Button type="primary" style={{ marginRight: "20px" }}>
+              <ModaladdStaff userAA={user} loadData={loadData} />
+              <Button type="primary" onClick={loadData} style={{ marginRight: "20px",borderRadius:"5px",width:"100px",height:"38px" }}>
                 <FaRedoAlt /> Tải lại
               </Button>
             </Form>
@@ -294,6 +296,7 @@ function Staff() {
         isVisible={isShowUpdate}
         empId={empId}
         loadData={loadData}
+        userAB={user}
       />
 
       <div style={{ marginLeft: "100px", marginRight: "100px" }}>
