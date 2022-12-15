@@ -19,6 +19,11 @@ const createAdmin = async (req, res) => {
   ];
 
   const admin = await UserModel.create(user);
+  const adminId = await RoleModel.findOne({ name: "Admin" });
+  await UserRoleModel.create({
+    userId: admin[0]._id,
+    roleId: adminId._id,
+  })
   try {
     if ((await ProfileModel.find({ _id: "admin" }).count()) > 0) return null;
     const profileAdmin = {
@@ -57,7 +62,7 @@ const curProfile = async (req, res) => {
   res.send({ success: 1, data: fullProfile });
 };
 
-};
+
 
 const getDoctor = async (req, res) => {
   const role = await RoleModel.findOne({ name: "Bác sĩ" });
@@ -489,7 +494,7 @@ module.exports = {
   checkEmail,
   checkPhone,
   curProfile,
-  editProfileByUser
+  editProfileByUser,
   getDoctor,
   getTechStaff,
 };
