@@ -24,10 +24,19 @@ const MedListPaper = ({
   openMedPaper,
   singleSelectionsDoc,
   serListID,
+  PKID,
 }) => {
   const [form] = FormAntd.useForm();
 
-  const [vv, setVV] = useState();
+  const [medicalPrescribe, setMedicalPrescribe] = useState([
+    {
+      doctorId: singleSelectionsDoc[0]?.id,
+      medicalPaperId: PKID,
+      medicineId: "",
+      quantity: 0,
+      usage: "",
+    },
+  ]);
 
   const [medListA, setMedListA] = useState([]);
 
@@ -43,58 +52,91 @@ const MedListPaper = ({
     setShow(false);
   };
 
-  // const isFormValid = () => {
-  //   form.getFieldsError().some(({ errors }) => errors.length > 0);
-  // };
-
   const isnotFormValidd = () => {
     const temp = form.getFieldsError().map((item) => item.errors.length > 0);
     return temp;
   };
 
-  const checkClose = (e) => {
+  const checkClose = async (e) => {
     //chay khi length = 0 || length > 1 va dien du lieu
     //dk laf medListA.length > 1 && chua dien du lieu
-    let tem = isnotFormValidd();
-    console.log(tem);
-    // console.log(form.getFieldsError());
+    // let tem = isnotFormValidd();
+    // if ((medListA.length >= 1 && !tem.includes(true)) || medListA.length < 1) {
+    //   openMedPaper();
+    //   setShow(false);
+    // }
+    // await axios
+    //   .post(`/api/service/prescription`, pre)
+    //   .then((response) => {})
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
 
-    console.log(tem.includes(true));
+    let mePrescribe = [];
+    medListA.map((e) => {
+      mePrescribe.push({
+        doctorId: singleSelectionsDoc[0]?.id,
+        medicalPaperId: PKID,
+        medicineId: e[4],
+        quantity: e[1],
+        usage: e[3],
+      });
+    });
 
-    // console.log(e);
-    if ((medListA.length >= 1 && !tem.includes(true)) || medListA.length < 1) {
-      openMedPaper();
-      setShow(false);
-    }
+    await axios
+      .post("/api/medicinePrescribe", { medicalPrescribe: mePrescribe })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const getCurMed = async () => {
+    console.log(PKID);
+    await axios
+      .get(`/api/medicinePrescribe?medicalPaper=${PKID}`)
+      .then((response) => {
+        // console.log(response.data);
+        setMedListA([
+          ...response.data.map((i) => [
+            [i.name],
+            i.quantity,
+            i.unit,
+            i.usage,
+            i.medicineId,
+          ]),
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handleShow = () => {
     closeMedPaper();
     setShow(true);
-    // console.log(singleSelectionsDoc);
+    getCurMed();
   };
 
   const addMedListA = () => {
-    setMedListA([...medListA, [[], "", "", ""]]);
+    setMedListA([...medListA, [[], "", "", "", ""]]);
   };
 
   const deleteMedListA = (rowIndex) => {
     let temp = medListA;
     temp.splice(rowIndex, 1);
     setMedListA([...temp]);
-    // console.log(medListA);
-    // asdasd
   };
 
   const fillMedListA = (e, rowIndex) => {
-    // console.log(e);
-    // const searchResult = medNamelist.find((item) => item.name === e[0].name);
-    // console.log(e[0].unit);
-
-    if (e[0]?.name) {
+    if (e[0]?.quantity) {
       // medListA[rowIndex][0] = e[0].name;
-      medListA[rowIndex][2] = e[0].unit;
+      medListA[rowIndex][2] = e[0].quantity;
       setMedListA(medListA);
+
+      //fill medicalPrescribe
     } else {
       // medListA[rowIndex][0] = "";
       medListA[rowIndex][2] = "";
@@ -105,11 +147,11 @@ const MedListPaper = ({
     await axios
       .get("/api/medicine/activeMedicine")
       .then((response) => {
-        setMedNamelist([
-          ...response.data.map((u) => ({ id: u._id, name: u.name })),
-        ]);
-        // console.log(response.data);
-        // setMedNamelist(response.data);
+        // setMedNamelist([
+        //   ...response.data.map((u) => ({ id: u._id, name: u.name })),
+        // ]);
+
+        setMedNamelist(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -120,13 +162,20 @@ const MedListPaper = ({
 
   //get prescription meds from selected services
   const getMedFromSer = async () => {
-    console.log(pre);
     await axios
       .post(`/api/service/prescription`, pre)
       .then((response) => {
+        console.log(response.data);
+        // console.log(1);
         setMedListA([
           ...medListA,
-          ...response.data.map((i) => [[i.medicineId], "", "", ""]),
+          ...response.data.map((i) => [
+            [i.name],
+            i.quantity,
+            i.unit,
+            i.usage,
+            i.medicineId,
+          ]),
         ]);
       })
       .catch((error) => {
@@ -135,15 +184,41 @@ const MedListPaper = ({
   };
 
   useEffect(() => {
-    setPre({ serListId: serListID });
+    // setPre({ serListId: serListID });
     loadMedData();
   }, []);
 
   //
   useEffect(() => {
-    console.log(serListID);
+    // console.log(pre);
     setPre({ serListId: serListID });
   }, [serListID]);
+
+  useEffect(() => {
+    // console.log(pre);
+    setPre({ serListId: serListID });
+  }, [show]);
+
+  const printPDF = async () => {
+    const response = await axios
+      .get(`/api/invoice`, {
+        responseType: "arraybuffer",
+        headers: {
+          Accept: "application/pdf",
+        },
+      })
+      .then(async (response) => {
+        const pdfBlod = new Blob([response], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(pdfBlod);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "invoice.pdf"); //or any other extension
+        document.body.appendChild(link);
+        link.click();
+        const pdfWindow = window.open();
+        pdfWindow.location.href = url;
+      });
+  };
 
   return (
     <>
@@ -164,13 +239,37 @@ const MedListPaper = ({
         backdrop="static"
         // aria-labelledby="st-lg-modal"
       >
-        <FormAntd name="basic" form={form}>
-          <Modal.Header closeButton>
+        <FormAntd name="basic" form={form} onFinish={checkClose}>
+          <Modal.Header>
             <Modal.Title>Đơn thuốc</Modal.Title>
+
+            <div style={{ float: "right", display: "inline-block" }}>
+              <Button
+                variant="secondary"
+                style={{
+                  marginRight: "10px",
+                }}
+                onClick={handleClose}
+              >
+                Huỷ
+              </Button>
+              <Button
+                variant="warning"
+                style={{
+                  marginRight: "10px",
+                }}
+                onClick={printPDF}
+              >
+                In đơn thuốc
+              </Button>
+              <Button type="submit" variant="primary">
+                Nhập thuốc
+              </Button>
+            </div>
           </Modal.Header>
           <Modal.Body>
             <Row className="mb-3" style={{ margin: "5px" }}>
-              <Form.Label column sm={1}>
+              <Form.Label column sm={2}>
                 Bác sỹ kê đơn
               </Form.Label>
               <Col sm={3}>
@@ -185,7 +284,6 @@ const MedListPaper = ({
                 <Button
                   variant="success"
                   onClick={() => {
-                    // console.log(pre);
                     getMedFromSer();
                   }}
                   style={{
@@ -212,21 +310,7 @@ const MedListPaper = ({
                   Thuốc khác <FaPlusCircle></FaPlusCircle>
                 </Button>
               </Col>
-              <Col sm={2} style={{ width: "22%" }}>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  // onClick={checkClose}
-                  style={{
-                    // marginRight: "20px",
-                    width: "70%",
-                    maxWidth: "100%",
-                  }}
-                  disabled={singleSelectionsDoc.length < 1 ? true : false}
-                >
-                  Nhập thuốc
-                </Button>
-              </Col>
+              <Col sm={2} style={{ width: "22%" }}></Col>
             </Row>
 
             <Table bordered>
@@ -273,16 +357,12 @@ const MedListPaper = ({
                               id="basic-typeahead-single"
                               labelKey="name"
                               onChange={(e) => {
-                                // let temp = medListA;
-                                // temp[rowIndex][0] = e;
-                                // setMedListA(temp);
+                                fillMedListA(e, rowIndex);
 
-                                row[0] = e;
-                                // fillMedListA(e, rowIndex);
-
-                                let tempSelect = medName;
-                                tempSelect[rowIndex] = e;
-                                setSingleMedName([...tempSelect]);
+                                let temp = medListA;
+                                temp[rowIndex][0] = e;
+                                temp[rowIndex][4] = e[0]?._id;
+                                setMedListA([...temp]);
                               }}
                               options={medNamelist}
                               placeholder="Nhập thuốc"
@@ -309,7 +389,7 @@ const MedListPaper = ({
                             min="1"
                             onChange={(e) => {
                               let temp = medListA;
-                              temp[rowIndex][1] = e.target.value;
+                              temp[rowIndex][1] = Number(e.target.value);
                               setMedListA([...temp]);
                             }}
                             value={row[1]}
