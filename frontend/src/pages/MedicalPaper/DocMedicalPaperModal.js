@@ -24,6 +24,7 @@ import { Select, Pagination, Table as TableAntd, Form as FormAntd } from "antd";
 import { Typeahead } from "react-bootstrap-typeahead";
 import AdCusSearch from "./AdCusSearch";
 import MedListPaper from "./MedListPaper";
+import Payment from "./Payment";
 const DocMedicalPaperModal = ({
   PKID,
   closeModal,
@@ -237,7 +238,7 @@ const DocMedicalPaperModal = ({
       });
       setSerListID([]);
       let listTemp = [];
-      res.data.medicalService.map(async (i) => {
+      res.data.medicalService.map((i) => {
         // console.log(1);
         let temp = 0;
         listTemp.map((e) => {
@@ -254,23 +255,6 @@ const DocMedicalPaperModal = ({
       });
 
       setSerListID([...serListID, ...listTemp]);
-
-      // console.log(serListID);
-      // res.data.medicalService.map((item) => {
-      //   // console.log(item.serviceId);
-      //   if (!temp.includes(item.serviceId)) {
-      //     console.log(1);
-      //     setSerListID([...serListID, { serID: item.serviceId, count: 1 }]);
-      //     console.log(1.5);
-      //   } else {
-      //     console.log(2);
-      //     let t = serListID.find((obj) => {
-      //       return obj.serID === item.serviceId;
-      //     });
-      //     t.count += 1;
-      //   }
-      // });
-      // console.log(serListID);
     } catch (error) {
       console.log(error);
     }
@@ -595,6 +579,17 @@ const DocMedicalPaperModal = ({
                   Lưu lại
                 </Button>
               </div>
+              <div
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                {/* thay doi bang Payment modal */}
+                <Payment
+                  closeMedPaper={closeMedpaper}
+                  openMedPaper={openMedPaper}
+                />
+              </div>
             </div>
 
             <div id="serviceMiddle">
@@ -792,6 +787,7 @@ const DocMedicalPaperModal = ({
                 <Col sm={4}>
                   {/* Đơn thuốc */}
                   <MedListPaper
+                    PKID={pk._id}
                     closeMedPaper={closeMedpaper}
                     openMedPaper={openMedPaper}
                     singleSelectionsDoc={singleSelectionsDoc}

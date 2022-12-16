@@ -24,6 +24,7 @@ import { Select, Pagination, Table as TableAntd, Form as FormAntd } from "antd";
 import { Typeahead } from "react-bootstrap-typeahead";
 import AdCusSearch from "./AdCusSearch";
 import MedListPaper from "./MedListPaper";
+import Payment from "./Payment";
 const MedicalPaperModal = ({ loadData }) => {
   // const options = [];
   const [pk, setPK] = useState({
@@ -284,21 +285,6 @@ const MedicalPaperModal = ({ loadData }) => {
 
   const [currentItemList, setCurrentItemList] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-
-  // useEffect(() => {
-  //   setPK({
-  //     ...pk,
-  //     medicalService: [
-  //       ...currentItemList.map((item, index) => {
-  //         return {
-  //           serviceId: item[5],
-  //           ktvId: item[3] ? item[3][0].id : "",
-  //           status: item[4] ? item[4][0].id : "",
-  //         };
-  //       }),
-  //     ],
-  //   });
-  // }, []);
 
   useEffect(() => {
     // const iterator = currentItemList.values();
@@ -653,18 +639,10 @@ const MedicalPaperModal = ({ loadData }) => {
                   textAlign: "center",
                 }}
               >
-                <Button
-                  type="submit"
-                  variant="primary"
-                  style={{
-                    backgroundColor: "#e67e22",
-                    width: "52%",
-                    marginBottom: "8px",
-                    display: "inline",
-                  }}
-                >
-                  Thanh toán
-                </Button>
+                <Payment
+                  closeMedPaper={closeMedpaper}
+                  openMedPaper={openMedPaper}
+                />
               </div>
             </div>
 

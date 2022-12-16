@@ -26,6 +26,7 @@ import React from "react";
 import Staff from "./pages/Staff/Staff";
 import Decentralization from "./pages/decentralization/Decentralization";
 import DashBoard from "./pages/dashBoard/dashBoard";
+import MedicalPaper from "./pages/MedicalPaper/ListMedicalPaper";
 
 export const AuthContext = React.createContext();
 function App() {
@@ -71,7 +72,6 @@ function App() {
 
   if (userInfo.status === "error") return <div>Error</div>;
 
-
   return (
     <>
       <AuthContext.Provider value={{ user: userInfo.data, login, logout }}>
@@ -87,16 +87,19 @@ function App() {
               <Route path="/DashBoard" element={<DashBoard />} />
               <Route path="/Decentralization" element={<Decentralization />} />
               <Route path="/clinic" element={<Clinic />} />
-              <Route
-                path="/medicine"
-                element={<Medicine itemsPerPage={5} />}
-              ></Route>
               <Route path="/ChangePassword" element={<Changepassword />} />
               <Route path="/Profile" element={<Profile />} />
-              <Route path="/medicine" element={<Medicine />}></Route>
-              <Route path="/service" element={<Service />}></Route>
+              <Route path="/Medicine" element={<Medicine />}></Route>
+              <Route path="/Service" element={<Service />}></Route>
               <Route path="/Customer" element={<Customer />}></Route>
-              <Route path="/Staff"   element={<Staff user={userInfo.data}/>}></Route>
+              <Route
+                path="/Staff"
+                element={<Staff user={userInfo.data} />}
+              ></Route>
+              <Route
+                path="/MedicalPaper"
+                element={<MedicalPaper user={userInfo.data} />}
+              ></Route>
             </Route>
           </Routes>
         </Router>

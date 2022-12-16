@@ -222,7 +222,7 @@ const getServiceById = async (req, res) => {
           ...consumableArray[index],
           medicineName: medicine.name,
           medicineQuantity: medicine.quantity,
-          medicineUnit: medicine.unit,
+          medicineUnit: medicine.effect,
         };
       })
     );
@@ -237,7 +237,7 @@ const getServiceById = async (req, res) => {
           ...prescriptionArray[index],
           medicineName: medicine.name,
           medicineQuantity: medicine.quantity,
-          medicineUnit: medicine.unit,
+          medicineUnit: medicine.effect,
         };
       })
     );
@@ -306,7 +306,11 @@ const getMedicineByService = async (req, res) => {
   await Promise.all(
     prescription.map(async (element) => {
       const temp = await MedicineModel.findById(element.medicineId);
-      medicine.push({ ...element, name: temp.name });
+      medicine.push({
+        ...element._doc,
+        name: temp.name,
+        unit: temp.quantity,
+      });
     })
   );
   res.send({ success: 1, data: medicine });
