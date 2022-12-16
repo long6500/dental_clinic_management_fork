@@ -30,6 +30,8 @@ const dentalMedicalHistoryController = require("./modules/dental_medical_history
 const systemicMedicalHistoryRouter = require("./modules/systemic_medical_history/systemic_medical_history.router");
 const dentalMedicalHistoryRouter = require("./modules/dental_medical_history/dental_medical_history.router");
 
+const invoicePdfRouter = require('./common/invoicePdf/invoicePdf.router');
+
 const customerRouter = require("./modules/customer/customer.router");
 
 const medicalPaperRouter = require("./modules/medical_paper/medical_paper.router");
@@ -75,6 +77,7 @@ app.use("/api/medicalPaper", medicalPaperRouter);
 app.use("/api/function", functionRouter);
 app.use("/api/permission", permissionRouter);
 app.use("/api/medicinePrescribe", medicinePrescribeRouter);
+app.use('/api/invoice', invoicePdfRouter);
 
 app.use("*", (req, res, next) => {
   res.status(404).send({ message: "404 not found" });

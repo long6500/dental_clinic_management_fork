@@ -22,6 +22,17 @@ const MedicinePrescribeSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    medicineId: {
+        type: String,
+        require: true,
+    },
+    quantity: {
+        type: Number,
+        require: true,
+    },
+    usage: {
+        type: String,
+    },
     createBy: {
       type: mongoose.Types.ObjectId,
     },

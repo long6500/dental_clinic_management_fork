@@ -53,7 +53,6 @@ const Navbarr = ({ user }) => {
               <NavDropdown.Item href="/service">
                 Quản lý thủ thuật
               </NavDropdown.Item>
-              <NavDropdown.Divider />
               <NavDropdown.Item href="/staff">
                 Quản lý nhân viên
               </NavDropdown.Item>

@@ -16,6 +16,7 @@ import CustomToast from "../../components/CustomToast";
 import UpdateCustomerModal from "./UpdateCustomerModal";
 import customerProcessor from "../../apis/customerProcessor";
 import axios from "../../apis/api";
+import Swal from "sweetalert2";
 import { Pagination, Table } from "antd";
 import Swal from "sweetalert2";
 

@@ -21,6 +21,13 @@ router.get(
 );
 
 router.get(
+  "/birthday",
+  needAuthenticated,
+  //isRole,
+  customerController.getBirthday
+);
+
+router.get(
   "/",
   needAuthenticated,
   //isRole,
@@ -52,6 +59,13 @@ router.post(
   //isRole,
   validateInput(customerSchema, "body"),
   customerController.createCustomer
+);
+
+router.put(
+  "/updateCustomerWithMedical",
+  needAuthenticated,
+  //isRole,
+  customerController.updateCustomerWithMedical
 );
 
 router.put(
