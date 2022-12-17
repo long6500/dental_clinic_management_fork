@@ -25,6 +25,8 @@ import {
   Form as FormAntd,
   InputNumber,
 } from "antd";
+import Swal from "sweetalert2";
+
 // PHẦN này gồm typeahead trong Form.Item
 const ServiceModal = ({ loadData }) => {
   const [form] = FormAntd.useForm();
@@ -445,7 +447,7 @@ const ServiceModal = ({ loadData }) => {
                         </td>
                         <td>
                           {/* Số lần dùng */}
-                          <FormAntd.Item
+                          {/* <FormAntd.Item
                             name={`useCon${rowIndex}`}
                             rules={[
                               {
@@ -453,9 +455,9 @@ const ServiceModal = ({ loadData }) => {
                                 message: "Nhập số lần dùng",
                               },
                             ]}
-                            // initialValue={row[4]}
-                          >
-                            {/* <Form.Control
+                            
+                          > */}
+                          {/* <Form.Control
                                 type="number"
                                 min="1"
                                 // required
@@ -468,22 +470,40 @@ const ServiceModal = ({ loadData }) => {
                                 }}
                                 value={row[4]}
                               /> */}
-                            <InputNumber
-                              // required
-                              // name={`numberIn${rowIndex}`}
-                              min={1}
-                              max={10}
-                              // defaultValue={row[4]}
-                              onChange={(e) => {
-                                let temp = consumableUiList;
-                                temp[rowIndex][4] = e;
-                                setConsumableUiList([...temp]);
-                              }}
-                            />
-                          </FormAntd.Item>
+                          <InputNumber
+                            required
+                            // name={`numberIn${rowIndex}`}
+                            min={1}
+                            max={10}
+                            value={row[4]}
+                            // defaultValue={row[4]}
+                            onChange={(e) => {
+                              let temp = consumableUiList;
+                              temp[rowIndex][4] = e;
+                              setConsumableUiList([...temp]);
+                            }}
+                          />
+                          {/* </FormAntd.Item> */}
                         </td>
 
-                        <td onClick={() => deleteConsumableUiList(rowIndex)}>
+                        <td
+                          onClick={() => {
+                            Swal.fire({
+                              title: "Bạn có chắc chắn muốn xoá",
+                              showDenyButton: true,
+                              // showCancelButton: true,
+                              confirmButtonText: "Xoá",
+                              denyButtonText: `Huỷ`,
+                            }).then((result) => {
+                              /* Read more about isConfirmed, isDenied below */
+                              if (result.isConfirmed) {
+                                deleteConsumableUiList(rowIndex);
+                              } else if (result.isDenied) {
+                                // Swal.fire('Changes are not saved', '', 'info')
+                              }
+                            });
+                          }}
+                        >
                           <FaTrashAlt
                             cursor="pointer"
                             color="#e74c3c"
