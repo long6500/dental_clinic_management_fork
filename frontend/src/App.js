@@ -23,17 +23,19 @@ import PrivateRoute from "./components/Route/PrivateRoute";
 import GuestRoute from "./components/Route/GuestRoute";
 import Clinic from "./pages/Clinic/Clinic";
 import axios from "../src/apis/api";
-import React from "react";
+import React, { useState, useEffect, Component } from "react";
 import Staff from "./pages/Staff/Staff";
 import MedicalPaper from "./pages/MedicalPaper/ListMedicalPaper"
 import Decentralization from "./pages/decentralization/Decentralization";
 import Receptionist from "./pages/Receptionist/Receptionist";
 import Pdf from "./components/exportPdf";
 import DashBoard from "./pages/dashBoard/dashBoard";
-
+import Page404 from "./pages/page404/Page404";
+import DashBoardTech from "./pages/dashBoard/dashBoardtechnicians";
 export const AuthContext = React.createContext();
 function App() {
   const isLoading = useSelector((state) => state.loading);
+  const [temp, setTemp] = useState(false);
   const [userInfo, setUserInfo] = React.useState({
     status: "idle",
     data: null,
@@ -90,11 +92,18 @@ function App() {
               <Route path="/DashBoard" element={<DashBoard />} />
               <Route path="/Decentralization" element={<Decentralization />} />
               <Route path="/clinic" element={<Clinic />} />
+              <Route path="/Page404" element={<Page404 />} />
               <Route path="/ChangePassword" element={<Changepassword />} />
               <Route path="/Profile" element={<Profile />} />
-              <Route path="/Medicine" element={<Medicine />}></Route>
-              <Route path="/Service" element={<Service />}></Route>
-              <Route path="/Customer" element={<Customer />}></Route>
+              <Route path="/DashBoardTech" element={<DashBoardTech />} />
+              <Route
+                path="/service"
+                element={<Service user={userInfo.data} />}
+              ></Route>
+              <Route
+                path="/medicine"
+                element={<Medicine user={userInfo.data} />}
+              ></Route>
               <Route path="/Receptionist" element={<Receptionist />}></Route>
               <Route path="/Invoice" element={<Pdf />}></Route>
               <Route

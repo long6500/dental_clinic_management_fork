@@ -88,7 +88,7 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
           function (value) {
             return new Promise((resolve, reject) => {
               axios
-                .get(`http://localhost:8080/api/customer/checkPhone/${value}`)
+                .get(`http://localhost:9000/api/customer/checkPhone/${value}`)
                 .then((res) => {
                   if (res.success === 1 || curPhone === value) {
                     resolve(true);
@@ -112,7 +112,7 @@ const UpdateCustomerModal = ({ closeModal, isVisible, cusId, loadData }) => {
           function (value) {
             return new Promise((resolve, reject) => {
               axios
-                .get(`http://localhost:8080/api/customer/checkEmail/${value}`)
+                .get(`http://localhost:9000/api/customer/checkEmail/${value}`)
                 .then((res) => {
                   if (res.success === 1 || curEmail === value) resolve(true);
                   else resolve(false);

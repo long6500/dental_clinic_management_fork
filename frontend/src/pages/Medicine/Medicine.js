@@ -9,7 +9,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { FaRedoAlt, FaEdit } from "react-icons/fa";
+import { FaRedoAlt, FaEdit,FaEye } from "react-icons/fa";
 import MedicineModal from "./MedicineModal";
 // import Table from "react-bootstrap/Table";
 import medicineProcessor from "../../apis/medicineProcessor";
@@ -23,7 +23,8 @@ import axios from "../../apis/api";
 import { Pagination, Table } from "antd";
 // import "antd/dist/antd.css";
 
-const Medicine = () => {
+const Medicine = ({ user }) => {
+
   const [medId, setMedID] = useState("");
   const [isShowUpdate, setIsShowUpdate] = useState(false);
   const [searchMeds, setSearchMeds] = useState("");
@@ -34,7 +35,9 @@ const Medicine = () => {
     isSuccess: true,
     content: "",
   });
-
+  const [temp, setTemp] = useState(false);
+  const [tempEye, setTempeye] = useState(false);
+  const [temp1, setTemp1] = useState(false);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(5);
   const [total, setTotal] = useState(0);
@@ -54,8 +57,11 @@ const Medicine = () => {
       });
   };
 
+
+
   useEffect(() => {
     loadData();
+    getPermission("Quản lý thuốc");
   }, [offset, total, searchMeds, limit]);
 
   const onChangePage = (current, pageSize) => {
@@ -158,7 +164,8 @@ const Medicine = () => {
       // "false"
       action: (
         <>
-          <FaEdit
+         {tempEye === true ? (
+            <FaEdit
             className="mx-2"
             color="#2980b9"
             cursor={"pointer"}
@@ -167,7 +174,20 @@ const Medicine = () => {
               openUpdateModal(med._id);
             }}
           />
-          <Form.Check
+          ) : (
+            <FaEye
+              className="mx-2"
+              color="#2980b9"
+              cursor={"pointer"}
+              size={25}
+              onClick={() => {
+                openUpdateModal(med._id);
+              }}
+            />
+          )}
+          
+           {temp === true ? (
+             <Form.Check
             type="switch"
             checked={med.status}
             style={{ display: "inline", marginLeft: "10px" }}
@@ -196,10 +216,51 @@ const Medicine = () => {
               }
             }}
           />
+          ) : null}
         </>
       ),
     };
   });
+
+  function findIndexByProperty(data, key, value) {
+    for (var i = 0; i < data.length; i++) {
+      if (data[i][key] === value) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  const getPermission = async (functionName) => {
+    const functionArray = await axios({
+      url: `/api/function`,
+      method: "get",
+    });
+    const index = findIndexByProperty(functionArray.data, "name", functionName);
+    let tempView = 0;
+    await Promise.all(
+      user.role.map(async (element) => {
+        const permission = await axios({
+          url: `/api/permission/${element._id}/${functionArray.data[index]._id}`,
+          method: "get",
+        });
+        if (permission.success === 0 || !permission.data) return;
+        if (permission.data[0].view === true) {
+          tempView++;
+          setTemp1(true);
+        }
+        if (permission.data[0].delete === true) {
+          setTemp(true);
+        }
+        if (permission.data[0].edit === true) {
+          setTempeye(true);
+        }
+      })
+    );
+    if(tempView===0){
+      window.location.href = "/Page404";
+    }
+  };
 
   return (
     <>
@@ -208,6 +269,7 @@ const Medicine = () => {
         isVisible={isShowUpdate}
         medID={medId}
         loadData={loadData}
+        userU={user}
       ></UpdateMedicineModal>
       <Navbar>
         <Container fluid>
@@ -223,7 +285,7 @@ const Medicine = () => {
               </h4>
             </Nav>
             <Form className="d-flex">
-              <MedicineModal loadData={loadData}></MedicineModal>
+              <MedicineModal userA={user} loadData={loadData}></MedicineModal>
               <Button
                 variant="primary"
                 style={{ marginRight: "20px" }}
