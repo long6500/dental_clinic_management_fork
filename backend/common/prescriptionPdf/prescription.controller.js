@@ -16,6 +16,9 @@ const cloudinary = require('cloudinary');
 const streamifier = require('streamifier')
 const multer = require('multer');
 const MedicinePrescribeModel = require('../../modules/medicine_prescribe/medicine_prescribe');
+const MedicineModel = require("../../modules/medicine/medicine");
+const CustomerModel = require("../../modules/customer/customer");
+const MedicalPaperModel = require("../../modules/medical_paper/medical_paper");
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
@@ -32,11 +35,125 @@ function getImage(url, size) {
     });
 }
 
+function padTo2Digits(num) {
+    return num.toString().padStart(2, '0');
+}
+
+function formatDate(date) {
+    return [
+        padTo2Digits(date.getDate()),
+        padTo2Digits(date.getMonth() + 1),
+        date.getFullYear(),
+    ].join('/');
+}
+
+function buildTable(data) {
+    let body = [];
+    body.push([
+        {
+            text: 'TT',
+            fillColor: '#eaf2f5',
+            border: [false, true, false, true],
+            margin: [0, 5, 0, 5],
+            textTransform: 'uppercase',
+        },
+        {
+            text: 'Tên thuốc',
+            border: [false, true, false, true],
+            alignment: 'center',
+            fillColor: '#eaf2f5',
+            margin: [0, 5, 0, 5],
+            textTransform: 'uppercase',
+        },
+        {
+            text: 'SL',
+            border: [false, true, false, true],
+            alignment: 'center',
+            fillColor: '#eaf2f5',
+            margin: [0, 5, 0, 5],
+            textTransform: 'uppercase',
+        },
+        {
+            text: 'Lượng \n (viên/vỉ-ml,mg/lọ)',
+            border: [false, true, false, true],
+            alignment: 'center',
+            fillColor: '#eaf2f5',
+            margin: [0, 5, 0, 5],
+            textTransform: 'uppercase',
+        },
+        {
+            text: 'Cách dùng',
+            border: [false, true, false, true],
+            alignment: 'center',
+            fillColor: '#eaf2f5',
+            margin: [0, 5, 0, 5],
+            textTransform: 'uppercase',
+        },
+    ])
+    let temp = 1;
+    data.forEach(element => {
+        body.push([
+            {
+                text: temp,
+                border: [false, false, false, true],
+                margin: [0, 5, 0, 5],
+                alignment: 'left',
+            },
+            {
+                border: [false, false, false, true],
+                text: element.name,
+                bold: true,
+                alignment: 'left',
+                margin: [0, 5, 0, 5],
+            },
+            {
+                text: element.quantity,
+                border: [false, false, false, true],
+                margin: [0, 5, 0, 5],
+                alignment: 'left',
+            },
+            {
+                text: element.unit,
+                border: [false, false, false, true],
+                margin: [0, 5, 0, 5],
+                alignment: 'left',
+            },
+            {
+                text: element.usage,
+                border: [false, false, false, true],
+                margin: [0, 5, 0, 5],
+                alignment: 'left',
+            },
+        ])
+
+        temp++;
+    });
+    return body;
+}
+
 const exportPdf = async (req, res) => {
     const { medicalPaperId } = req.query;
     const clinic = await ClinicModel.find();
     const data = await getImage(clinic[0].icon, 400);
     const medicinePrescribe = await MedicinePrescribeModel.find({ medicalPaperId: medicalPaperId });
+    let medicine = [];
+    await Promise.all(
+        medicinePrescribe.map(async (element) => {
+            const temp = await MedicineModel.findById(element.medicineId);
+            medicine.push({
+                ...element._doc,
+                name: temp.name,
+                unit: temp.quantity,
+            });
+        })
+    );
+    const today = new Date();
+    const medicalPaper = await MedicalPaperModel.findOne({ _id: medicalPaperId });
+    const customer = await CustomerModel.findOne({ _id: medicalPaper.customerId });
+    let reExamination = '';
+    if(medicalPaper.reExamination && medicalPaper.reExamination !== 'null'){
+        reExamination = formatDate(medicalPaper.reExamination);
+    }
     var docDefinition = {
         content: [
             {
@@ -72,8 +189,8 @@ const exportPdf = async (req, res) => {
                                             bold: true,
                                             color: '#333333',
                                             fontSize: 12,
-                                            alignment: 'right',
-                                            width: 190,
+                                            alignment: 'left',
+                                            width: 220,
                                         },
                                     ],
                                 },
@@ -91,9 +208,9 @@ const exportPdf = async (req, res) => {
                                             text: clinic[0].email,
                                             bold: true,
                                             fontSize: 12,
-                                            alignment: 'right',
+                                            alignment: 'left',
                                             color: '#333333',
-                                            width: 190,
+                                            width: 220,
                                         },
                                     ],
                                 },
@@ -112,8 +229,8 @@ const exportPdf = async (req, res) => {
                                             bold: true,
                                             color: '#333333',
                                             fontSize: 12,
-                                            alignment: 'right',
-                                            width: 190,
+                                            alignment: 'left',
+                                            width: 220,
                                         },
                                     ],
                                 },
@@ -131,9 +248,9 @@ const exportPdf = async (req, res) => {
                                             text: clinic[0].accountNumber,
                                             bold: true,
                                             fontSize: 12,
-                                            alignment: 'right',
+                                            alignment: 'left',
                                             color: '#333333',
-                                            width: 190,
+                                            width: 220,
                                         },
                                     ],
                                 },
@@ -160,12 +277,12 @@ const exportPdf = async (req, res) => {
                         alignment: 'right',
                     },
                     {
-                        text: "0001",
+                        text: medicalPaperId,
                         bold: true,
                         fontSize: 12,
-                        alignment: 'right',
+                        alignment: 'left',
                         color: '#333333',
-                        width: 70,
+                        width: 100,
                     },
                 ],
             }, '\n\n',
@@ -181,7 +298,7 @@ const exportPdf = async (req, res) => {
                         margin: [0, 0, 0, 10]
                     },
                     {
-                        text: '',
+                        text: customer.fullname,
                         color: '#333333',
                         bold: true,
                         fontSize: 13,
@@ -202,7 +319,7 @@ const exportPdf = async (req, res) => {
                         margin: [0, 0, 0, 10]
                     },
                     {
-                        text: 'aaaa',
+                        text: customer.address,
                         color: '#333333',
                         bold: true,
                         fontSize: 13,
@@ -223,7 +340,7 @@ const exportPdf = async (req, res) => {
                         margin: [0, 0, 0, 10]
                     },
                     {
-                        text: '00000',
+                        text: formatDate(customer.dateOfBirth),
                         color: '#333333',
                         bold: true,
                         fontSize: 13,
@@ -232,42 +349,6 @@ const exportPdf = async (req, res) => {
                     },
                 ],
             },
-            '\n\n',
-            {
-                ul: [
-                    medicinePrescribe.map((element) => {
-                        return
-                        {
-                            columns: [
-                                {
-                                    text: element.name,
-                                    fontSize: 13,
-                                    bold: true,
-                                    alignment: 'left',
-                                    width: 140,
-                                    margin: [0, 0, 0, 10]
-                                },
-                                {
-                                    text: "Đơn vị: "+element.unit,
-                                    fontSize: 13,
-                                    alignment: 'left',
-                                    width: 140,
-                                    margin: [0, 0, 0, 10]
-                                },
-                                {
-                                    text: "Số lượng: "+element.quantity,
-                                    fontSize: 13,
-                                    alignment: 'left',
-                                    width: 140,
-                                    margin: [0, 0, 0, 10]
-                                },
-                            ],
-                            element.usage
-                        }
-                    }),
-                ]
-            },
-            '\n',
             '\n\n',
             {
                 layout: {
@@ -279,6 +360,9 @@ const exportPdf = async (req, res) => {
                         return 1;
                     },
                     hLineColor: function (i, node) {
+                        if (i === 1 || i === 0) {
+                            return '#bfdde8';
+                        }
                         return '#eaeaea';
                     },
                     vLineColor: function (i, node) {
@@ -297,10 +381,10 @@ const exportPdf = async (req, res) => {
                         return 10;
                     },
                     paddingTop: function (i, node) {
-                        return 3;
+                        return 2;
                     },
                     paddingBottom: function (i, node) {
-                        return 3;
+                        return 2;
                     },
                     fillColor: function (rowIndex, node, columnIndex) {
                         return '#fff';
@@ -308,68 +392,64 @@ const exportPdf = async (req, res) => {
                 },
                 table: {
                     headerRows: 1,
-                    widths: ['*', 'auto'],
-                    body: [
-                        [
-                            {
-                                text: 'Payment Subtotal',
-                                border: [false, true, false, true],
-                                alignment: 'right',
-                                margin: [0, 5, 0, 5],
-                            },
-                            {
-                                border: [false, true, false, true],
-                                text: '$999.99',
-                                alignment: 'right',
-                                fillColor: '#f5f5f5',
-                                margin: [0, 5, 0, 5],
-                            },
-                        ],
-                        [
-                            {
-                                text: 'Payment Processing Fee',
-                                border: [false, false, false, true],
-                                alignment: 'right',
-                                margin: [0, 5, 0, 5],
-                            },
-                            {
-                                text: '$999.99',
-                                border: [false, false, false, true],
-                                fillColor: '#f5f5f5',
-                                alignment: 'right',
-                                margin: [0, 5, 0, 5],
-                            },
-                        ],
-                        [
-                            {
-                                text: 'Total Amount',
-                                bold: true,
-                                fontSize: 20,
-                                alignment: 'right',
-                                border: [false, false, false, true],
-                                margin: [0, 5, 0, 5],
-                            },
-                            {
-                                text: 'USD $999.99',
-                                bold: true,
-                                fontSize: 20,
-                                alignment: 'right',
-                                border: [false, false, false, true],
-                                fillColor: '#f5f5f5',
-                                margin: [0, 5, 0, 5],
-                            },
-                        ],
-                    ],
+                    widths: [30, '*', 30, 70, 200],
+                    body: buildTable(medicine)
                 },
             },
             '\n\n',
             {
-                text: 'NOTES',
-                style: 'notesTitle',
+                text: 'Cộng khoản: ' + medicine.length,
+                fontSize: 13,
+                style: 'notesText',
+                alignment: 'left'
+            },
+            '\n\n',
+            {
+                text: `Hà Nội, ngày ${today.getDay()} tháng ${today.getMonth()} năm ${today.getFullYear()}`,
+                style: 'notesText',
+                alignment: 'right',
+                width: '*',
+            },
+            '\n\n',
+            {
+                columns: [
+                    {
+                        text: 'Tái khám ngày: ' + reExamination,
+                        style: 'notesTitle',
+                        fontSize: 13,
+                        bold: true,
+                        alignment: 'left',
+                        width: '50%',
+                        margin: [0, 0, 0, 10]
+                    },
+                    {
+                        text: 'Bác sĩ điều trị',
+                        style: 'notesTitle',
+                        bold: true,
+                        fontSize: 13,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 10]
+                    },
+                ],
             },
             {
-                text: 'Some notes goes here \n Notes second line',
-                style: 'notesText',
+                columns: [
+                    {
+                        text: 'Lời dặn',
+                        style: 'notesText',
+                        fontSize: 13,
+                        alignment: 'left',
+                        width: '50%',
+                        margin: [0, 0, 0, 10]
+                    },
+                    {
+                        text: '(Kí và ghi rõ họ tên)',
+                        style: 'notesText',
+                        fontSize: 12,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 10]
+                    },
+                ],
             },
         ],
         styles: {

@@ -12,11 +12,9 @@ const printer = new PdfPrinter(fonts);
 const fs = require('fs');
 const ClinicModel = require('../../modules/clinic/clinic');
 const { createCanvas, loadImage } = require('canvas');
-const fileUploader = require("../../middlewares/cloudinary.config");
 const cloudinary = require('cloudinary');
 const streamifier = require('streamifier')
 const multer = require('multer');
-const {LocalFileData} = require('get-file-object-from-local-path');
 
 const memoryStorage = multer.memoryStorage()
 const uploadWithMemoryStorage = multer({ storage: memoryStorage })
@@ -75,8 +73,8 @@ const exportPdf = async (req, res) => {
                                             bold: true,
                                             color: '#333333',
                                             fontSize: 12,
-                                            alignment: 'right',
-                                            width: 170,
+                                            alignment: 'left',
+                                            width: 220,
                                         },
                                     ],
                                 },
@@ -95,8 +93,8 @@ const exportPdf = async (req, res) => {
                                             bold: true,
                                             color: '#333333',
                                             fontSize: 12,
-                                            alignment: 'right',
-                                            width: 170,
+                                            alignment: 'left',
+                                            width: 220,
                                         },
                                     ],
                                 },
@@ -114,9 +112,9 @@ const exportPdf = async (req, res) => {
                                             text: clinic[0].email,
                                             bold: true,
                                             fontSize: 12,
-                                            alignment: 'right',
+                                            alignment: 'left',
                                             color: '#333333',
-                                            width: 170,
+                                            width: 220,
                                         },
                                     ],
                                 },
@@ -134,9 +132,9 @@ const exportPdf = async (req, res) => {
                                             text: clinic[0].accountNumber,
                                             bold: true,
                                             fontSize: 12,
-                                            alignment: 'right',
+                                            alignment: 'left',
                                             color: '#333333',
-                                            width: 170,
+                                            width: 220,
                                         },
                                     ],
                                 },
@@ -166,7 +164,7 @@ const exportPdf = async (req, res) => {
                         text: "0001",
                         bold: true,
                         fontSize: 12,
-                        alignment: 'right',
+                        alignment: 'left',
                         color: '#333333',
                         width: 70,
                     },
@@ -278,7 +276,7 @@ const exportPdf = async (req, res) => {
                 },
                 table: {
                     headerRows: 1,
-                    widths: [30, '*', 30, '*', '*'],
+                    widths: [30, '*', 30, '*', 90],
                     body: [
                         [
                             {
@@ -387,6 +385,43 @@ const exportPdf = async (req, res) => {
                                 margin: [0, 5, 0, 5],
                             },
                         ],
+                        [
+                            {
+                                text: '',
+                                border: [false, false, false, true],
+                                margin: [0, 5, 0, 5],
+                                alignment: 'left',
+                            },
+                            {
+                                text: '',
+                                border: [false, false, false, true],
+                                margin: [0, 5, 0, 5],
+                                alignment: 'left',
+                            },
+                            {
+                                text: '',
+                                border: [false, false, false, true],
+                                margin: [0, 5, 0, 5],
+                                alignment: 'left',
+                            },
+                            {
+                                text: 'Tổng cộng',
+                                fontSize: 18,
+                                bold: true,
+                                border: [false, false, false, true],
+                                margin: [0, 5, 0, 5],
+                                alignment: 'right',
+                            },
+                            {
+                                text: '$999.99',
+                                fontSize: 18,
+                                bold: true,
+                                border: [false, false, false, true],
+                                fillColor: '#f5f5f5',
+                                alignment: 'right',
+                                margin: [0, 5, 0, 5],
+                            },
+                        ],
                     ],
                 },
             },
@@ -431,11 +466,11 @@ const exportPdf = async (req, res) => {
                 },
                 table: {
                     headerRows: 1,
-                    widths: ['*', 'auto'],
+                    widths: ['*', 90],
                     body: [
                         [
                             {
-                                text: 'Payment Subtotal',
+                                text: 'Đã thanh toán',
                                 border: [false, true, false, true],
                                 alignment: 'right',
                                 margin: [0, 5, 0, 5],
@@ -450,7 +485,7 @@ const exportPdf = async (req, res) => {
                         ],
                         [
                             {
-                                text: 'Payment Processing Fee',
+                                text: 'Còn nợ',
                                 border: [false, false, false, true],
                                 alignment: 'right',
                                 margin: [0, 5, 0, 5],
@@ -460,25 +495,6 @@ const exportPdf = async (req, res) => {
                                 border: [false, false, false, true],
                                 fillColor: '#f5f5f5',
                                 alignment: 'right',
-                                margin: [0, 5, 0, 5],
-                            },
-                        ],
-                        [
-                            {
-                                text: 'Total Amount',
-                                bold: true,
-                                fontSize: 20,
-                                alignment: 'right',
-                                border: [false, false, false, true],
-                                margin: [0, 5, 0, 5],
-                            },
-                            {
-                                text: 'USD $999.99',
-                                bold: true,
-                                fontSize: 20,
-                                alignment: 'right',
-                                border: [false, false, false, true],
-                                fillColor: '#f5f5f5',
                                 margin: [0, 5, 0, 5],
                             },
                         ],
@@ -487,12 +503,51 @@ const exportPdf = async (req, res) => {
             },
             '\n\n',
             {
-                text: 'NOTES',
-                style: 'notesTitle',
+                text: 'Hà Nội, ngày  tháng  năm',
+                style: 'notesText',
+                alignment: 'right',
+                width: '*',
+            },
+            '\n\n',
+            {
+                columns: [
+                    {
+                        text: 'Bệnh nhân',
+                        style: 'notesTitle',
+                        fontSize: 13,
+                        bold: true,
+                        alignment: 'center',
+                        width: '50%',
+                        margin: [0, 0, 0, 10]
+                    },
+                    {
+                        text: 'Nhân viên thu ngân',
+                        style: 'notesTitle',
+                        bold: true,
+                        fontSize: 13,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 10]
+                    },
+                ],
             },
             {
-                text: 'Some notes goes here \n Notes second line',
-                style: 'notesText',
+                columns: [
+                    {
+                        text: '(Kí và ghi rõ họ tên)',
+                        style: 'notesText',
+                        fontSize: 12,
+                        alignment: 'center',
+                        width: '50%',
+                        margin: [0, 0, 0, 10]
+                    },
+                    {
+                        text: '(Kí và ghi rõ họ tên)',
+                        style: 'notesText',
+                        fontSize: 12,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 10]
+                    },
+                ],
             },
         ],
         styles: {
@@ -516,34 +571,34 @@ const exportPdf = async (req, res) => {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=invoice.pdf',
         'Content-Transfer-Encoding': 'Binary'
-      });
-    
-      pdfDoc.pipe(res); 
-      pdfDoc.end();
+    });
+
+    pdfDoc.pipe(res);
+    pdfDoc.end();
 }
 
 const uploadToCloud = async (req, res) => {
-    const {file} = req.body;
+    const { file } = req.body;
     console.log(file)
     const streamUpload = (req) => {
-      return new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            (error, result) => {
-              if (result) {
-                resolve(result);
-              } else {
-                reject(error);
-              }
-            }
-          );
-  
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
-  };
-  
+        return new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                (error, result) => {
+                    if (result) {
+                        resolve(result);
+                    } else {
+                        reject(error);
+                    }
+                }
+            );
+
+            streamifier.createReadStream(req.file.buffer).pipe(stream);
+        });
+    };
+
     const result = await streamUpload(req);
-    res.send({ success: 1, data:result.secure_url })
-  }
+    res.send({ success: 1, data: result.secure_url })
+}
 
 module.exports = {
     exportPdf,

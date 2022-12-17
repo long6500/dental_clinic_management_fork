@@ -31,12 +31,16 @@ const systemicMedicalHistoryRouter = require("./modules/systemic_medical_history
 const dentalMedicalHistoryRouter = require("./modules/dental_medical_history/dental_medical_history.router");
 
 const invoicePdfRouter = require('./common/invoicePdf/invoicePdf.router');
+const prescriptionPdfRouter = require('./common/prescriptionPdf/prescription.router');
 
 const customerRouter = require("./modules/customer/customer.router");
 
 const medicalPaperRouter = require("./modules/medical_paper/medical_paper.router");
 
 const medicinePrescribeRouter = require("./modules/medicine_prescribe/medicine_prescribe.router");
+
+const paymentController = require("./modules/payment/payment.controller");
+const paymentRouter = require("./modules/payment/payment.router");
 
 mongoose.connect(process.env.MONGODB_URL, (err) => {
   if (err) {
@@ -51,6 +55,7 @@ mongoose.connect(process.env.MONGODB_URL, (err) => {
     profileController.createAdmin();
     clinicController.createClinic();
     permissionController.createPermission();
+    paymentController.createPayment();
   } catch (err) {
     return console.log("Err insert", err);
   }
@@ -78,6 +83,8 @@ app.use("/api/function", functionRouter);
 app.use("/api/permission", permissionRouter);
 app.use("/api/medicinePrescribe", medicinePrescribeRouter);
 app.use('/api/invoice', invoicePdfRouter);
+app.use('/api/prescriptionPdf', prescriptionPdfRouter);
+app.use('/api/payment', paymentRouter);
 
 app.use("*", (req, res, next) => {
   res.status(404).send({ message: "404 not found" });

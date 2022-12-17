@@ -201,7 +201,7 @@ const MedListPaper = ({
 
   const printPDF = async () => {
     const response = await axios
-      .get(`/api/invoice`, {
+      .get(`/api/prescriptionPdf?medicalPaperId=${PKID}`, {
         responseType: "arraybuffer",
         headers: {
           Accept: "application/pdf",
@@ -212,7 +212,7 @@ const MedListPaper = ({
         const url = window.URL.createObjectURL(pdfBlod);
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "invoice.pdf"); //or any other extension
+        link.setAttribute("download", "prescription.pdf"); //or any other extension
         document.body.appendChild(link);
         link.click();
         const pdfWindow = window.open();

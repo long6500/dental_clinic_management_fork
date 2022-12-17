@@ -30,7 +30,6 @@ import Decentralization from "./pages/decentralization/Decentralization";
 import Receptionist from "./pages/Receptionist/Receptionist";
 import Pdf from "./components/exportPdf";
 import DashBoard from "./pages/dashBoard/dashBoard";
-import MedicalPaper from "./pages/MedicalPaper/ListMedicalPaper";
 
 export const AuthContext = React.createContext();
 function App() {

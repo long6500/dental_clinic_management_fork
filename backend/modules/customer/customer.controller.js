@@ -160,32 +160,6 @@ const updateCustomer = async (req, res) => {
   res.send({ success: 1, data: updatedCustomer });
 };
 
-const updateCustomerWithMedical = async (req, res) => {
-  const senderUser = req.user;
-  const {
-    customerId,
-    systemicMedicalHistory,
-    dentalMedicalHistory,
-  } = req.body;
-
-  const existCustomer = await CustomerModel.findOne({ _id: customerId });
-  if (!existCustomer) {
-    throw new HTTPError(400, "Not found customer");
-  }
-
-  const updatedCustomer = await CustomerModel.findByIdAndUpdate(
-    customerId,
-    {
-      modifyBy: senderUser._id,
-      systemicMedicalHistory,
-      dentalMedicalHistory,
-    },
-    { new: true }
-  );
-
-  res.send({ success: 1, data: updatedCustomer });
-}
-
 const getCustomerById = async (req, res) => {
   const { customerId } = req.params;
 
@@ -233,10 +207,6 @@ const getNext = async () => {
 const updateCustomerWithMedical = async (req, res) => {
   const senderUser = req.user;
   const { customerId, systemicMedicalHistory, dentalMedicalHistory } = req.body;
-  console.log(customerId);
-  console.log(systemicMedicalHistory);
-  console.log(dentalMedicalHistory);
-
   const existCustomer = await CustomerModel.findOne({ _id: customerId });
   if (!existCustomer) {
     throw new HTTPError(400, "Not found customer");
@@ -250,8 +220,6 @@ const updateCustomerWithMedical = async (req, res) => {
     },
     { new: true }
   );
-
-  console.log(updatedCustomer);
   res.send({ success: 1, data: updatedCustomer });
 };
 
