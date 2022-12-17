@@ -320,7 +320,7 @@ const MedListPaper = ({
                   <th>Tên thuốc</th>
                   <th>Số lượng</th>
                   <th>Đơn vị</th>
-                  <th>Cách dùngs</th>
+                  <th>Cách dùng</th>
                   <th></th>
                 </tr>
               </thead>
