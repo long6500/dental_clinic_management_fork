@@ -18,9 +18,8 @@ import customerProcessor from "../../apis/customerProcessor";
 import axios from "../../apis/api";
 import Swal from "sweetalert2";
 import { Pagination, Table } from "antd";
-import ExportCSV from "../../components/ExportCSV";
+
 const Customer = ({ user }) => {
-  console.log(user);
   const [customers, setCustomers] = useState([]);
 
   const [offset, setOffset] = useState(0);
@@ -149,6 +148,8 @@ const Customer = ({ user }) => {
       align: "center",
     },
   ];
+
+  
 
   const data = customers.map((med) => {
     return {

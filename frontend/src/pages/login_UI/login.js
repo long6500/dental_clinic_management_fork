@@ -51,21 +51,20 @@ function Login() {
             token: res.data.token,
           });
 
-          if (res.data.role[0].name === "Admin") {
-            // <Navigate to="/DashBoard" />;
-            navigate("/DashBoard");
-            navigate(0);
+          if(res.data.role[0].name === "Admin"){
+            window.location.href= "/DashBoard"
             return;
           }
-          if (res.data.role.find((e) => e.name === "Lễ tân")) {
-            <Navigate to="/Receptionist" />;
+          if(res.data.role.find((e) => e.name === "Lễ tân")){
+            window.location.href= "/Receptionist"
             return;
           }
-          if (res.data.role.find((e) => e.name === "Bác sĩ")) {
-            <Navigate to="/DashboardDoctor" />;
+          if(res.data.role.find((e) => e.name === "Bác sĩ")){
+            window.location.href= "/DashboardDoctor"
             return;
           }
-          <Navigate to="/DashBoardTech" />;
+          window.location.href= "/DashBoardTech"
+
         }
       } catch (err) {
         Swal.fire("Thất Bại", `Email hoặc mật khẩu sai`, "error");
