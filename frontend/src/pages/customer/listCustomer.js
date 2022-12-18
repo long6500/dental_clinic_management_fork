@@ -149,8 +149,6 @@ const Customer = ({ user }) => {
     },
   ];
 
-  
-
   const data = customers.map((med) => {
     return {
       key: med._id,
@@ -300,7 +298,7 @@ const Customer = ({ user }) => {
                 widthh="181px"
                 userA={user}
               />
-              <ExportCSV csvData={customers} fileName={"Demo"} />
+              {/* <ExportCSV csvData={customers} fileName={"Demo"} /> */}
 
               <Button
                 variant="primary"

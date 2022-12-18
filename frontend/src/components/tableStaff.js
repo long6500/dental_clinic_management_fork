@@ -6,90 +6,87 @@ import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import axios from "../apis/api";
-import { Pagination, Table} from "antd";
+import { Pagination, Table } from "antd";
 import moment from "moment";
 import { FaRedoAlt } from "react-icons/fa";
 
-export const TableStaff = ({a}) => {
-    const [offsetReExam, setOffsetReExam] = useState(0);
-    const [limitReExam, setLimitReExam] = useState(5);
-    const [totalReExam, setTotalReExam] = useState(0);
-    const [reExamination, setReExamination] = useState([]);
-  
-  
-    const today = new Date();
-  
-    const [startDate, setStartDate] = useState(
-      moment(today).format("YYYY-MM-DD")
-    );
-    const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
-  
-    const loadDataReExam = async () => {
-      const response = await axios
-        .get(
-          `/api/medicalPaper/reExam?offset=${offsetReExam}&limit=${limitReExam}&startDate=${startDate}&endDate=${endDate}`
-        )
-        .then((response) => {
-          if (response.success === 1) {
-            setReExamination(response.data.data);
-            setTotalReExam(response.data.total);
-          }
-        });
-    };
-  
-    useEffect(() => {
-      loadDataReExam();
-    }, [offsetReExam, limitReExam, startDate, endDate]);
-  
-    const onChangePageReExam = (current, pageSize) => {
-      setOffsetReExam(current - 1);
-      setLimitReExam(pageSize);
-    };
-  
-    const columnsReExam = [
-      {
-        title: "STT",
-        dataIndex: "_stt",
-        align: "center",
-        sorter: (a, b) => a._id.localeCompare(b._id),
-      },
-      {
-        title: "Mã nhân viên",
-        dataIndex: "id",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Tên nhân viên ",
-        dataIndex: "payment",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Doanh thu",
-        dataIndex: "paper",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Hoa hồng",
-        dataIndex: "paper",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Tiền Tip",
-        dataIndex: "paper",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-     
-    ];
-  
-    
-    return (
-        <>
-     <div
+export const TableStaff = ({ a }) => {
+  const [offsetReExam, setOffsetReExam] = useState(0);
+  const [limitReExam, setLimitReExam] = useState(5);
+  const [totalReExam, setTotalReExam] = useState(0);
+  const [reExamination, setReExamination] = useState([]);
+
+  const today = new Date();
+
+  const [startDate, setStartDate] = useState(
+    moment(today).format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
+
+  const loadDataReExam = async () => {
+    const response = await axios
+      .get(
+        `/api/medicalPaper/reExam?offset=${offsetReExam}&limit=${limitReExam}&startDate=${startDate}&endDate=${endDate}`
+      )
+      .then((response) => {
+        if (response.success === 1) {
+          setReExamination(response.data.data);
+          setTotalReExam(response.data.total);
+        }
+      });
+  };
+
+  useEffect(() => {
+    loadDataReExam();
+  }, [offsetReExam, limitReExam, startDate, endDate]);
+
+  const onChangePageReExam = (current, pageSize) => {
+    setOffsetReExam(current - 1);
+    setLimitReExam(pageSize);
+  };
+
+  const columnsReExam = [
+    {
+      title: "STT",
+      dataIndex: "_stt",
+      align: "center",
+      sorter: (a, b) => a._id.localeCompare(b._id),
+    },
+    {
+      title: "Mã nhân viên",
+      dataIndex: "id",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Tên nhân viên ",
+      dataIndex: "payment",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Doanh thu",
+      dataIndex: "paper",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Hoa hồng",
+      dataIndex: "paper",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Tiền Tip",
+      dataIndex: "paper",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+  ];
+
+  return (
+    <>
+      <div
         style={{
           margin: "auto",
           width: "90%",
@@ -109,7 +106,7 @@ export const TableStaff = ({a}) => {
                 navbarScroll
               >
                 <h4 style={{ display: "inline-block", margin: "10px" }}>
-                  Thống kê
+                  Thống kê nhân viên
                 </h4>
               </Nav>
               {/* <DatePicker.RangePicker
@@ -165,5 +162,7 @@ export const TableStaff = ({a}) => {
         </div>
       </div>
     </>
-    )
-}
+  );
+};
+
+export default TableStaff;

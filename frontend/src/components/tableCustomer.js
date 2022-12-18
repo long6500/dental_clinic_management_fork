@@ -6,95 +6,147 @@ import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import axios from "../apis/api";
-import { Pagination, Table} from "antd";
+import { Pagination, Table, Typography } from "antd";
 import moment from "moment";
 import { FaRedoAlt } from "react-icons/fa";
 
-export const Customers123 = ({customers}) => {
-    const [offsetReExam, setOffsetReExam] = useState(0);
-    const [limitReExam, setLimitReExam] = useState(5);
-    const [totalReExam, setTotalReExam] = useState(0);
-    const [reExamination, setReExamination] = useState([]);
-  
-  
-    const today = new Date();
-  
-    const [startDate, setStartDate] = useState(
-      moment(today).format("YYYY-MM-DD")
-    );
-    const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
-  
-    const loadDataReExam = async () => {
-      const response = await axios
-        .get(
-          `/api/medicalPaper/reExam?offset=${offsetReExam}&limit=${limitReExam}&startDate=${startDate}&endDate=${endDate}`
-        )
-        .then((response) => {
-          if (response.success === 1) {
-            setReExamination(response.data.data);
-            setTotalReExam(response.data.total);
-          }
-        });
+import CSV from "../components/ExportCSV";
+
+export const Customers123 = ({ customers }) => {
+  const { Text } = Typography;
+  const [offsetReExam, setOffsetReExam] = useState(0);
+  const [limitReExam, setLimitReExam] = useState(5);
+  const [totalReExam, setTotalReExam] = useState(0);
+  const [reExamination, setReExamination] = useState([]);
+
+  const today = new Date();
+
+  const [startDate, setStartDate] = useState(
+    moment(today).format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
+
+  const loadDataReExam = async () => {
+    const response = await axios
+      .get(
+        `/api/medicalPaper/reExam?offset=${offsetReExam}&limit=${limitReExam}&startDate=${startDate}&endDate=${endDate}`
+      )
+      .then((response) => {
+        if (response.success === 1) {
+          setReExamination(response.data.data);
+          setTotalReExam(response.data.total);
+        }
+      });
+  };
+
+  const [cusExcel, setCusExcel] = useState([]);
+
+  useEffect(() => {
+    setCusExcel([
+      ...customers?.map((i, rowIndex) => {
+        return {
+          "Mã khách hàng": i.id,
+          "Tên khách hàng": i.name,
+          "Doanh thu": i.totalAmount,
+          "Doanh thu thực": i.customerPayment,
+          "Còn nợ": i.debt,
+          "Số lượng phiếu": i.count,
+        };
+      }),
+    ]);
+  }, []);
+
+  useEffect(() => {
+    console.log(customers);
+  }, [customers]);
+
+  // useEffect(() => {
+  //   console.log(cusExcel);
+  // }, [cusExcel]);
+
+  useEffect(() => {
+    loadDataReExam();
+  }, [offsetReExam, limitReExam, startDate, endDate]);
+
+  const onChangePageReExam = (current, pageSize) => {
+    setOffsetReExam(current - 1);
+    setLimitReExam(pageSize);
+  };
+
+  const columnsReExam = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      align: "center",
+      sorter: (a, b) => a._id.localeCompare(b._id),
+    },
+    {
+      title: "Mã khách hàng",
+      dataIndex: "id",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Tên khách hàng",
+      dataIndex: "name",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Doanh thu",
+      dataIndex: "totalAmount",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Doanh thu thực",
+      dataIndex: "customerPayment",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Còn nợ",
+      dataIndex: "debt",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Số lượng phiếu",
+      dataIndex: "count",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+  ];
+
+  const dataSource = customers?.map((i, rowIndex) => {
+    return {
+      stt: rowIndex + 1,
+      id: i.id,
+      name: i.name,
+      totalAmount: i.totalAmount,
+      customerPayment: i.customerPayment,
+      //check khi debt < 0?
+      debt: i.debt,
+      count: i.count,
     };
-  
-    useEffect(() => {
-      loadDataReExam();
-    }, [offsetReExam, limitReExam, startDate, endDate]);
-  
-    const onChangePageReExam = (current, pageSize) => {
-      setOffsetReExam(current - 1);
-      setLimitReExam(pageSize);
+  });
+
+  const dataFooter = customers?.map((i, rowIndex) => {
+    return {
+      stt: rowIndex + 1,
+      id: "demo",
+      name: i.name,
+      totalAmount: Number(i.totalAmount),
+      customerPayment: Number(i.customerPayment),
+      //check khi debt < 0?
+      debt: Number(i.debt),
+      count: Number(i.count),
     };
-  
-    const columnsReExam = [
-      {
-        title: "STT",
-        dataIndex: "_stt",
-        align: "center",
-        sorter: (a, b) => a._id.localeCompare(b._id),
-      },
-      {
-        title: "Mã khách hàng",
-        dataIndex: "id",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Tên khách hàng",
-        dataIndex: "date",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Doanh thu",
-        dataIndex: "date",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Doanh thu thực",
-        dataIndex: "date",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Còn nợ",
-        dataIndex: "date",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-      {
-        title: "Số lượng phiếu",
-        dataIndex: "date",
-        align: "center",
-        sorter: (a, b) => a.name.localeCompare(b.name),
-      },
-    ];
-  
-    
-    return (
-        <>
-     <div
+  });
+
+  return (
+    <>
+      <div
         style={{
           margin: "auto",
           width: "90%",
@@ -114,7 +166,7 @@ export const Customers123 = ({customers}) => {
                 navbarScroll
               >
                 <h4 style={{ display: "inline-block", margin: "10px" }}>
-                 Thống kê
+                  Thống kê khách hàng
                 </h4>
               </Nav>
               {/* <DatePicker.RangePicker
@@ -126,13 +178,14 @@ export const Customers123 = ({customers}) => {
                 style={{ float: "right", marginRight: "20px" }}
               /> */}
               <Form className="d-flex">
-                <Button
+                {/* <Button
                   variant="primary"
                   style={{ marginRight: "20px" }}
                   onClick={loadDataReExam}
                 >
-                 Xuất file
-                </Button>
+                  Xuất file
+                </Button> */}
+                <CSV csvData={cusExcel} fileName={"Customer"} />
               </Form>
             </Navbar.Collapse>
           </Container>
@@ -155,10 +208,61 @@ export const Customers123 = ({customers}) => {
             Tổng: {totalReExam}
           </span> */}
 
-          <Table columns={columnsReExam} pagination={false} />
+          <Table
+            columns={columnsReExam}
+            dataSource={dataSource}
+            pagination={false}
+            summary={(pageData) => {
+              let tempTotalAmount = 0;
+              let totalCustomerPayment = 0;
+              let totalDebt = 0;
+              let totalCount = 0;
+
+              pageData.forEach(
+                ({ totalAmount, customerPayment, debt, count }) => {
+                  tempTotalAmount += totalAmount;
+                  totalCustomerPayment += customerPayment;
+                  totalDebt += debt;
+                  totalCount += count;
+                }
+              );
+
+              return (
+                <>
+                  {/* <div> */}
+                  <Table.Summary.Row style={{ textAlign: "center" }}>
+                    <Table.Summary.Cell>
+                      <b>Tổng:{pageData.length}</b>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell></Table.Summary.Cell>
+                    <Table.Summary.Cell></Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text type="danger">{Number(tempTotalAmount)}</Text>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text type="danger">{Number(totalCustomerPayment)}</Text>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text type="danger">{Number(totalDebt)}</Text>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text type="danger">{Number(totalCount)}</Text>
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                  {/* <Table.Summary.Row>
+                    <Table.Summary.Cell>Balance</Table.Summary.Cell>
+                    <Table.Summary.Cell colSpan={2}>
+                      <Text type="danger">{totalBorrow - totalRepayment}</Text>
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row> */}
+                  {/* </div> */}
+                </>
+              );
+            }}
+          />
         </div>
 
-        <div id="pagin" style={{ marginTop: "10px", marginBottom: "10px" }}>
+        {/* <div id="pagin" style={{ marginTop: "10px", marginBottom: "10px" }}>
           <Pagination
             showSizeChanger
             current={offsetReExam + 1}
@@ -167,8 +271,10 @@ export const Customers123 = ({customers}) => {
             defaultPageSize={5}
             pageSizeOptions={[5, 10, 20, 50]}
           />
-        </div>
+        </div> */}
       </div>
     </>
-    )
-}
+  );
+};
+
+export default Customers123;

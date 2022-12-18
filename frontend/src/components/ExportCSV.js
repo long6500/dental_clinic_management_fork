@@ -9,7 +9,15 @@ const ExportCSV = ({ csvData, fileName }) => {
   const fileExtension = ".xlsx";
 
   const exportToCSV = (csvData, fileName) => {
-    const ws = XLSX.utils.json_to_sheet(csvData);
+    let ws = XLSX.utils.json_to_sheet(csvData);
+    var wscols = [{ wch: 20 }, { wch: 20 }, { wch: 20 }];
+    for (let index = 0; index < Object.keys(csvData[0]).length; index++) {
+      console.log(1);
+      wscols.push({ wch: 20 });
+    }
+
+    ws["!cols"] = wscols;
+
     const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: fileType });
@@ -18,7 +26,7 @@ const ExportCSV = ({ csvData, fileName }) => {
 
   return (
     <Button variant="warning" onClick={(e) => exportToCSV(csvData, fileName)}>
-      Export
+      Xuất file
     </Button>
   );
 };

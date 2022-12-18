@@ -44,6 +44,8 @@ const paymentRouter = require("./modules/payment/payment.router");
 
 const billRouter = require("./modules/bill/bill.router");
 
+const staticsticalRouter = require("./common/static/statistical.router");
+
 mongoose.connect(process.env.MONGODB_URL, (err) => {
   if (err) {
     return console.log("Err connnect mongodb", err);
@@ -88,6 +90,7 @@ app.use("/api/invoice", invoicePdfRouter);
 app.use("/api/prescriptionPdf", prescriptionPdfRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/bill", billRouter);
+app.use("/api/staticstial", staticsticalRouter);
 
 app.use("*", (req, res, next) => {
   res.status(404).send({ message: "404 not found" });
