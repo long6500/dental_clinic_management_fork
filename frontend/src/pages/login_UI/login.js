@@ -50,34 +50,25 @@ function Login() {
             _id: res.data._id,
             token: res.data.token,
           });
-          if(res.data.role[0].name === "Admin"){
-            window.location.href= "/DashBoard"
+          if (res.data.role[0].name === "Admin") {
+            window.location.href = "/DashBoard";
             return;
           }
-          if(res.data.role.find((e) => e.name === "Lễ tân")){
-            window.location.href= "/Receptionist"
+          if (res.data.role.find((e) => e.name === "Lễ tân")) {
+            window.location.href = "/Receptionist";
             return;
           }
-          if(res.data.role.find((e) => e.name === "Bác sĩ")){
-            window.location.href= "/DashboardDoctor"
+          if (res.data.role.find((e) => e.name === "Bác sĩ")) {
+            window.location.href = "/DashboardDoctor";
             return;
           }
-          window.location.href= "/DashBoardTech"
+          window.location.href = "/DashBoardTech";
         }
       } catch (err) {
         Swal.fire("Thất Bại", `Email hoặc mật khẩu sai`, "error");
       }
     },
   });
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log("run in 1");
-    if (token) {
-      navigate("/DashBoard");
-      console.log("run in 2");
-    }
-  }, []);
 
   return (
     <section className="vh-100">

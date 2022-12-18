@@ -24,7 +24,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import AdCusSearch from "./AdCusSearch";
 import MedListPaper from "./MedListPaper";
 import Payment from "./Payment";
-const MedicalPaperModal = ({ loadData }) => {
+const MedicalPaperModal = ({ loadData, user }) => {
   // const options = [];
   const [pk, setPK] = useState({
     customerId: "",
@@ -189,6 +189,10 @@ const MedicalPaperModal = ({ loadData }) => {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(5);
   const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    console.log(singleSelections);
+  }, [singleSelections]);
 
   useEffect(() => {
     loadServiceTable();
@@ -745,7 +749,7 @@ const MedicalPaperModal = ({ loadData }) => {
                   </span>
                 </Form.Label>
                 <Col sm={8}>
-                  <FormAntd.Item
+                  {/* <FormAntd.Item
                     name="KH"
                     rules={[
                       {
@@ -753,25 +757,27 @@ const MedicalPaperModal = ({ loadData }) => {
                         message: "Nhập tên khách hàng",
                       },
                     ]}
-                  >
-                    <Typeahead
-                      id="basic-typeahead-single"
-                      labelKey="name"
-                      onChange={(e) => {
-                        if (e[0]) {
-                          // setPK({ ...pk, customerId: e[0].id });
-                          fillCusDataByName(e);
-                        } else {
-                          selectedCus.systemicMedicalHistory = [];
-                          selectedCus.dentalMedicalHistory = [];
-                        }
-                        setSingleSelections(e);
-                      }}
-                      options={customerId}
-                      placeholder="Chọn tên khách hàng..."
-                      selected={singleSelections}
-                    />
-                  </FormAntd.Item>
+                    initialValue={singleSelections}
+                  > */}
+                  <Typeahead
+                    id="basic-typeahead-single"
+                    labelKey="name"
+                    onChange={(e) => {
+                      if (e[0]) {
+                        // setPK({ ...pk, customerId: e[0].id });
+                        fillCusDataByName(e);
+                      } else {
+                        selectedCus.systemicMedicalHistory = [];
+                        selectedCus.dentalMedicalHistory = [];
+                      }
+                      setSingleSelections(e);
+                    }}
+                    options={customerId}
+                    placeholder="Chọn tên khách hàng..."
+                    selected={singleSelections}
+                    inputProps={{ required: true }}
+                  />
+                  {/* </FormAntd.Item> */}
                 </Col>
               </Row>
               <Row className="mb-3" style={{ margin: "5px" }}>
@@ -786,6 +792,7 @@ const MedicalPaperModal = ({ loadData }) => {
                 </Col>
                 <Col sm={4}>
                   <CustomerModal
+                    userA={user}
                     lbl={"Thêm KH"}
                     // loadData={loadData}
                     widthh="200px"
