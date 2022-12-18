@@ -32,6 +32,8 @@ import DashBoard from "./pages/dashBoard/dashBoard";
 import Page404 from "./pages/page404/Page404";
 import DashBoardTech from "./pages/dashBoard/dashBoardtechnicians";
 import DashBoardDoctor from "./pages/dashBoard/dashBoardDoctor";
+import Statistical from "./pages/statistical/statistical";
+
 export const AuthContext = React.createContext();
 function App() {
   const isLoading = useSelector((state) => state.loading);
@@ -119,6 +121,10 @@ function App() {
               <Route
                 path="/MedicalPaper"
                 element={<MedicalPaper user={userInfo.data} />}
+              ></Route>
+              <Route
+                path="/Statistical"
+                element={<Statistical user={userInfo.data} />}
               ></Route>
             </Route>
           </Routes>

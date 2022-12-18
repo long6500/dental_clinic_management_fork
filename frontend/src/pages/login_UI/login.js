@@ -53,21 +53,19 @@ function Login() {
             _id: res.data._id,
             token: res.data.token,
           });
-
           if(res.data.role[0].name === "Admin"){
-            <Navigate to="/DashBoard" />
+            window.location.href= "/DashBoard"
             return;
           }
           if(res.data.role.find((e) => e.name === "Lễ tân")){
-            <Navigate to="/Receptionist" />
+            window.location.href= "/Receptionist"
             return;
           }
           if(res.data.role.find((e) => e.name === "Bác sĩ")){
-            <Navigate to="/DashboardDoctor" />
+            window.location.href= "/DashboardDoctor"
             return;
           }
-          <Navigate to="/DashBoardTech" />
-
+          window.location.href= "/DashBoardTech"
         }
       } catch (err) {
         Swal.fire("Thất Bại", `Email hoặc mật khẩu sai`, "error");
