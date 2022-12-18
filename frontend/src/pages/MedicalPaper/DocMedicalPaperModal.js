@@ -549,7 +549,7 @@ const DocMedicalPaperModal = ({
                     placeholder={new Intl.NumberFormat("de-DE", {
                       style: "currency",
                       currency: "VND",
-                    }).format(totalPrice.toLocaleString("en-US"))}
+                    }).format(totalPrice)}
                   />
                 </Col>
               </Row>

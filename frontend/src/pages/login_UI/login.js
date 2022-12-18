@@ -4,7 +4,9 @@ import axios from "../../apis/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import useAuth from "../../components/hooks/useAuth";
-// import { useNavigate } from "react-router";
+
+import { useNavigate } from "react-router";
+import {Navigate} from "react-router-dom";
 
 import Swal from "sweetalert2";
 import SwalCard from "../../components/CardErr";
@@ -51,28 +53,21 @@ function Login() {
             _id: res.data._id,
             token: res.data.token,
           });
-          if (res.data.role[0].name === "Admin") {
-            // window.location.href = "/DashBoard";
-            console.log(1);
-            navigate("/DashBoard");
 
+          if(res.data.role[0].name === "Admin"){
+            <Navigate to="/DashBoard" />
             return;
           }
-          if (res.data.role.find((e) => e.name === "Lễ tân")) {
-            // window.location.href = "/Receptionist";
-            navigate("/Receptionist");
-
+          if(res.data.role.find((e) => e.name === "Lễ tân")){
+            <Navigate to="/Receptionist" />
             return;
           }
-          if (res.data.role.find((e) => e.name === "Bác sĩ")) {
-            // window.location.href = "/DashboardDoctor";
-            navigate("/DashboardDoctor");
-
+          if(res.data.role.find((e) => e.name === "Bác sĩ")){
+            <Navigate to="/DashboardDoctor" />
             return;
           }
-          // window.location.href = "/DashBoardTech";
-          // <Navigate to="/DashBoardTech" />;
-          navigate("/DashBoardTech");
+          <Navigate to="/DashBoardTech" />
+
         }
       } catch (err) {
         Swal.fire("Thất Bại", `Email hoặc mật khẩu sai`, "error");
