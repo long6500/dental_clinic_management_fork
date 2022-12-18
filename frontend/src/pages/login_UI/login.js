@@ -1,12 +1,9 @@
 import "./login.css";
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "../../apis/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import useAuth from "../../components/hooks/useAuth";
-
-import { useNavigate } from "react-router";
-import {Navigate} from "react-router-dom";
 
 import Swal from "sweetalert2";
 import SwalCard from "../../components/CardErr";
@@ -54,26 +51,36 @@ function Login() {
             token: res.data.token,
           });
 
-          if(res.data.role[0].name === "Admin"){
-            <Navigate to="/DashBoard" />
+          if (res.data.role[0].name === "Admin") {
+            // <Navigate to="/DashBoard" />;
+            navigate("/DashBoard");
+            navigate(0);
             return;
           }
-          if(res.data.role.find((e) => e.name === "Lễ tân")){
-            <Navigate to="/Receptionist" />
+          if (res.data.role.find((e) => e.name === "Lễ tân")) {
+            <Navigate to="/Receptionist" />;
             return;
           }
-          if(res.data.role.find((e) => e.name === "Bác sĩ")){
-            <Navigate to="/DashboardDoctor" />
+          if (res.data.role.find((e) => e.name === "Bác sĩ")) {
+            <Navigate to="/DashboardDoctor" />;
             return;
           }
-          <Navigate to="/DashBoardTech" />
-
+          <Navigate to="/DashBoardTech" />;
         }
       } catch (err) {
         Swal.fire("Thất Bại", `Email hoặc mật khẩu sai`, "error");
       }
     },
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("run in 1");
+    if (token) {
+      navigate("/DashBoard");
+      console.log("run in 2");
+    }
+  }, []);
 
   return (
     <section className="vh-100">

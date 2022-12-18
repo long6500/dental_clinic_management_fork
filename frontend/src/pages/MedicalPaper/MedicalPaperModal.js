@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { addMed } from "../../apis/medicineProcessor";
 import Form from "react-bootstrap/Form";
@@ -15,7 +15,6 @@ import axios from "../../apis/api";
 import Table from "react-bootstrap/Table";
 import ReactPaginate from "react-paginate";
 import CustomerModal from "../customer/CustomerModal";
-import { FaTrashAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 // import "antd/dist/antd.css";
@@ -288,10 +287,7 @@ const MedicalPaperModal = ({ loadData }) => {
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
-    // const iterator = currentItemList.values();
-    // for (const value of iterator) {
-    //   console.log(value);
-    // }
+    console.log("xoa");
     setPK({
       ...pk,
       medicalService: [
@@ -357,8 +353,7 @@ const MedicalPaperModal = ({ loadData }) => {
     let temp = currentItemList;
     temp.splice(rowIndex, 1);
     //deu render lai duoc
-    // setCurrentItemList([...temp]);
-    setCurrentItemList(temp);
+    setCurrentItemList([...temp]);
 
     setTotalPrice(totalPrice - price);
 
