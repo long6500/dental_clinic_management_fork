@@ -50,7 +50,6 @@ function Login() {
             _id: res.data._id,
             token: res.data.token,
           });
-
           if (res.data.role[0].name === "Admin") {
             window.location.href = "/DashBoard";
             return;
