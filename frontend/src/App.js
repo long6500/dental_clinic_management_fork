@@ -28,7 +28,6 @@ import Staff from "./pages/Staff/Staff";
 import MedicalPaper from "./pages/MedicalPaper/ListMedicalPaper"
 import Decentralization from "./pages/decentralization/Decentralization";
 import Receptionist from "./pages/Receptionist/Receptionist";
-import Pdf from "./components/exportPdf";
 import DashBoard from "./pages/dashBoard/dashBoard";
 import Page404 from "./pages/page404/Page404";
 import DashBoardTech from "./pages/dashBoard/dashBoardtechnicians";
@@ -82,7 +81,7 @@ function App() {
     <>
       <AuthContext.Provider value={{ user: userInfo.data, login, logout }}>
         <Router>
-          {userInfo.data ? <Navbarr user={userInfo.data} /> : <></>}
+          {userInfo.data ? <Navbarr user={userInfo.data} /> : <><Navigate to="/Login" /></>}
           <Routes>
             <Route element={<GuestRoute user={userInfo.data} />}>
               <Route path="/Login" element={<Login />} />
@@ -92,7 +91,7 @@ function App() {
             <Route element={<PrivateRoute user={userInfo.data} />}>
               <Route path="/DashBoard" element={<DashBoard />} />
               <Route path="/Decentralization" element={<Decentralization />} />
-              <Route path="/clinic" element={<Clinic />} />
+              <Route path="/clinic" element={<Clinic user={userInfo.data}/>} />
               <Route path="/Page404" element={<Page404 />} />
               <Route path="/ChangePassword" element={<Changepassword />} />
               <Route path="/Profile" element={<Profile />} />
@@ -108,7 +107,6 @@ function App() {
                 element={<Medicine user={userInfo.data} />}
               ></Route>
               <Route path="/Receptionist" element={<Receptionist />}></Route>
-              <Route path="/Invoice" element={<Pdf />}></Route>
               <Route
                 path="/Staff"
                 element={<Staff user={userInfo.data} />}

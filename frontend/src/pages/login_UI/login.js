@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import useAuth from "../../components/hooks/useAuth";
 import { useNavigate } from "react-router";
+import {Navigate} from "react-router-dom";
 import Swal from "sweetalert2";
 import SwalCard from "../../components/CardErr";
 import { render } from "@testing-library/react";
@@ -52,18 +53,18 @@ function Login() {
             token: res.data.token,
           });
           if(res.data.role[0].name === "Admin"){
-            window.location.href= "/DashBoard"
+            <Navigate to="/DashBoard" />
             return;
           }
           if(res.data.role.find((e) => e.name === "Lễ tân")){
-            window.location.href= "/Receptionist"
+            <Navigate to="/Receptionist" />
             return;
           }
           if(res.data.role.find((e) => e.name === "Bác sĩ")){
-            window.location.href= "/DashboardDoctor"
+            <Navigate to="/DashboardDoctor" />
             return;
           }
-          window.location.href= "/DashBoardTech"
+          <Navigate to="/DashBoardTech" />
         }
       } catch (err) {
         Swal.fire(
