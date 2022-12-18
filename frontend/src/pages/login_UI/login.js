@@ -1,12 +1,9 @@
 import "./login.css";
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "../../apis/api";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import useAuth from "../../components/hooks/useAuth";
-
-import { useNavigate } from "react-router";
-import {Navigate} from "react-router-dom";
 
 import Swal from "sweetalert2";
 import SwalCard from "../../components/CardErr";
@@ -53,6 +50,7 @@ function Login() {
             _id: res.data._id,
             token: res.data.token,
           });
+
           if(res.data.role[0].name === "Admin"){
             window.location.href= "/DashBoard"
             return;
@@ -66,12 +64,22 @@ function Login() {
             return;
           }
           window.location.href= "/DashBoardTech"
+
         }
       } catch (err) {
         Swal.fire("Thất Bại", `Email hoặc mật khẩu sai`, "error");
       }
     },
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("run in 1");
+    if (token) {
+      navigate("/DashBoard");
+      console.log("run in 2");
+    }
+  }, []);
 
   return (
     <section className="vh-100">
