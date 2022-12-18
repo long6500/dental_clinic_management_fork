@@ -26,7 +26,7 @@ const getReExamination = async (req, res) => {
   let fullMedicalPaper = [];
   await Promise.all(medicalPaper.map(async (element) => {
     const customer = await CustomerModel.findById(element.customerId);
-    fullMedicalPaper.push({...element._doc, customerName: customer.fullname, phone: customer.phone})
+    fullMedicalPaper.push({ ...element._doc, customerName: customer.fullname, phone: customer.phone })
   }))
   res.send({
     success: 1,
@@ -265,7 +265,6 @@ const getMedicalPaperForDoctor = async (req, res) => {
   const senderUser = req.user;
   const role = req.role;
   const { keyword, offset, limit, startDate, endDate } = req.query;
-
   const offsetNumber = offset && Number(offset) ? Number(offset) : 0;
   const limitNumber = limit && Number(limit) ? Number(limit) : 5;
 
@@ -281,6 +280,12 @@ const getMedicalPaperForDoctor = async (req, res) => {
   }
 
   filter.status = 0;
+  const [listMedicalPaper, total] = await Promise.all([MedicalPaperModel
+    .find(filter)
+    .populate({ path: 'customerId', select: 'fullname' })
+    .skip(offsetNumber * limitNumber)
+    .limit(limitNumber),
+  MedicalPaperModel.count(filter)]);
   if (keyword) {
     let listMedicalPaperArray = [];
     let totalListMedicalPaper = 0;

@@ -47,6 +47,8 @@ const medicalServiceRouter = require("./modules/medical_service/medical_service.
 
 const billRouter = require("./modules/bill/bill.router");
 
+const medicalServiceRouter = require("./modules/medical_service/medical_service.router");
+
 const staticsticalRouter = require("./common/static/statistical.router");
 
 mongoose.connect(process.env.MONGODB_URL, (err) => {
@@ -94,6 +96,7 @@ app.use('/api/prescriptionPdf', prescriptionPdfRouter);
 app.use('/api/payment', paymentRouter);
 app.use("/api/medicalService", medicalServiceRouter);;
 app.use("/api/bill", billRouter);
+app.use("/api/medicalService", medicalServiceRouter);
 app.use("/api/staticstial", staticsticalRouter);
 
 app.use("*", (req, res, next) => {
