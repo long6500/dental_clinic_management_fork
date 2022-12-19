@@ -23,14 +23,21 @@ import axios from "../../apis/api";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
-const UpdateMedicineModal = ({ userU,medID, isVisible, closeModal, loadData }) => {
+const UpdateMedicineModal = ({
+  userU,
+  medID,
+  isVisible,
+  closeModal,
+  loadData,
+}) => {
   const dispatch = useDispatch();
-  console.log(userU)
+  console.log(userU);
   const [temp, setTemp] = useState(false);
   const newMedicine = useSelector((state) => state.med.medDetail);
   // const [newMedicine, setNewMedicine] = useState({});
 
   useEffect(() => {
+    getPermission("Quản lý thuốc");
     medID && medicineProcessor.getMedicineDetailObj(medID);
     if (medID) {
       getNewMedicine();
@@ -121,21 +128,23 @@ const UpdateMedicineModal = ({ userU,medID, isVisible, closeModal, loadData }) =
       url: `/api/function`,
       method: "get",
     });
-    const index = findIndexByProperty(functionArray.data, "name", functionName)
+    const index = findIndexByProperty(functionArray.data, "name", functionName);
 
-    await Promise.all(userU.role.map(async (element) => {
-      const permission = await axios({
-        url: `/api/permission/${element._id}/${functionArray.data[index]._id}`,
-        method: "get",
+    await Promise.all(
+      userU.role.map(async (element) => {
+        const permission = await axios({
+          url: `/api/permission/${element._id}/${functionArray.data[index]._id}`,
+          method: "get",
+        });
+        if (permission.success === 0 || !permission.data) return;
+        if (permission.data[0].edit === true) {
+          setTemp(true);
+          return;
+        }
       })
-      if(permission.success === 0 || !permission.data) return;
-      if(permission.data[0].edit === true ) {
-        setTemp(true);
-        return;
-      }
-    }))
+    );
     return;
-  }
+  };
 
   return (
     <>
@@ -377,28 +386,27 @@ const UpdateMedicineModal = ({ userU,medID, isVisible, closeModal, loadData }) =
                   )}
                 </Form.Group>
               </Row>
-               {temp === true ? (
-                <Button
-                variant="primary"
-                type="submit"
-                style={{ float: "right" }}
-              >
-                Lưu lại
-              </Button>
-               ):null}
               {temp === true ? (
-                 <Button
-                 onClick={closeModal}
-                 style={{
-                   float: "right",
-                   marginRight: "10px",
-                   backgroundColor: "gray",
-                 }}
-               >
-                 Hủy bỏ
-               </Button>
-               ):null}
-             
+                <Button
+                  variant="primary"
+                  type="submit"
+                  style={{ float: "right" }}
+                >
+                  Lưu lại
+                </Button>
+              ) : null}
+              {temp === true ? (
+                <Button
+                  onClick={closeModal}
+                  style={{
+                    float: "right",
+                    marginRight: "10px",
+                    backgroundColor: "gray",
+                  }}
+                >
+                  Hủy bỏ
+                </Button>
+              ) : null}
             </Form>
           </>
         </Modal.Body>
