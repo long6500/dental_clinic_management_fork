@@ -88,10 +88,10 @@ app.use("/api/medicalPaper", medicalPaperRouter);
 app.use("/api/function", functionRouter);
 app.use("/api/permission", permissionRouter);
 app.use("/api/medicinePrescribe", medicinePrescribeRouter);
-app.use("/api/invoice", invoicePdfRouter);
-app.use("/api/prescriptionPdf", prescriptionPdfRouter);
-app.use("/api/payment", paymentRouter);
-app.use("/api/medicalService", medicalServiceRouter);
+app.use('/api/invoice', invoicePdfRouter);
+app.use('/api/prescriptionPdf', prescriptionPdfRouter);
+app.use('/api/payment', paymentRouter);
+app.use("/api/medicalService", medicalServiceRouter);;
 app.use("/api/bill", billRouter);
 app.use("/api/staticstial", staticsticalRouter);
 

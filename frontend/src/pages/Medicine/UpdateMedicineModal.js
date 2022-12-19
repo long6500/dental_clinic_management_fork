@@ -31,7 +31,6 @@ const UpdateMedicineModal = ({
   loadData,
 }) => {
   const dispatch = useDispatch();
-  console.log(userU);
   const [temp, setTemp] = useState(false);
   const newMedicine = useSelector((state) => state.med.medDetail);
   // const [newMedicine, setNewMedicine] = useState({});
@@ -120,6 +119,7 @@ const UpdateMedicineModal = ({
   }
 
   const getPermission = async (functionName) => {
+    console.log(userU)
     if (userU.role[0].name === "Admin") {
       setTemp(true);
       return;
