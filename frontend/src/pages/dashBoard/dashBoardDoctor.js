@@ -140,7 +140,8 @@ function DashBoardDoctor() {
         isVisible={isShowUpdate}
         loadData={loadDataReExam}
         openMedPaper={openMedPaper}
-        role={"doctor"}
+        role = {"doctor"}
+
       />
       <div
         style={{

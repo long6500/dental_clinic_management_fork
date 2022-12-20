@@ -104,9 +104,8 @@ const DocMedicalPaperModal = ({
 
       if (res.data.reExamination !== null) {
         setBirthDay(new Date(res.data.reExamination));
-      } else {
-        setBirthDay(null);
-      }
+      }else setBirthDay(null);
+
     } catch (error) {
       console.log(error);
     }
