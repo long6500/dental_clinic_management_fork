@@ -123,8 +123,8 @@ export const Customers123 = ({ customers }) => {
       stt: rowIndex + 1,
       id: i.id,
       name: i.name,
-      totalAmount: i.totalAmount,
-      customerPayment: i.customerPayment,
+      totalAmount: Number(i.totalAmount),
+      customerPayment: Number(i.customerPayment),
       //check khi debt < 0?
       debt: i.debt,
       count: i.count,

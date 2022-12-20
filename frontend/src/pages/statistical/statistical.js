@@ -106,6 +106,10 @@ function Statistical() {
     console.log(tableData);
   }, [tableData]);
 
+  useEffect(() => {
+    setShowTable(false);
+  }, [selectTK]);
+
   const onSubmitStatic = async () => {
     if (endEmployee.length === 0) {
       endEmployee = startEmployee;
@@ -156,7 +160,6 @@ function Statistical() {
           method: "post",
           data: tempData,
         });
-        console.log(ress.data);
 
         setTableData([
           ...ress.data.map((i) => ({

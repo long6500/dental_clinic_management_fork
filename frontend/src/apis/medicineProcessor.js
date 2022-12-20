@@ -15,7 +15,7 @@ import Swal from "sweetalert2";
 
 const medProcessor = {};
 
-export const addMed = async (medicine, loadData) => {
+export const addMed = async (medicine) => {
   try {
     await axios
       .post("/api/medicine/", medicine)
@@ -23,7 +23,6 @@ export const addMed = async (medicine, loadData) => {
         store.dispatch(addMedicine(response.data.data));
         if (response.success === 1) {
           Swal.fire("Thành công", `Thêm thành công`, "success");
-          loadData();
         }
       })
       .catch((error) => {

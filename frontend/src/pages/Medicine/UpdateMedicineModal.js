@@ -36,12 +36,13 @@ const UpdateMedicineModal = ({
   // const [newMedicine, setNewMedicine] = useState({});
 
   useEffect(() => {
+    formik.handleReset();
     getPermission("Quản lý thuốc");
     medID && medicineProcessor.getMedicineDetailObj(medID);
     if (medID) {
       getNewMedicine();
     }
-  }, [medID]);
+  }, [medID, isVisible]);
 
   const getNewMedicine = () => {
     const response = axios
@@ -119,7 +120,6 @@ const UpdateMedicineModal = ({
   }
 
   const getPermission = async (functionName) => {
-    console.log(userU)
     if (userU.role[0].name === "Admin") {
       setTemp(true);
       return;
@@ -156,17 +156,13 @@ const UpdateMedicineModal = ({
           <>
             <Form onSubmit={formik.handleSubmit}>
               <Row className="mb-3">
-                <Form.Group as={Col} controlId="formGridEmail">
+                <Form.Group as={Col}>
                   <Form.Label>Mã thuốc</Form.Label>
                   <Form.Control disabled type="text" value={newMedicine._id} />
                 </Form.Group>
               </Row>
               <Row className="mb-3">
-                <Form.Group
-                  className="mb-3"
-                  as={Col}
-                  controlId="formGroupPassword"
-                >
+                <Form.Group className="mb-3" as={Col}>
                   <Form.Label column sm={12}>
                     Tên thuốc
                   </Form.Label>

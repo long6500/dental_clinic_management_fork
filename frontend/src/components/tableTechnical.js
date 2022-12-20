@@ -14,30 +14,11 @@ import CSV from "../components/ExportCSV";
 export const TableTechnical = ({ customers }) => {
   const { Text } = Typography;
 
-  const [offsetReExam, setOffsetReExam] = useState(0);
-  const [limitReExam, setLimitReExam] = useState(5);
-  const [totalReExam, setTotalReExam] = useState(0);
-  const [reExamination, setReExamination] = useState([]);
+  const [cusExcel, setCusExcel] = useState([]);
 
-  const today = new Date();
-
-  const [startDate, setStartDate] = useState(
-    moment(today).format("YYYY-MM-DD")
-  );
-  const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
-
-  const loadDataReExam = async () => {
-    const response = await axios
-      .get(
-        `/api/medicalPaper/reExam?offset=${offsetReExam}&limit=${limitReExam}&startDate=${startDate}&endDate=${endDate}`
-      )
-      .then((response) => {
-        if (response.success === 1) {
-          setReExamination(response.data.data);
-          setTotalReExam(response.data.total);
-        }
-      });
-  };
+  useEffect(() => {
+    console.log(cusExcel);
+  }, [cusExcel]);
 
   useEffect(() => {
     setCusExcel([
@@ -51,17 +32,6 @@ export const TableTechnical = ({ customers }) => {
       }),
     ]);
   }, []);
-
-  const [cusExcel, setCusExcel] = useState([]);
-
-  useEffect(() => {
-    loadDataReExam();
-  }, [offsetReExam, limitReExam, startDate, endDate]);
-
-  const onChangePageReExam = (current, pageSize) => {
-    setOffsetReExam(current - 1);
-    setLimitReExam(pageSize);
-  };
 
   const columnsReExam = [
     {
