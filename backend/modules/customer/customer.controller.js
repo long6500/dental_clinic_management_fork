@@ -1,6 +1,7 @@
 const CustomerModel = require("./customer");
 const HTTPError = require("../../common/httpError");
-const moment = require('moment');
+const moment = require("moment");
+const MedicalPaperModel = require("../medical_paper/medical_paper");
 
 const getBirthday = async (req, res) => {
   const { offset, limit } = req.query;
@@ -10,22 +11,26 @@ const getBirthday = async (req, res) => {
 
   const [customer, totalCustomer] = await Promise.all([
     CustomerModel.find({
-      "$expr": {
-        "$and": [
-          { "$eq": [{ "$dayOfMonth": "$dateOfBirth" }, { "$dayOfMonth": new Date() }] },
-          { "$eq": [{ "$month": "$dateOfBirth" }, { "$month": new Date() }] }
-        ]
-      }
+      $expr: {
+        $and: [
+          {
+            $eq: [{ $dayOfMonth: "$dateOfBirth" }, { $dayOfMonth: new Date() }],
+          },
+          { $eq: [{ $month: "$dateOfBirth" }, { $month: new Date() }] },
+        ],
+      },
     })
       .skip(offsetNumber * limitNumber)
       .limit(limitNumber),
     CustomerModel.countDocuments({
-      "$expr": {
-        "$and": [
-          { "$eq": [{ "$dayOfMonth": "$dateOfBirth" }, { "$dayOfMonth": new Date() }] },
-          { "$eq": [{ "$month": "$dateOfBirth" }, { "$month": new Date() }] }
-        ]
-      }
+      $expr: {
+        $and: [
+          {
+            $eq: [{ $dayOfMonth: "$dateOfBirth" }, { $dayOfMonth: new Date() }],
+          },
+          { $eq: [{ $month: "$dateOfBirth" }, { $month: new Date() }] },
+        ],
+      },
     }),
   ]);
 
@@ -164,8 +169,19 @@ const getCustomerById = async (req, res) => {
   const { customerId } = req.params;
 
   const customer = await CustomerModel.findById(customerId);
+  const medicalPaper = await MedicalPaperModel.find({
+    customerId: customer._id,
+  });
 
-  res.send({ success: 1, data: customer });
+  let totalAmount = 0;
+  let payment = 0;
+
+  medicalPaper.map((element) => {
+    totalAmount += Number(element.totalAmount);
+    payment += Number(element.customerPayment);
+  });
+  console.log({ ...customer._doc, totalAmount, payment });
+  res.send({ success: 1, data: { ...customer._doc, totalAmount, payment } });
 };
 
 const updateStatus = async (req, res) => {

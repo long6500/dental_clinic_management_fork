@@ -69,6 +69,27 @@ const curProfile = async (req, res) => {
   res.send({ success: 1, data: fullProfile });
 };
 
+const getWeekday = (day) => {
+  switch (day) {
+    case 0:
+      return "sunday";
+    case 1:
+      return "monday";
+    case 2:
+      return "tuesday";
+    case 3:
+      return "wednesday";
+    case 4:
+      return "thursday";
+    case 5:
+      return "friday";
+    case 6:
+      return "saturday";
+    default:
+      break;
+  }
+};
+
 const getDoctor = async (req, res) => {
   const role = await RoleModel.findOne({ name: "Bác sĩ" });
   const userId = await UserRoleModel.find({ roleId: role._id });
@@ -77,12 +98,102 @@ const getDoctor = async (req, res) => {
   res.send({ success: 1, data: doctor });
 };
 
+const getDoctorToday = async (req, res) => {
+  const role = await RoleModel.findOne({ name: "Bác sĩ" });
+  const userId = await UserRoleModel.find({ roleId: role._id });
+  const userIdArray = userId.map((u) => u.userId);
+  const doctor = await ProfileModel.find({
+    userId: { $in: userIdArray },
+    status: true,
+  });
+  const today = new Date();
+  const weekday = getWeekday(today.getDay());
+  let fullDoctor = [];
+  await Promise.all(
+    doctor.map(async (element) => {
+      const scheduleId = await UserScheduleModel.find({ userId: element._id });
+      const scheduleIdArray = scheduleId.map((element) => {
+        return element.scheduleId;
+      });
+      const schedule = await ScheduleModel.find({
+        _id: { $in: scheduleIdArray },
+      });
+      let temp = false;
+      schedule.forEach((element1) => {
+        if (element1.weekday === weekday) {
+          if (element1.start_time_hours === today.getHours()) {
+            if (element1.start_time_minutes < today.getMinutes()) {
+              temp = true;
+            }
+          } else if (element1.end_time_hours === today.getHours()) {
+            if (element1.end_time_minutes > today.getMinutes()) {
+              temp = true;
+            }
+          } else if (
+            element1.start_time_hours < today.getHours() &&
+            element1.end_time_hours > today.getHours()
+          ) {
+            temp = true;
+          }
+        }
+      });
+      if (temp) fullDoctor.push(element);
+    })
+  );
+  res.send({ success: 1, data: fullDoctor });
+};
+
 const getTechStaff = async (req, res) => {
   const role = await RoleModel.findOne({ name: "Kỹ thuật viên" });
   const userId = await UserRoleModel.find({ roleId: role._id });
   const userIdArray = userId.map((u) => u.userId);
   const techStaff = await ProfileModel.find({ userId: { $in: userIdArray } });
   res.send({ success: 1, data: techStaff });
+};
+
+const getTechStaffToday = async (req, res) => {
+  const role = await RoleModel.findOne({ name: "Kỹ thuật viên" });
+  const userId = await UserRoleModel.find({ roleId: role._id });
+  const userIdArray = userId.map((u) => u.userId);
+  const doctor = await ProfileModel.find({
+    userId: { $in: userIdArray },
+    status: true,
+  });
+  const today = new Date();
+  const weekday = getWeekday(today.getDay());
+  let fullDoctor = [];
+  await Promise.all(
+    doctor.map(async (element) => {
+      const scheduleId = await UserScheduleModel.find({ userId: element._id });
+      const scheduleIdArray = scheduleId.map((element) => {
+        return element.scheduleId;
+      });
+      const schedule = await ScheduleModel.find({
+        _id: { $in: scheduleIdArray },
+      });
+      let temp = false;
+      schedule.forEach((element1) => {
+        if (element1.weekday === weekday) {
+          if (element1.start_time_hours === today.getHours()) {
+            if (element1.start_time_minutes < today.getMinutes()) {
+              temp = true;
+            }
+          } else if (element1.end_time_hours === today.getHours()) {
+            if (element1.end_time_minutes > today.getMinutes()) {
+              temp = true;
+            }
+          } else if (
+            element1.start_time_hours < today.getHours() &&
+            element1.end_time_hours > today.getHours()
+          ) {
+            temp = true;
+          }
+        }
+      });
+      if (temp) fullDoctor.push(element);
+    })
+  );
+  res.send({ success: 1, data: fullDoctor });
 };
 
 const getReceptionist = async (req, res) => {
@@ -527,4 +638,6 @@ module.exports = {
   getTechStaff,
   getReceptionist,
   getAllEmployee,
+  getTechStaffToday,
+  getDoctorToday,
 };
