@@ -99,24 +99,24 @@ function App() {
             </Route>
 
             <Route element={<PrivateRoute user={userInfo.data} />}>
-              if(userInfo.data.role[0].name === "Admin")
-              {<Route path="/" element={<DashBoard />} />} else
-              if(findRole(userInfo.data, "Lễ Tân"))
-              {<Route path="/" element={<Receptionist />} />} else
-              if(findRole(userInfo.data, "Bác sĩ"))
-              {<Route path="/" element={<DashBoardDoctor />} />} else
-              {<Route path="/" element={<DashBoardTech />} />}
-              <Route path="/DashBoard" element={<DashBoard />} />
-              <Route path="/Decentralization" element={<Decentralization />} />
+              if(userInfo.data.role[0].name === "Admin"){
+                <Route path="/" element={<DashBoard />} />
+              } else if(findRole(userInfo.data, "Lễ Tân")){
+                <Route path="/" element={<Receptionist />} />
+              } else if(findRole(userInfo.data, "Bác sĩ")){
+                <Route path="/" element={<DashBoardDoctor />} />
+              } else{
+                <Route path="/" element={<DashBoardTech />} />
+              }
+
+              <Route path="/DashBoard" element={<DashBoard user={userInfo.data} />} />
+              <Route path="/Decentralization" element={<Decentralization user={userInfo.data} />} />
               <Route path="/clinic" element={<Clinic user={userInfo.data} />} />
               <Route path="/Page404" element={<Page404 />} />
               <Route path="/ChangePassword" element={<Changepassword />} />
               <Route path="/Profile" element={<Profile />} />
-              <Route
-                path="/DashBoardTech"
-                element={<DashBoardTech user={userInfo.data} />}
-              />
-              <Route path="/DashBoardDoctor" element={<DashBoardDoctor />} />
+              <Route path="/DashBoardTech" element={<DashBoardTech user={userInfo.data} />} />
+              <Route path="/DashBoardDoctor" element={<DashBoardDoctor user={userInfo.data} />} />
               <Route
                 path="/Customer"
                 element={<Customer user={userInfo.data} />}
@@ -129,7 +129,7 @@ function App() {
                 path="/medicine"
                 element={<Medicine user={userInfo.data} />}
               ></Route>
-              <Route path="/Receptionist" element={<Receptionist />}></Route>
+              <Route path="/Receptionist" element={<Receptionist user={userInfo.data}/>}></Route>
               <Route
                 path="/Staff"
                 element={<Staff user={userInfo.data} />}

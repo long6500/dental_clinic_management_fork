@@ -108,7 +108,7 @@ const ListMedicalPaper = ({ user }) => {
     if (user.role[0].name === "Admin") {
       setTemp1(true);
       setTemp(true);
-      setTempeye(true);
+      setTempeye(false);
       return;
     }
     const functionArray = await axios({
@@ -224,34 +224,55 @@ const ListMedicalPaper = ({ user }) => {
       createdAt: new Date(p.createdAt).toLocaleDateString("en-GB"),
       customer: p.customer,
       staff: p.staff,
-      status:
-        p.status.$numberDecimal === "0" ? (
-          <Button
-            variant="danger"
-            style={{ width: "60%" }}
-            onClick={() => {
-              openUpdateModalY(p._id);
-            }}
-          >
-            Chưa thanh toán
-          </Button>
-        ) : p.status.$numberDecimal === "1" ? (
-          <Button
-            variant="warning"
-            style={{ width: "60%" }}
-            onClick={() => {
-              //mo thanh toan
-              openUpdateModalY(p._id);
-            }}
-          >
-            Còn nợ
-          </Button>
-        ) : (
-          <Button variant="success" style={{ width: "60%" }}>
-            Thanh toan
-          </Button>
-        ),
-
+      status: (
+        <>
+          {tempEye === true ? (
+            p.status.$numberDecimal === "0" ? (
+              <Button
+                variant="danger"
+                style={{ width: "60%" }}
+                onClick={() => {
+                  openUpdateModalY(p._id);
+                }}
+              >
+                Chưa thanh toán
+              </Button>
+            ) : p.status.$numberDecimal === "1" ? (
+              <Button
+                variant="warning"
+                style={{ width: "60%" }}
+                onClick={() => {
+                  openUpdateModalY(p._id);
+                }}
+              >
+                Còn nợ
+              </Button>
+            ) : (
+              <Button variant="success" style={{ width: "60%" }}>
+                Thanh toan
+              </Button>
+            )
+          ) : p.status.$numberDecimal === "0" ? (
+            <Button
+              variant="danger"
+              style={{ width: "60%" }}
+            >
+              Chưa thanh toán
+            </Button>
+          ) : p.status.$numberDecimal === "1" ? (
+            <Button
+              variant="warning"
+              style={{ width: "60%" }}
+            >
+              Còn nợ
+            </Button>
+          ) : (
+            <Button variant="success" style={{ width: "60%" }}>
+              Thanh toan
+            </Button>
+          )}
+        </>
+      ),
       action: (
         <>
           {tempEye === true ? (
@@ -327,6 +348,7 @@ const ListMedicalPaper = ({ user }) => {
               />
               {/* </Space> */}
               {/* Add Modal */}
+
               <MedicalPaperModal loadData={loadDataFilterByDate} user={user} />
               <Button
                 variant="primary"

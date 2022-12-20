@@ -180,7 +180,7 @@ const getCustomerById = async (req, res) => {
     totalAmount += Number(element.totalAmount);
     payment += Number(element.customerPayment);
   });
-  console.log({ ...customer._doc, totalAmount, payment });
+
   res.send({ success: 1, data: { ...customer._doc, totalAmount, payment } });
 };
 

@@ -349,9 +349,9 @@ const createProfile = async (req, res) => {
     email,
     "[DCManagement] Tài khoản và mật khẩu của bạn",
     "Chào mừng bạn đến với Dentail Clinic Management! \n Tài khoản của bạn là " +
-      username +
-      "\n Mật khẩu của bạn là " +
-      password
+    username +
+    "\n Mật khẩu của bạn là " +
+    password
   );
 
   const fullProfile = { ...newProfile._doc, roleArray, scheduleArray };
