@@ -27,7 +27,7 @@ import moment from "moment";
 import DocMedicalPaperModal from "./DocMedicalPaperModal";
 import PaymentY from "./PaymentY";
 
-const ListMedicalPaper = (user) => {
+const ListMedicalPaper = ({ user }) => {
   const { RangePicker } = DatePicker;
   const dateFormat = "DD/MM/YYYY";
   const [pkList, setPkList] = useState([]);
@@ -254,14 +254,13 @@ const ListMedicalPaper = (user) => {
 
       action: (
         <>
-        
           {tempEye === true ? (
             <FaEdit
-            onClick={() => {
-              openUpdateModal(p._id);
-            }}
-            cursor={"pointer"}
-            size={25}
+              onClick={() => {
+                openUpdateModal(p._id);
+              }}
+              cursor={"pointer"}
+              size={25}
             />
           ) : (
             <FaRegEye

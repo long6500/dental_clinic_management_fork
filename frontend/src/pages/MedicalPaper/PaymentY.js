@@ -97,13 +97,17 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
   };
 
   useEffect(() => {
-    loadTT();
-    loadReceptionist();
-    getPaymentData();
+    if (PKID) {
+      loadTT();
+      loadReceptionist();
+      getPaymentData();
+    }
   }, []);
 
   useEffect(() => {
-    getPaymentData();
+    if (PKID) {
+      getPaymentData();
+    }
     // loadDataFilterByDate();
   }, [show]);
   const columns = [
