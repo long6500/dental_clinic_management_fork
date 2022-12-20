@@ -100,7 +100,7 @@ export const TableStaff = ({ customers }) => {
       stt: rowIndex + 1,
       id: i.id,
       employeeName: i.employeeName,
-      customerPayment: i.customerPayment,
+      customerPayment: Number(i.customerPayment),
       count: i.count,
     };
   });

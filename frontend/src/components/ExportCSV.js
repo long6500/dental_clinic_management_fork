@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 
 const ExportCSV = ({ csvData, fileName }) => {
+  console.log(csvData);
+  // useEffect(() => {
+  //   console.log(csvData);
+  // }, [csvData]);
+
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";

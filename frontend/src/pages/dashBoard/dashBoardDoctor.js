@@ -58,18 +58,18 @@ function DashBoardDoctor() {
 
   const hangleChangeDate = (e) => {
     setStartDate(moment(e[0]).format("YYYY-MM-DD"));
-    setEndDate(moment(e[1]).format("YYYY-MM-DD"))
-  }
+    setEndDate(moment(e[1]).format("YYYY-MM-DD"));
+  };
 
   const handleSearch = (e) => {
-    setkeyWord(e.target.value)
-  }
+    setkeyWord(e.target.value);
+  };
   const columnsReExam = [
     {
       title: "Mã phiếu khám",
       dataIndex: "_id",
       align: "center",
-      defaultSortOrder: 'ascend',
+      defaultSortOrder: "ascend",
       sorter: (a, b) => a._id.localeCompare(b._id),
     },
     {
@@ -116,7 +116,7 @@ function DashBoardDoctor() {
       date: moment(element.createdAt).format("DD/MM/YYYY"),
       customerId: element.customerId._id,
       name: element.customerId.fullname,
-      action:
+      action: (
         <FaEdit
           className="mx-2"
           color="#2980b9"
@@ -126,6 +126,7 @@ function DashBoardDoctor() {
             openUpdateModal(element._id);
           }}
         />
+      ),
     };
   });
 
@@ -140,6 +141,7 @@ function DashBoardDoctor() {
         loadData={loadDataReExam}
         openMedPaper={openMedPaper}
         role = {"doctor"}
+
       />
       <div
         style={{
@@ -204,7 +206,11 @@ function DashBoardDoctor() {
             Tổng: {totalReExam}
           </span>
 
-          <Table columns={columnsReExam} dataSource={dataReExam} pagination={false} />
+          <Table
+            columns={columnsReExam}
+            dataSource={dataReExam}
+            pagination={false}
+          />
         </div>
 
         <div id="pagin" style={{ marginTop: "10px", marginBottom: "10px" }}>

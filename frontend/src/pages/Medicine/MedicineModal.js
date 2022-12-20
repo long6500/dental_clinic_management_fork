@@ -14,8 +14,7 @@ import * as Yup from "yup";
 import UploadAndDisplayImage from "../../components/uploadImage";
 import axios from "../../apis/api";
 
-const MedicineModal = ({ userA }, prop) => {
-  const { loadData } = prop;
+const MedicineModal = ({ userA, loadData }, prop) => {
   const [show, setShow] = useState(false);
   const [temp, setTemp] = useState(false);
   const handleClose = () => setShow(false);
@@ -87,9 +86,9 @@ const MedicineModal = ({ userA }, prop) => {
       formData.append("effect", values.effect);
       formData.append("usage", values.usage);
       formData.append("contraindication", values.contraindication);
-      setTimeout(() => {
-        handleClose();
-      }, 100);
+      // setTimeout(() => {
+
+      // }, 100);
       values.name = "";
       values.imageUrl = "";
       values.quantity = 0;
@@ -98,7 +97,9 @@ const MedicineModal = ({ userA }, prop) => {
       values.effect = "";
       values.usage = "";
       values.contraindication = "";
-      await addMed(formData, loadData);
+      handleClose();
+      await addMed(formData);
+      loadData();
     },
   });
   function findIndexByProperty(data, key, value) {
@@ -111,7 +112,12 @@ const MedicineModal = ({ userA }, prop) => {
   }
   useEffect(() => {
     getPermission("Quản lý thuốc");
-  }, []);
+  }, [show]);
+
+  useEffect(() => {
+    formik.handleReset();
+    // formik.setTouched({}, false);
+  }, [show]);
 
   const getPermission = async (functionName) => {
     if (userA.role[0].name === "Admin") {
@@ -160,11 +166,7 @@ const MedicineModal = ({ userA }, prop) => {
           <>
             <Form onSubmit={formik.handleSubmit}>
               <Row className="mb-3">
-                <Form.Group
-                  className="mb-3"
-                  as={Col}
-                  controlId="formGroupPassword"
-                >
+                <Form.Group className="mb-3" as={Col}>
                   <Form.Label column sm={12}>
                     Tên thuốc{" "}
                     <span
@@ -180,11 +182,6 @@ const MedicineModal = ({ userA }, prop) => {
                   </Form.Label>
                   <Form.Control
                     id="name"
-                    value={formik.values.name}
-                    // onChange={(e) => {
-                    //   // setNewMedicine({ ...newMedicine, name: e.target.value });
-                    //   formik.handleChange();
-                    // }}
                     onChange={formik.handleChange}
                     placeholder="Nhập tên thuốc"
                   />
@@ -240,7 +237,6 @@ const MedicineModal = ({ userA }, prop) => {
                     id="quantity"
                     type="text"
                     placeholder="0"
-                    // value={formik.values.quantity}
                     onChange={formik.handleChange}
                   />
                   {formik.errors.quantity && (
@@ -351,7 +347,6 @@ const MedicineModal = ({ userA }, prop) => {
                   </Form.Label>
                   <Form.Control
                     id="usage"
-                    value={formik.values.usage}
                     onChange={formik.handleChange}
                     as="textarea"
                     rows={3}
@@ -376,7 +371,6 @@ const MedicineModal = ({ userA }, prop) => {
                   </Form.Label>
                   <Form.Control
                     id="contraindication"
-                    value={formik.values.contraindication}
                     onChange={formik.handleChange}
                     as="textarea"
                     rows={3}
