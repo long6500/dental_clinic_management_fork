@@ -11,6 +11,7 @@ import moment from "moment";
 import { FaEye } from "react-icons/fa";
 import { FaRedoAlt } from "react-icons/fa";
 import ModaleTech from "./modalTech";
+import Swal from "sweetalert2";
 
 function DashBoardTech({ user }) {
   const [offsetReExam, setOffsetReExam] = useState(0);
@@ -35,10 +36,17 @@ function DashBoardTech({ user }) {
       )
       .then((response) => {
         if (response.success === 1) {
+          console.log(response.data.data);
           setTable(response.data.data);
           setTotalReExam(response.data.total);
         }
       });
+  };
+
+  const changeStatus = async (id, status) => {
+    const response = await axios
+      .put(`/api/medicalService/updateStatus/${id}/${status}`)
+      .then((response) => {});
   };
 
   useEffect(() => {
@@ -137,11 +145,67 @@ function DashBoardTech({ user }) {
       nameTT: element.serviceId.name,
       dateT: moment(element.createdAt).format("DD/MM/YYYY"),
       status:
-        element.status.$numberDecimal === "0"
-          ? "Chưa thực hiện"
-          : element.status.$numberDecimal === "1"
-          ? "Đang thực hiện"
-          : "Thực hiện",
+        element.status.$numberDecimal === "0" ? (
+          <Button
+            variant="danger"
+            onClick={async () => {
+              Swal.fire({
+                title: "Bạn có chắc chắn muốn đổi",
+                showDenyButton: true,
+                confirmButtonText: "Đổi",
+                denyButtonText: `Huỷ`,
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  await changeStatus(element._id, 1);
+                  loadDataReExam();
+                } else if (result.isDenied) {
+                }
+              });
+            }}
+          >
+            Chưa thực hiện
+          </Button>
+        ) : element.status.$numberDecimal === "1" ? (
+          <Button
+            variant="warning"
+            onClick={async () => {
+              Swal.fire({
+                title: "Bạn có chắc chắn muốn đổi",
+                showDenyButton: true,
+                confirmButtonText: "Đổi",
+                denyButtonText: `Huỷ`,
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  await changeStatus(element._id, 2);
+                  loadDataReExam();
+                } else if (result.isDenied) {
+                }
+              });
+            }}
+          >
+            Đang thực hiện
+          </Button>
+        ) : (
+          <Button
+            variant="success"
+            onClick={async () => {
+              Swal.fire({
+                title: "Bạn có chắc chắn muốn đổi",
+                showDenyButton: true,
+                confirmButtonText: "Đổi",
+                denyButtonText: `Huỷ`,
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  await changeStatus(element._id, 0);
+                  loadDataReExam();
+                } else if (result.isDenied) {
+                }
+              });
+            }}
+          >
+            Hoàn thành
+          </Button>
+        ),
       view: (
         <FaEye
           className="mx-2"

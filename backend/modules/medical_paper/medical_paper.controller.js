@@ -271,7 +271,12 @@ const getMedicalPaperForDoctor = async (req, res) => {
   let filter = {};
 
   if (startDate && endDate) {
-    filter.createAt = { $gte: new Date(startDate), $lt: new Date(endDate) };
+    const fromDate = new Date(startDate);
+    fromDate.setHours(0);
+
+    const toDate = new Date(endDate);
+    toDate.setHours(24);
+    filter.createdAt = { $gte: fromDate, $lte: toDate };
   }
 
   if (role[0].name !== "Admin") {

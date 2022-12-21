@@ -13,16 +13,20 @@ const getMedicalPaperWithService = async (req, res) => {
 
   let filter = {};
 
-  //ngày lloiix
-  // if (startDate && endDate) {
-  //   filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
-  // }
+  if (startDate && endDate) {
+    const fromDate = new Date(startDate);
+    fromDate.setHours(0);
+
+    const toDate = new Date(endDate);
+    toDate.setHours(24);
+    filter.createdAt = { $gte: fromDate, $lte: toDate };
+  }
 
   if (role[0].name !== "Admin") {
     const techStaff = await ProfileModel.findOne({ userId: senderUser._id });
     filter.techStaffId = techStaff._id;
   }
-  console.log(filter)
+
   const [listMedicalService, total] = await Promise.all([MedicalServiceModel
     .find(filter)
     .populate({ path: 'customerId', select: 'fullname' })
@@ -32,7 +36,6 @@ const getMedicalPaperWithService = async (req, res) => {
     MedicalServiceModel.count(filter)
   ])
 
-  console.log(listMedicalService)
   if (keyword) {
     let listMedicalServiceArray = [];
     let totalListMedicalService = 0;
@@ -65,8 +68,6 @@ const updateStatus = async (req, res) => {
   const senderUser = req.user;
   const role = req.role;
   const { medicalServiceId, status } = req.params;
-
-  let filter = {};
 
   const existMedicalService = await MedicalServiceModel.findOne({ _id: medicalServiceId });
   if (!existMedicalService) {

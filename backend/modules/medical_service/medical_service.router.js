@@ -12,7 +12,7 @@ router.get(
   medicalServiceController.getMedicalPaperWithService
 );
 
-router.get(
+router.put(
     "/updateStatus/:medicalServiceId/:status",
     needAuthenticated,
     //isRole,
