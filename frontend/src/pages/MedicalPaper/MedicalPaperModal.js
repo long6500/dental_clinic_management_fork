@@ -91,7 +91,7 @@ const MedicalPaperModal = ({ loadData, user }) => {
           url: `/api/permission/${element._id}/${functionArray.data[index]._id}`,
           method: "get",
         });
-        console.log(permission)
+        // console.log(permission);
         if (permission.success === 0 || !permission.data) return;
         if (permission.data[0].add === true) {
           setTemp(true);
@@ -141,7 +141,7 @@ const MedicalPaperModal = ({ loadData, user }) => {
 
   const loadTechStaffData = () => {
     axios
-      .get("/api/profile/getTechStaff")
+      .get("/api/profile/getTechStaffToday")
       .then((response) => {
         setTechStaff([
           ...response.data.map((item) => ({
@@ -157,7 +157,7 @@ const MedicalPaperModal = ({ loadData, user }) => {
 
   const loadDocData = () => {
     axios
-      .get("/api/profile/getDoctor")
+      .get("/api/profile/getDoctorToday")
       .then((response) => {
         setDocList([
           ...response.data.map((item) => ({
@@ -303,7 +303,7 @@ const MedicalPaperModal = ({ loadData, user }) => {
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
-    getPermission("Quản lý phiếu khám")
+    getPermission("Quản lý phiếu khám");
     setPK({
       ...pk,
       medicalService: [
@@ -393,7 +393,7 @@ const MedicalPaperModal = ({ loadData, user }) => {
         >
           <FaPlusCircle></FaPlusCircle> Thêm Phiếu khám
         </Button>
-      ): null}
+      ) : null}
 
       <Modal
         id="medPaperModal"

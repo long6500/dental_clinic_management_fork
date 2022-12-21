@@ -34,7 +34,7 @@ const DocMedicalPaperModal = ({
   opac,
   openMedPaper,
   role,
-  user
+  user,
 }) => {
   const [tempDate, setTempDate] = useState([]);
   const [pk, setPK] = useState({});
@@ -105,8 +105,7 @@ const DocMedicalPaperModal = ({
 
       if (res.data.reExamination !== null) {
         setBirthDay(new Date(res.data.reExamination));
-      }else setBirthDay(null);
-
+      } else setBirthDay(null);
     } catch (error) {
       console.log(error);
     }
@@ -150,7 +149,7 @@ const DocMedicalPaperModal = ({
 
   const loadTechStaffData = () => {
     axios
-      .get("/api/profile/getTechStaff")
+      .get("/api/profile/getTechStaffToday")
       .then((response) => {
         setTechStaff([
           ...response.data.map((item) => ({
@@ -166,7 +165,7 @@ const DocMedicalPaperModal = ({
 
   const loadDocData = () => {
     axios
-      .get("/api/profile/getDoctor")
+      .get("/api/profile/getDoctorToday")
       .then((response) => {
         setDocList([
           ...response.data.map((item) => ({
@@ -473,11 +472,13 @@ const DocMedicalPaperModal = ({
                     return (
                       <tr
                         onClick={() => {
-                          addCurrentItems(
-                            ser._id,
-                            ser.name,
-                            ser.price.$numberDecimal
-                          );
+                          if (role) {
+                            addCurrentItems(
+                              ser._id,
+                              ser.name,
+                              ser.price.$numberDecimal
+                            );
+                          }
                         }}
                       >
                         <td
@@ -813,28 +814,6 @@ const DocMedicalPaperModal = ({
                   </span>
                 </Form.Label>
                 <Col sm={8}>
-                  {/* <Typeahead
-                    disabled
-                    id="basic-typeahead-single"
-                    labelKey="name"
-                    onChange={(e) => {
-                      if (e[0]) {
-                        setPK({ ...pk, doctorId: e[0].id });
-                      }
-                      setSingleSelectionsDoc(e);
-                    }}
-                    options={docList}
-                    placeholder="Chọn tên bác sỹ..."
-                    selected={singleSelectionsDoc}
-                    renderMenuItemChildren={(option) => (
-                      <div>
-                        {option.name}
-                        <div>
-                          <small>ID: {option.id}</small>
-                        </div>
-                      </div>
-                    )}
-                  /> */}
                   <Form.Control
                     id="BS"
                     type="text"
@@ -858,24 +837,6 @@ const DocMedicalPaperModal = ({
                   </span>
                 </Form.Label>
                 <Col sm={8}>
-                  {/* <Typeahead
-                    disabled
-                    id="basic-typeahead-single"
-                    labelKey="name"
-                    onChange={(e) => {
-                      if (e[0]) {
-                        // setPK({ ...pk, customerId: e[0].id });
-                        fillCusDataByName(e);
-                      } else {
-                        selectedCus.systemicMedicalHistory = [];
-                        selectedCus.dentalMedicalHistory = [];
-                      }
-                      setSingleSelections(e);
-                    }}
-                    options={customerId}
-                    placeholder="Chọn tên khách hàng..."
-                    selected={singleSelections}
-                  /> */}
                   <Form.Control
                     id="KH"
                     type="text"
@@ -889,13 +850,16 @@ const DocMedicalPaperModal = ({
 
                 <Col sm={4}>
                   {/* Đơn thuốc */}
-                  <MedListPaper
-                    PKID={pk._id}
-                    closeMedPaper={closeMedpaper}
-                    openMedPaper={openMedPaper}
-                    singleSelectionsDoc={singleSelectionsDoc}
-                    serListID={serListID}
-                  />
+
+                  {role && (
+                    <MedListPaper
+                      PKID={pk._id}
+                      closeMedPaper={closeMedpaper}
+                      openMedPaper={openMedPaper}
+                      singleSelectionsDoc={singleSelectionsDoc}
+                      serListID={serListID}
+                    />
+                  )}
                 </Col>
               </Row>
               <hr style={{ marginTop: "8px", marginBottom: "4px" }} />
@@ -942,6 +906,7 @@ const DocMedicalPaperModal = ({
                               initialValue={row[3]}
                             >
                               <Typeahead
+                                disabled={role ? false : true}
                                 style={{ width: "100%", margin: "auto" }}
                                 id="basic-typeahead-single"
                                 labelKey="name"
@@ -1031,22 +996,27 @@ const DocMedicalPaperModal = ({
 
                           <td
                             onClick={() => {
-                              //them alert truoc khi xoa
-                              Swal.fire({
-                                title: "Bạn có chắc chắn muốn xoá",
-                                showDenyButton: true,
-                                // showCancelButton: true,
-                                confirmButtonText: "Xoá",
-                                denyButtonText: `Huỷ`,
-                              }).then((result) => {
-                                /* Read more about isConfirmed, isDenied below */
-                                if (result.isConfirmed) {
-                                  // Swal.fire('Saved!', '', 'success')
-                                  deleteCurrentItems(rowIndex, row[2], row[5]);
-                                } else if (result.isDenied) {
-                                  // Swal.fire('Changes are not saved', '', 'info')
-                                }
-                              });
+                              if (role) {
+                                Swal.fire({
+                                  title: "Bạn có chắc chắn muốn xoá",
+                                  showDenyButton: true,
+                                  // showCancelButton: true,
+                                  confirmButtonText: "Xoá",
+                                  denyButtonText: `Huỷ`,
+                                }).then((result) => {
+                                  /* Read more about isConfirmed, isDenied below */
+                                  if (result.isConfirmed) {
+                                    // Swal.fire('Saved!', '', 'success')
+                                    deleteCurrentItems(
+                                      rowIndex,
+                                      row[2],
+                                      row[5]
+                                    );
+                                  } else if (result.isDenied) {
+                                    // Swal.fire('Changes are not saved', '', 'info')
+                                  }
+                                });
+                              }
                             }}
                           >
                             <FaTrashAlt cursor="pointer" color="#e74c3c" />

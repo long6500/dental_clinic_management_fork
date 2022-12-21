@@ -6,54 +6,63 @@ import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import axios from "../apis/api";
-import { Pagination, Table } from "antd";
+import { Pagination, Table, Typography } from "antd";
 import moment from "moment";
 import { FaRedoAlt } from "react-icons/fa";
+import CSV from "../components/ExportCSV";
 
-export const TablePayment = ({ a }) => {
-  const [offsetReExam, setOffsetReExam] = useState(0);
-  const [limitReExam, setLimitReExam] = useState(5);
-  const [totalReExam, setTotalReExam] = useState(0);
-  const [reExamination, setReExamination] = useState([]);
+export const TablePayment = ({ customers }) => {
+  const { Text } = Typography;
 
-  const today = new Date();
-
-  const [startDate, setStartDate] = useState(
-    moment(today).format("YYYY-MM-DD")
-  );
-  const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
-
-  const onChangePageReExam = (current, pageSize) => {
-    setOffsetReExam(current - 1);
-    setLimitReExam(pageSize);
-  };
+  const [cusExcel, setCusExcel] = useState([]);
+  useEffect(() => {
+    setCusExcel([
+      ...customers?.map((i, rowIndex) => {
+        return {
+          "Hình thức thanh toán": i.payment,
+          "Doanh thu": i.amount,
+          "Số lượng phiếu": i.count,
+        };
+      }),
+    ]);
+  }, []);
 
   const columnsReExam = [
     {
       title: "STT",
-      dataIndex: "_stt",
+      dataIndex: "stt",
       align: "center",
       sorter: (a, b) => a._id.localeCompare(b._id),
     },
     {
       title: "Hình thức thanh toán",
-      dataIndex: "id",
-      align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Doanh thu ",
       dataIndex: "payment",
       align: "center",
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
+      title: "Doanh thu ",
+      dataIndex: "amount",
+      align: "center",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
       title: "Số lượng phiếu",
-      dataIndex: "paper",
+      dataIndex: "count",
       align: "center",
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
   ];
+
+  const dataSource = customers?.map((i, rowIndex) => {
+    return {
+      stt: rowIndex + 1,
+      id: i.id,
+      payment: i.payment,
+      amount: Number(i.amount),
+      count: i.count,
+    };
+  });
 
   return (
     <>
@@ -88,7 +97,9 @@ export const TablePayment = ({ a }) => {
                 format={dateFormat}
                 style={{ float: "right", marginRight: "20px" }}
               /> */}
-              <Form className="d-flex"></Form>
+              <Form className="d-flex">
+                <CSV csvData={cusExcel} fileName={"Payment report"} />
+              </Form>
             </Navbar.Collapse>
           </Container>
         </Navbar>
@@ -110,17 +121,38 @@ export const TablePayment = ({ a }) => {
             Tổng: {totalReExam}
           </span> */}
 
-          <Table columns={columnsReExam} pagination={false} />
-        </div>
+          <Table
+            columns={columnsReExam}
+            dataSource={dataSource}
+            pagination={false}
+            summary={(pageData) => {
+              let tempTotalAmount = 0;
 
-        <div id="pagin" style={{ marginTop: "10px", marginBottom: "10px" }}>
-          <Pagination
-            showSizeChanger
-            current={offsetReExam + 1}
-            total={totalReExam}
-            onChange={onChangePageReExam}
-            defaultPageSize={5}
-            pageSizeOptions={[5, 10, 20, 50]}
+              let totalCount = 0;
+
+              pageData.forEach(({ amount, count }) => {
+                tempTotalAmount += amount;
+                totalCount += count;
+              });
+
+              return (
+                <>
+                  {/* <div> */}
+                  <Table.Summary.Row style={{ textAlign: "center" }}>
+                    <Table.Summary.Cell>
+                      <b>Tổng:{pageData.length}</b>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell></Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text type="danger">{Number(tempTotalAmount)}</Text>
+                    </Table.Summary.Cell>
+                    <Table.Summary.Cell>
+                      <Text type="danger">{Number(totalCount)}</Text>
+                    </Table.Summary.Cell>
+                  </Table.Summary.Row>
+                </>
+              );
+            }}
           />
         </div>
       </div>

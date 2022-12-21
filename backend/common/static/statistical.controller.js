@@ -16,17 +16,16 @@ function findIndexByProperty(data, key, value) {
 }
 
 const statisticalForCustomer = async (req, res) => {
-  const {
-    startCustomer,
-    startEmployee,
-    startService,
-    startDate,
-    endDate,
-  } = req.body;
+
+  const { startCustomer, startEmployee, startService, startDate, endDate } =
+    req.body;
 
   let filter = {};
-  if (startCustomer && startCustomer !== "Chọn tất cả") filter.customerId = startCustomer;
-  if (startEmployee && startEmployee !== "Chọn tất cả") filter.createBy = startEmployee;
+  if (startCustomer && startCustomer !== "Chọn tất cả")
+    filter.customerId = startCustomer;
+  if (startEmployee && startEmployee !== "Chọn tất cả")
+    filter.createBy = startEmployee;
+
   if (
     startDate ||
     endDate ||
@@ -42,7 +41,10 @@ const statisticalForCustomer = async (req, res) => {
   }
 
   let filterService = {};
-  if (startService && startService !== "Chọn tất cả") filterService.serviceId = startService;
+
+  if (startService && startService !== "Chọn tất cả")
+    filterService.serviceId = startService;
+
   const staticstical = await MedicalPaperModel.aggregate([
     {
       $lookup: {
@@ -62,7 +64,9 @@ const statisticalForCustomer = async (req, res) => {
         totalAmount: { $sum: "$totalAmount" },
         customerPayment: { $sum: "$customerPayment" },
         count: { $sum: 1 },
-        service: { $addToSet: '$service' },
+
+        service: { $addToSet: "$service" },
+
       },
     },
   ]);
@@ -74,7 +78,9 @@ const statisticalForCustomer = async (req, res) => {
       let temp = 0;
       element.service.map((e) => {
         if (e.length > 0) temp++;
-      })
+
+      });
+
       if (temp > 0) {
         staticsticalTemp.push({
           ...element,
@@ -88,17 +94,16 @@ const statisticalForCustomer = async (req, res) => {
 };
 
 const statisticalForService = async (req, res) => {
-  const {
-    startCustomer,
-    startEmployee,
-    startService,
-    startDate,
-    endDate,
-  } = req.body;
+
+  const { startCustomer, startEmployee, startService, startDate, endDate } =
+    req.body;
 
   let filter = {};
-  if (startCustomer && startCustomer !== "Chọn tất cả") filter.customerId = startCustomer;
-  if (startEmployee && startEmployee !== "Chọn tất cả") filter.createBy = startEmployee;
+  if (startCustomer && startCustomer !== "Chọn tất cả")
+    filter.customerId = startCustomer;
+  if (startEmployee && startEmployee !== "Chọn tất cả")
+    filter.createBy = startEmployee;
+
   if (
     startDate ||
     endDate ||
@@ -114,7 +119,10 @@ const statisticalForService = async (req, res) => {
   }
 
   let filterService = {};
-  if (startService && startService !== "Chọn tất cả") filterService.serviceId = startService;
+
+  if (startService && startService !== "Chọn tất cả")
+    filterService.serviceId = startService;
+
   const staticstical = await MedicalServiceModel.aggregate([
     {
       $match: filterService,
@@ -132,7 +140,9 @@ const statisticalForService = async (req, res) => {
       $group: {
         _id: { serviceId: "$serviceId" },
         count: { $sum: 1 },
-        medicalPaper: { $addToSet: '$medicalPaper' },
+
+        medicalPaper: { $addToSet: "$medicalPaper" },
+
       },
     },
   ]);
@@ -144,7 +154,9 @@ const statisticalForService = async (req, res) => {
       let temp = 0;
       element.medicalPaper.map((e) => {
         if (e.length > 0) temp++;
-      })
+
+      });
+
       if (temp > 0) {
         staticsticalTemp.push({
           ...element,
@@ -159,17 +171,16 @@ const statisticalForService = async (req, res) => {
 };
 
 const statisticalForEmployee = async (req, res) => {
-  const {
-    startCustomer,
-    startEmployee,
-    startService,
-    startDate,
-    endDate,
-  } = req.body;
+
+  const { startCustomer, startEmployee, startService, startDate, endDate } =
+    req.body;
 
   let filter = {};
-  if (startCustomer && startCustomer !== "Chọn tất cả") filter.customerId = startCustomer;
-  if (startEmployee && startEmployee !== "Chọn tất cả") filter.createBy = startEmployee;
+  if (startCustomer && startCustomer !== "Chọn tất cả")
+    filter.customerId = startCustomer;
+  if (startEmployee && startEmployee !== "Chọn tất cả")
+    filter.createBy = startEmployee;
+
   if (
     startDate ||
     endDate ||
@@ -185,7 +196,10 @@ const statisticalForEmployee = async (req, res) => {
   }
 
   let filterService = {};
-  if (startService && startService !== "Chọn tất cả") filterService.serviceId = startService;
+
+  if (startService && startService !== "Chọn tất cả")
+    filterService.serviceId = startService;
+
   const staticstical = await MedicalPaperModel.aggregate([
     {
       $lookup: {
@@ -205,7 +219,9 @@ const statisticalForEmployee = async (req, res) => {
         totalAmount: { $sum: "$totalAmount" },
         customerPayment: { $sum: "$customerPayment" },
         count: { $sum: 1 },
-        service: { $addToSet: '$service' },
+
+        service: { $addToSet: "$service" },
+
       },
     },
   ]);
@@ -217,7 +233,9 @@ const statisticalForEmployee = async (req, res) => {
       let temp = 0;
       element.service.map((e) => {
         if (e.length > 0) temp++;
-      })
+
+      });
+
       if (temp > 0) {
         staticsticalTemp.push({
           ...element,
@@ -230,17 +248,16 @@ const statisticalForEmployee = async (req, res) => {
 };
 
 const statisticalForPayment = async (req, res) => {
-  const {
-    startCustomer,
-    startEmployee,
-    startService,
-    startDate,
-    endDate,
-  } = req.body;
+
+  const { startCustomer, startEmployee, startService, startDate, endDate } =
+    req.body;
 
   let filter = {};
-  if (startCustomer && startCustomer !== "Chọn tất cả") filter.customerId = startCustomer;
-  if (startEmployee && startEmployee !== "Chọn tất cả") filter.createBy = startEmployee;
+  if (startCustomer && startCustomer !== "Chọn tất cả")
+    filter.customerId = startCustomer;
+  if (startEmployee && startEmployee !== "Chọn tất cả")
+    filter.createBy = startEmployee;
+
   if (
     startDate ||
     endDate ||
@@ -256,7 +273,10 @@ const statisticalForPayment = async (req, res) => {
   }
 
   let filterService = {};
-  if (startService && startService !== "Chọn tất cả") filterService.serviceId = startService;
+
+  if (startService && startService !== "Chọn tất cả")
+    filterService.serviceId = startService;
+
   const staticstical = await MedicalPaperModel.aggregate([
     {
       $lookup: {
@@ -296,7 +316,9 @@ const statisticalForPayment = async (req, res) => {
           staticsticalTemp,
           "_id",
           element.paymentId._id
-        )
+
+        );
+
         if (index < 0) {
           staticsticalTemp.push({
             _id: element.paymentId._id,
@@ -322,6 +344,7 @@ const statisticalForPayment = async (req, res) => {
 };
 
 const statisticalForDate = async (req, res) => {
+
   const {
     startCustomer,
     startEmployee,
@@ -333,6 +356,7 @@ const statisticalForDate = async (req, res) => {
   let filter = {};
   if (startCustomer && startCustomer !== "Chọn tất cả") filter.customerId = startCustomer;
   if (startEmployee && startEmployee !== "Chọn tất cả") filter.createBy = startEmployee;
+
   if (
     startDate ||
     endDate ||
@@ -348,7 +372,10 @@ const statisticalForDate = async (req, res) => {
   }
 
   let filterService = {};
-  if (startService && startService !== "Chọn tất cả") filterService.serviceId = startService;
+
+  if (startService && startService !== "Chọn tất cả")
+    filterService.serviceId = startService;
+
   const staticstical = await MedicalPaperModel.aggregate([
     {
       $lookup: {
@@ -368,7 +395,9 @@ const statisticalForDate = async (req, res) => {
         totalAmount: { $sum: "$totalAmount" },
         customerPayment: { $sum: "$customerPayment" },
         count: { $sum: 1 },
-        service: { $addToSet: '$service' },
+
+        service: { $addToSet: "$service" },
+
       },
     },
   ]);
@@ -379,7 +408,9 @@ const statisticalForDate = async (req, res) => {
       let temp = 0;
       element.service.map((e) => {
         if (e.length > 0) temp++;
-      })
+
+      });
+
       if (temp > 0) {
         staticsticalTemp.push({
           ...element,
@@ -388,6 +419,162 @@ const statisticalForDate = async (req, res) => {
     })
   );
   res.send({ success: 1, data: staticsticalTemp });
+
+};
+
+const getStatisticalDash = async (req, res) => {
+  const service = await MedicalServiceModel.aggregate([
+    {
+      $lookup: {
+        from: "services",
+        localField: "serviceId",
+        foreignField: "_id",
+        as: "service",
+      },
+    },
+    {
+      $group: {
+        _id: { serviceId: "$serviceId" },
+        count: { $sum: 1 },
+        service: { $addToSet: "$service" },
+      },
+    },
+    {
+      $sort: { count: -1 },
+    },
+  ]);
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const [totalCustomer, totalCustomerInMonth] = await Promise.all([
+    CustomerModel.count(),
+    CustomerModel.count({
+      createdAt: {
+        $gte: new Date(year, month, 0),
+        $lt: new Date(year, month + 1, 0),
+      },
+    }),
+  ]);
+
+  const [totalService, totalServiceInMonth] = await Promise.all([
+    ServiceModel.count(),
+    ServiceModel.count({
+      createdAt: {
+        $gte: new Date(year, month, 0),
+        $lt: new Date(year, month + 1, 0),
+      },
+    }),
+  ]);
+
+  const [totalEmployee, totalEmployeeInMonth] = await Promise.all([
+    ProfileModel.count(),
+    ProfileModel.count({
+      createdAt: {
+        $gte: new Date(year, month, 0),
+        $lt: new Date(year, month + 1, 0),
+      },
+    }),
+  ]);
+
+  const [totalMedical, totalMedicalInMonth] = await Promise.all([
+    MedicalPaperModel.count(),
+    MedicalPaperModel.count({
+      createdAt: {
+        $gte: new Date(year, month, 0),
+        $lt: new Date(year, month + 1, 0),
+      },
+    }),
+  ]);
+  res.send({
+    success: 1,
+    data: {
+      ...service,
+      totalCustomer,
+      totalCustomerInMonth,
+      totalService,
+      totalServiceInMonth,
+      totalEmployee,
+      totalEmployeeInMonth,
+      totalMedical,
+      totalMedicalInMonth,
+    },
+  });
+};
+
+const getCustomerWeek = async (req, res) => {
+  const today = new Date();
+  const date = today.getDay();
+  let numberCustomer = [];
+  let count = 0;
+  switch (date) {
+    case 1:
+      count = 7;
+      break;
+    case 0:
+      count = 6;
+      break;
+    default:
+      count = date - 1;
+      break;
+  }
+
+  for (let i = count; i >= 1; i--) {
+    let fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - i);
+    fromDate.setHours(0);
+
+    let toDate = new Date();
+    toDate.setDate(toDate.getDate() - i);
+    toDate.setHours(24);
+
+    const number = await MedicalPaperModel.count({
+      createdAt: { $gte: fromDate, $lt: toDate },
+    });
+    numberCustomer.push(number);
+  }
+  res.send({ success: 1, data: numberCustomer });
+};
+
+const getCustomerMonth = async (req, res) => {
+  const today = new Date();
+  const month = today.getMonth();
+  let numberCustomer = [];
+  let count = 0;
+  switch (month) {
+    case 0:
+      count = 12;
+      break;
+    default:
+      count = month;
+      break;
+  }
+  if (count !== 12) {
+    for (let i = count; i >= 1; i--) {
+      let fromDate = new Date(today.getFullYear(), month - i, 1);
+
+      let toDate = new Date(today.getFullYear(), month - i + 1, 0);
+      console.log(fromDate);
+      console.log(toDate);
+      const number = await MedicalPaperModel.count({
+        createdAt: { $gte: fromDate, $lt: toDate },
+      });
+      console.log(number);
+      numberCustomer.push(number);
+    }
+  } else {
+    for (let i = 0; i <= 11; i++) {
+      let fromDate = new Date(today.getFullYear() - 1, month + i, 1);
+
+      let toDate = new Date(today.getFullYear() - 1, month + i + 1, 0);
+      const number = await MedicalPaperModel.count({
+        createdAt: { $gte: fromDate, $lt: toDate },
+      });
+      numberCustomer.push(number);
+    }
+  }
+  res.send({ success: 1, data: numberCustomer });
+
 };
 
 const getStatisticalDash = async (req, res) => {

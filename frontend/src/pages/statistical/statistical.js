@@ -19,7 +19,7 @@ import TableStaff from "../../components/tableStaff";
 import TableTechnical from "../../components/tableTechnical";
 import moment from "moment";
 
-function Statistical({user}) {
+function Statistical({ user }) {
   const today = new Date();
   const dateFormat = "DD/MM/YYYY";
 
@@ -115,7 +115,7 @@ function Statistical({user}) {
 
   useEffect(() => {
     console.log(user.role[0]);
-    if(user.role[0].name !== "Admin") window.location.href = "/Page404";
+    if (user.role[0].name !== "Admin") window.location.href = "/Page404";
     loadCustomer();
     loadEmployee();
     loadService();
@@ -141,14 +141,15 @@ function Statistical({user}) {
 
     let tempData = {};
     tempData.startCustomer = startCustomer[0]?.id;
-    tempData.endCustomer = endCustomer[0]?.id;
+    // tempData.endCustomer = endCustomer[0]?.id;
     tempData.startEmployee = startEmployee[0]?.id;
-    tempData.endEmployee = endEmployee[0]?.id;
+    // tempData.endEmployee = endEmployee[0]?.id;
     tempData.startService = startService[0]?.id;
-    tempData.endService = endService[0]?.id;
+    // tempData.endService = endService[0]?.id;
     tempData.startDate = startDate;
     tempData.endDate = endDate;
 
+    console.log(tempData);
     if (selectTK === "1") {
       try {
         const ress = await axios({
@@ -207,9 +208,9 @@ function Statistical({user}) {
         console.log(ress.data);
         setTableData([
           ...ress.data.map((i) => ({
-            id: i._id.serviceId,
-            serviceName: i.serviceName,
-            price: Number(i.price.$numberDecimal),
+            id: i._id,
+            payment: i.payment,
+            amount: Number(i.amount),
             count: i.count,
           })),
         ]);
@@ -390,25 +391,6 @@ function Statistical({user}) {
                     />
                   </FormAntd.Item>
                 </div>
-                {/* <div class="col-4">
-                  <div
-                    class="form-check"
-                    style={{
-                      transform: "translateY(7px)",
-                      // textAlign: "center",
-                    }}
-                  >
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckDefault"
-                    />
-                    <label class="form-check-label" for="flexCheckDefault">
-                      Chọn tất cả nhân viên
-                    </label>
-                  </div>
-                </div> */}
               </div>
               <div className="form-group row">
                 <label class="col-4 col-form-label form-control-label">
@@ -452,25 +434,6 @@ function Statistical({user}) {
                     />
                   </FormAntd.Item>
                 </div>
-                {/* <div class="col-4">
-                  <div
-                    class="form-check"
-                    style={{
-                      transform: "translateY(7px)",
-                      // textAlign: "center",
-                    }}
-                  >
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckDefault"
-                    />
-                    <label class="form-check-label" for="flexCheckDefault">
-                      Chọn tất cả khách hàng
-                    </label>
-                  </div>
-                </div> */}
               </div>
             </div>
             <div className="col-md-6">
@@ -533,8 +496,16 @@ function Statistical({user}) {
                       labelKey="id"
                       placeholder="Chọn thủ thuật"
                       onChange={(e) => {
+                        console.log(e);
                         setStartService(e);
                       }}
+                      // onBlur={(e) => {
+                      //   let selec = e.target.value;
+                      //   if (selec) {
+                      //   }
+                      //   console.log(serviceList);
+                      //   // setStartService(e);
+                      // }}
                       selected={startService}
                       options={serviceList}
                       renderMenuItemChildren={(option) => {
@@ -554,25 +525,6 @@ function Statistical({user}) {
                     />
                   </FormAntd.Item>
                 </div>
-                {/* <div class="col-4">
-                  <div
-                    // class="form-check"
-                    style={{
-                      transform: "translateY(7px)",
-                      // textAlign: "center",
-                    }}
-                  >
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckDefault"
-                    />
-                    <label class="form-check-label" for="flexCheckDefault">
-                      Chọn tất cả thủ thuật
-                    </label>
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>

@@ -75,6 +75,7 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
         url: `/api/payment/`,
         method: "get",
       });
+      console.log(res.data);
       setOP([...res.data.map((i) => ({ id: i._id, name: i.name }))]);
     } catch (error) {
       console.log(error);
@@ -96,18 +97,13 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
 
   useEffect(() => {
     if (PKID) {
+      console.log("trong if");
       loadTT();
       loadReceptionist();
       getPaymentData();
     }
-  }, []);
-
-  useEffect(() => {
-    if (PKID) {
-      getPaymentData();
-    }
-    // loadDataFilterByDate();
   }, [show]);
+
   const columns = [
     {
       title: "Ngày trả",
