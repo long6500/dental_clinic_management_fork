@@ -21,6 +21,18 @@ router.get(
   statisticalController.getStatisticalDash
 );
 
+router.get(
+    "/forPieChart",
+    needAuthenticated,
+    statisticalController.getCustomerWeek
+);
+
+router.get(
+    '/getMostService',
+    needAuthenticated,
+    statisticalController.getStatisticalDash,
+);
+
 router.post(
   "/byCustomer",
   needAuthenticated,

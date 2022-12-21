@@ -52,7 +52,7 @@ function DashBoardDoctor({user}) {
     user.role.forEach(element => {
       if (element.name === "Bác sĩ" || element.name === "Admin") temp++;
     });
-    if (temp === 0) window.location.href = "/Page404";
+    //if (temp === 0) window.location.href = "/Page404";
     loadDataReExam();
   }, [offsetReExam, limitReExam, startDate, endDate, keyWord]);
 

@@ -75,6 +75,7 @@ const DashBoard = () => {
         setCusTotal(response.data.totalCustomer);
         setCusInMonth(response.data.totalCustomerInMonth);
 
+
         setEmpTotal(response.data.totalEmployee);
         setEmpInMonth(response.data.totalEmployeeInMonth);
 
@@ -125,6 +126,7 @@ const DashBoard = () => {
     loadDataPieChart();
     loadDataLineChart();
   }, []);
+
 
   //data pie chart
   const data = {
@@ -432,6 +434,7 @@ const DashBoard = () => {
                         {
                           id: 1,
                           label: "",
+
                           data: [
                             cusMon1,
                             cusMon2,
@@ -446,6 +449,7 @@ const DashBoard = () => {
                             cusMon11,
                             cusMon12,
                           ],
+
                         },
                       ],
                     }}

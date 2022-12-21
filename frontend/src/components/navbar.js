@@ -217,7 +217,9 @@ const Navbarr = ({ user }) => {
 
             <Nav.Link href="/MedicalPaper">Phiếu khám</Nav.Link>
             <Nav.Link href="/Customer">Khách hàng</Nav.Link>
-            <Nav.Link href="/Statistical">Thống kê</Nav.Link>
+            {user.role[0].name === "Admin" ? (
+              <Nav.Link href="/Statistical">Thống kê</Nav.Link>
+            ) : null}
 
             <NavDropdown title="Thiết lập" id="basic-nav-dropdown">
               {tempMedicine === true ? (
