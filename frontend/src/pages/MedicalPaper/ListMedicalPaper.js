@@ -253,17 +253,11 @@ const ListMedicalPaper = ({ user }) => {
               </Button>
             )
           ) : p.status.$numberDecimal === "0" ? (
-            <Button
-              variant="danger"
-              style={{ width: "60%" }}
-            >
+            <Button variant="danger" style={{ width: "60%" }}>
               Chưa thanh toán
             </Button>
           ) : p.status.$numberDecimal === "1" ? (
-            <Button
-              variant="warning"
-              style={{ width: "60%" }}
-            >
+            <Button variant="warning" style={{ width: "60%" }}>
               Còn nợ
             </Button>
           ) : (

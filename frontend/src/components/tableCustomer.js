@@ -26,19 +26,6 @@ export const Customers123 = ({ customers }) => {
   );
   const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
 
-  const loadDataReExam = async () => {
-    const response = await axios
-      .get(
-        `/api/medicalPaper/reExam?offset=${offsetReExam}&limit=${limitReExam}&startDate=${startDate}&endDate=${endDate}`
-      )
-      .then((response) => {
-        if (response.success === 1) {
-          setReExamination(response.data.data);
-          setTotalReExam(response.data.total);
-        }
-      });
-  };
-
   const [cusExcel, setCusExcel] = useState([]);
 
   useEffect(() => {
@@ -55,23 +42,6 @@ export const Customers123 = ({ customers }) => {
       }),
     ]);
   }, []);
-
-  useEffect(() => {
-    console.log(customers);
-  }, [customers]);
-
-  // useEffect(() => {
-  //   console.log(cusExcel);
-  // }, [cusExcel]);
-
-  useEffect(() => {
-    loadDataReExam();
-  }, [offsetReExam, limitReExam, startDate, endDate]);
-
-  const onChangePageReExam = (current, pageSize) => {
-    setOffsetReExam(current - 1);
-    setLimitReExam(pageSize);
-  };
 
   const columnsReExam = [
     {

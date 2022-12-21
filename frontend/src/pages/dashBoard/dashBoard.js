@@ -18,142 +18,121 @@ import { FaRedoAlt } from "react-icons/fa";
 import { Pagination, Table, DatePicker } from "antd";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
-import { Line } from 'react-chartjs-2';
+import { Line } from "react-chartjs-2";
 import moment from "moment";
-import { CategoryScale, LinearScale, BarElement, Title ,registerables} from "chart.js";
+import {
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  registerables,
+} from "chart.js";
 const DashBoard = () => {
   ChartJS.register(ArcElement, Tooltip, Legend);
   ChartJS.register(CategoryScale);
   ChartJS.register(...registerables);
-  const [offsetReExam, setOffsetReExam] = useState(0);
-  const [limitReExam, setLimitReExam] = useState(5);
-  const [totalReExam, setTotalReExam] = useState(0);
-  const [reExamination, setReExamination] = useState([]);
-  const [offsetBirthday, setOffsetBirthday] = useState(0);
-  const [limitBirthday, setLimitBirthday] = useState(5);
-  const [totalBirthday, setTotalBirthday] = useState(0);
-  const [birthday, setBirthday] = useState([]);
-  const today = new Date();
-  const dateFormat = "DD/MM/YYYY";
-  const [startDate, setStartDate] = useState(
-    moment(today).format("YYYY-MM-DD")
-  );
-  const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
 
-  const loadDataReExam = async () => {
+  const [cusTotal, setCusTotal] = useState(0);
+  const [cusInMonth, setCusInMonth] = useState(0);
+
+  const [empTotal, setEmpTotal] = useState(0);
+  const [empInMonth, setEmpInMonth] = useState(0);
+
+  const [medTotal, setMedTotal] = useState(0);
+  const [medInMonth, setMedInMonth] = useState(0);
+
+  const [serTotal, setSerTotal] = useState(0);
+  const [serInMonth, setSerInMonth] = useState(0);
+
+  const [bestSer, setBestSer] = useState(0);
+  const [bestSerNumber, setBestSerNumber] = useState(0);
+
+  const [cus2, setCus2] = useState(0);
+  const [cus3, setCus3] = useState(0);
+  const [cus4, setCus4] = useState(0);
+  const [cus5, setCus5] = useState(0);
+  const [cus6, setCus6] = useState(0);
+  const [cus7, setCus7] = useState(0);
+  const [cus8, setCus8] = useState(0);
+
+  const [cusMon1, setCusMon1] = useState(0);
+  const [cusMon2, setCusMon2] = useState(0);
+  const [cusMon3, setCusMon3] = useState(0);
+  const [cusMon4, setCusMon4] = useState(0);
+  const [cusMon5, setCusMon5] = useState(0);
+  const [cusMon6, setCusMon6] = useState(0);
+  const [cusMon7, setCusMon7] = useState(0);
+  const [cusMon8, setCusMon8] = useState(0);
+  const [cusMon9, setCusMon9] = useState(0);
+  const [cusMon10, setCusMon10] = useState(0);
+  const [cusMon11, setCusMon11] = useState(0);
+  const [cusMon12, setCusMon12] = useState(0);
+
+  const loadDataDashBoard = async () => {
     const response = await axios
-      .get(
-        `/api/medicalPaper/reExam?offset=${offsetReExam}&limit=${limitReExam}&startDate=${startDate}&endDate=${endDate}`
-      )
+      .get(`/api/staticstial/forDashBoard`)
       .then((response) => {
-        if (response.success === 1) {
-          setReExamination(response.data.data);
-          setTotalReExam(response.data.total);
-        }
+        setCusTotal(response.data.totalCustomer);
+        setCusInMonth(response.data.totalCustomerInMonth);
+
+        setEmpTotal(response.data.totalEmployee);
+        setEmpInMonth(response.data.totalEmployeeInMonth);
+
+        setMedTotal(response.data.totalMedical);
+        setMedInMonth(response.data.totalMedicalInMonth);
+
+        setSerTotal(response.data.totalService);
+        setSerInMonth(response.data.totalServiceInMonth);
+
+        setBestSer(response.data[0].service[0][0].name);
+        setBestSerNumber(response.data[0].count);
       });
   };
-  const loadDataBirthday = async () => {
-    const response = await axios
-      .get(
-        `/api/customer/birthday?offset=${offsetBirthday}&limit=${limitBirthday}`
-      )
-      .then((response) => {
-        if (response.success === 1) {
-          setBirthday(response.data.data);
-          setTotalBirthday(response.data.total);
-        }
-      });
+
+  const loadDataPieChart = async () => {
+    await axios.get(`/api/staticstial/forPieChart`).then((response) => {
+      setCus2(response.data[0]);
+      setCus3(response.data[1]);
+      setCus4(response.data[2]);
+      setCus5(response.data[3]);
+      setCus6(response.data[4]);
+      setCus7(response.data[5]);
+      setCus8(response.data[6]);
+    });
+  };
+
+  const loadDataLineChart = async () => {
+    await axios.get(`/api/staticstial/forLineChart`).then((response) => {
+      console.log(response.data);
+
+      setCusMon1(response.data[0]);
+      setCusMon2(response.data[1]);
+      setCusMon3(response.data[2]);
+      setCusMon4(response.data[3]);
+      setCusMon5(response.data[4]);
+      setCusMon6(response.data[5]);
+      setCusMon7(response.data[6]);
+      setCusMon8(response.data[7]);
+      setCusMon9(response.data[8]);
+      setCusMon10(response.data[9]);
+      setCusMon11(response.data[10]);
+      setCusMon12(response.data[11]);
+    });
   };
 
   useEffect(() => {
-    loadDataReExam();
-    loadDataBirthday();
-  }, [
-    offsetReExam,
-    limitReExam,
-    totalReExam,
-    offsetBirthday,
-    limitBirthday,
-    totalBirthday,
-  ]);
+    loadDataDashBoard();
+    loadDataPieChart();
+    loadDataLineChart();
+  }, []);
 
-  const onChangePageReExam = (current, pageSize) => {
-    setOffsetReExam(current - 1);
-    setLimitReExam(pageSize);
-  };
-
-  const onChangePageBirthday = (current, pageSize) => {
-    setOffsetBirthday(current - 1);
-    setLimitBirthday(pageSize);
-  };
-
-  const columnsReExam = [
-    {
-      title: "Mã khách hàng",
-      dataIndex: "_id",
-      align: "center",
-      sorter: (a, b) => a._id.localeCompare(b._id),
-    },
-    {
-      title: "Khách hàng",
-      dataIndex: "name",
-      align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Ngày",
-      dataIndex: "date",
-      align: "center",
-      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
-    },
-    {
-      title: "Phiếu khám",
-      dataIndex: "medicalPaper",
-      align: "center",
-      sorter: (a, b) => a.medicalPaper.localeCompare(b.medicalPaper),
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "phone",
-      align: "center",
-    },
-  ];
-
-  const columnsBirthday = [
-    {
-      title: "Mã khách hàng",
-      dataIndex: "_id",
-      align: "center",
-      sorter: (a, b) => a._id.localeCompare(b._id),
-    },
-    {
-      title: "Tên khách hàng",
-      dataIndex: "name",
-      align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "phone",
-      align: "center",
-    },
-  ];
-
-  const dataBirthday = birthday.map((element) => {
-    return {
-      key: element._id,
-      _id: element._id,
-      name: element.fullname,
-      phone: element.phone,
-    };
-  });
   //data pie chart
   const data = {
-    labels: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7","Chủ nhật"],
+    labels: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"],
     datasets: [
       {
         label: "# of Votes",
-        data: [7, 5, 3, 5, 2, 3,14],
+        data: [cus2, cus3, cus4, cus5, cus6, cus7, cus8],
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
           "rgba(54, 162, 235, 0.2)",
@@ -204,11 +183,17 @@ const DashBoard = () => {
               </span>
             </div>
             <div class="card-body">
-              <div class="count"> 15 </div>
+              <div class="count"> {cusTotal} </div>
               <span class="count_bottom">
-                <i class="green"> 20% </i> so với tháng trước{" "}
+                <i class="green">
+                  {" "}
+                  {Math.round(
+                    (cusInMonth / (cusTotal - cusInMonth)) * 100
+                  )}%{" "}
+                </i>{" "}
+                so với tháng trước{" "}
               </span>
-              <span class="count_bottom"> (30 khách) </span>
+              <span class="count_bottom"> ({cusInMonth} khách) </span>
             </div>
           </div>
         </div>
@@ -223,11 +208,19 @@ const DashBoard = () => {
               </span>
             </div>
             <div class="card-body">
-              <div class="count"> 5 </div>
+              <div class="count"> {empTotal} </div>
               <span class="count_bottom">
-                <i class="green"> 100% </i> so với tháng trước{" "}
+                <i class="green">
+                  {" "}
+                  {Math.round((empInMonth / (empTotal - empInMonth)) * 100) ===
+                  Infinity
+                    ? 0
+                    : Math.round((empInMonth / (empTotal - empInMonth)) * 100)}
+                  %{" "}
+                </i>{" "}
+                so với tháng trước{" "}
               </span>
-              <span class="count_bottom"> (30 khách) </span>
+              <span class="count_bottom"> ({empInMonth} khách) </span>
             </div>
           </div>
         </div>
@@ -242,11 +235,19 @@ const DashBoard = () => {
               </span>
             </div>
             <div class="card-body">
-              <div class="count"> 20 </div>
+              <div class="count"> {medTotal} </div>
               <span class="count_bottom">
-                <i class="green"> 40% </i> so với tháng trước{" "}
+                <i class="green">
+                  {" "}
+                  {Math.round((medInMonth / (medTotal - medInMonth)) * 100) ===
+                  Infinity
+                    ? 0
+                    : Math.round((medInMonth / (medTotal - medInMonth)) * 100)}
+                  %{" "}
+                </i>{" "}
+                so với tháng trước{" "}
               </span>
-              <span class="count_bottom"> (30 khách) </span>
+              <span class="count_bottom"> ({medInMonth} khách) </span>
             </div>
           </div>
         </div>
@@ -261,11 +262,19 @@ const DashBoard = () => {
               </span>
             </div>
             <div class="card-body">
-              <div class="count"> 26 </div>
+              <div class="count"> {serTotal} </div>
               <span class="count_bottom">
-                <i class="green"> 50% </i> so với tháng trước{" "}
+                <i class="green">
+                  {" "}
+                  {Math.round((serInMonth / (serTotal - serInMonth)) * 100) ===
+                  Infinity
+                    ? 0
+                    : Math.round((serInMonth / (serTotal - serInMonth)) * 100)}
+                  %{" "}
+                </i>{" "}
+                so với tháng trước{" "}
               </span>
-              <span class="count_bottom"> (30 khách) </span>
+              <span class="count_bottom"> ({serInMonth} khách) </span>
             </div>
           </div>
         </div>
@@ -280,11 +289,14 @@ const DashBoard = () => {
               </span>
             </div>
             <div class="card-body">
-              <div class="count"> 2 </div>
+              <div class="count">
+                {" "}
+                {bestSer} - {bestSerNumber}
+              </div>
               <span class="count_bottom">
-                <i class="green"> 80% </i> so với tháng trước{" "}
+                <i class="green"> {bestSerNumber} </i> lần sử dụng tháng này
               </span>
-              <span class="count_bottom"> (30 khách) </span>
+              {/* <span class="count_bottom"> (30 khách) </span> */}
             </div>
           </div>
         </div>
@@ -382,27 +394,62 @@ const DashBoard = () => {
                   className=""
                   style={{ textAlign: "-webkit-center", height: "400px" }}
                 >
-                  <span style={{fontWeight:"bold",fontSize:"16px"}}>Số lượng khách hàng trong tuần</span>
+                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Số lượng khách hàng trong tuần
+                  </span>
 
                   <Pie data={data} />
                 </div>
-                <div className=""   style={{ textAlign: "-webkit-center", height: "400px" ,marginTop:"40px"}}>
-                <span style={{fontWeight:"bold",fontSize:"16px"}}>Số lượng khách hàng trong tháng</span>
+                <div
+                  className=""
+                  style={{
+                    textAlign: "-webkit-center",
+                    height: "400px",
+                    marginTop: "40px",
+                  }}
+                >
+                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Số lượng khách hàng trong tháng
+                  </span>
                   <Line
                     datasetIdKey="id"
                     data={{
-                      labels: ["T1", "T2", "T3","T4","T5","T6","T7","T8","T9","T10","T11","T12"],
+                      labels: [
+                        "T1",
+                        "T2",
+                        "T3",
+                        "T4",
+                        "T5",
+                        "T6",
+                        "T7",
+                        "T8",
+                        "T9",
+                        "T10",
+                        "T11",
+                        "T12",
+                      ],
                       datasets: [
                         {
                           id: 1,
                           label: "",
-                          data: [5,2, 8, 4,8,1,9,4,2,7,1,3,4],
+                          data: [
+                            cusMon1,
+                            cusMon2,
+                            cusMon3,
+                            cusMon4,
+                            cusMon5,
+                            cusMon6,
+                            cusMon7,
+                            cusMon8,
+                            cusMon9,
+                            cusMon10,
+                            cusMon11,
+                            cusMon12,
+                          ],
                         },
-                        
                       ],
                     }}
                   />
-                    
                 </div>
               </div>
             </div>

@@ -1,36 +1,54 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const needAuthenticated = require('../../middlewares/needAuthenticated');
-const statisticalController = require('./statistical.controller');
+const needAuthenticated = require("../../middlewares/needAuthenticated");
+const statisticalController = require("./statistical.controller");
 
-router.post(
-    '/byCustomer',
-    needAuthenticated,
-    statisticalController.statisticalForCustomer,
+router.get(
+  "/forLineChart",
+  needAuthenticated,
+  statisticalController.getCustomerMonth
+);
+
+router.get(
+  "/forPieChart",
+  needAuthenticated,
+  statisticalController.getCustomerWeek
+);
+
+router.get(
+  "/forDashBoard",
+  needAuthenticated,
+  statisticalController.getStatisticalDash
 );
 
 router.post(
-    '/byService',
-    needAuthenticated,
-    statisticalController.statisticalForService,
+  "/byCustomer",
+  needAuthenticated,
+  statisticalController.statisticalForCustomer
 );
 
 router.post(
-    '/byEmployee',
-    needAuthenticated,
-    statisticalController.statisticalForEmployee,
+  "/byService",
+  needAuthenticated,
+  statisticalController.statisticalForService
 );
 
 router.post(
-    '/byPayment',
-    needAuthenticated,
-    statisticalController.statisticalForPayment,
+  "/byEmployee",
+  needAuthenticated,
+  statisticalController.statisticalForEmployee
 );
 
 router.post(
-    '/byDate',
-    needAuthenticated,
-    statisticalController.statisticalForDate,
+  "/byPayment",
+  needAuthenticated,
+  statisticalController.statisticalForPayment
+);
+
+router.post(
+  "/byDate",
+  needAuthenticated,
+  statisticalController.statisticalForDate
 );
 
 module.exports = router;
