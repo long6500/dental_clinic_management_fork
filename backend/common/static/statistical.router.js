@@ -3,6 +3,18 @@ const router = express.Router();
 const needAuthenticated = require('../../middlewares/needAuthenticated');
 const statisticalController = require('./statistical.controller');
 
+router.get(
+    "/forPieChart",
+    needAuthenticated,
+    statisticalController.getCustomerWeek
+);
+
+router.get(
+    '/getMostService',
+    needAuthenticated,
+    statisticalController.getStatisticalDash,
+);
+
 router.post(
     '/byCustomer',
     needAuthenticated,

@@ -58,7 +58,7 @@ const Receptionist = ({user}) => {
         user.role.forEach(element => {
             if(element.name === "Lễ tân" || element.name === "Admin") temp++;
         });
-        if(temp === 0) window.location.href = "/Page404";
+        //if(temp === 0) window.location.href = "/Page404";
         loadDataReExam();
         loadDataBirthday();
     }, [offsetReExam, limitReExam, offsetBirthday, limitBirthday, startDate, endDate]);

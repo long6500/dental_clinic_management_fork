@@ -33,6 +33,7 @@ import Page404 from "./pages/page404/Page404";
 import DashBoardTech from "./pages/dashBoard/dashBoardtechnicians";
 import DashBoardDoctor from "./pages/dashBoard/dashBoardDoctor";
 import Statistical from "./pages/statistical/statistical";
+import HomeRoute from "./components/Home";
 
 export const AuthContext = React.createContext();
 function App() {
@@ -79,12 +80,7 @@ function App() {
 
   if (userInfo.status === "error") return <div>Error</div>;
 
-  const findRole = (data, name) => {
-    data.role.map((element) => {
-      if (element.name === name) return true;
-    });
-    return false;
-  };
+  
 
   return (
     <>
@@ -98,17 +94,9 @@ function App() {
               <Route path="/Forgotpassword" element={<Forgotpassword />} />
             </Route>
 
-            <Route element={<PrivateRoute user={userInfo.data} />}>
-              if(userInfo.data.role[0].name === "Admin"){
-                <Route path="/" element={<DashBoard />} />
-              } else if(findRole(userInfo.data, "Lễ Tân")){
-                <Route path="/" element={<Receptionist />} />
-              } else if(findRole(userInfo.data, "Bác sĩ")){
-                <Route path="/" element={<DashBoardDoctor />} />
-              } else{
-                <Route path="/" element={<DashBoardTech />} />
-              }
-
+            <Route element={<PrivateRoute user={userInfo?.data} />}>
+              <Route path="/" element={<HomeRoute user={userInfo.data} />}>
+              </Route>
               <Route path="/DashBoard" element={<DashBoard user={userInfo.data} />} />
               <Route path="/Decentralization" element={<Decentralization user={userInfo.data} />} />
               <Route path="/clinic" element={<Clinic user={userInfo.data} />} />
@@ -129,7 +117,7 @@ function App() {
                 path="/medicine"
                 element={<Medicine user={userInfo.data} />}
               ></Route>
-              <Route path="/Receptionist" element={<Receptionist user={userInfo.data}/>}></Route>
+              <Route path="/Receptionist" element={<Receptionist user={userInfo.data} />}></Route>
               <Route
                 path="/Staff"
                 element={<Staff user={userInfo.data} />}

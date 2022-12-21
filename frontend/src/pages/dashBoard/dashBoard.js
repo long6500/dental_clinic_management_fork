@@ -66,6 +66,7 @@ const DashBoard = () => {
   };
 
   useEffect(() => {
+    
     loadDataReExam();
     loadDataBirthday();
   }, [
@@ -77,83 +78,13 @@ const DashBoard = () => {
     totalBirthday,
   ]);
 
-  const onChangePageReExam = (current, pageSize) => {
-    setOffsetReExam(current - 1);
-    setLimitReExam(pageSize);
-  };
-
-  const onChangePageBirthday = (current, pageSize) => {
-    setOffsetBirthday(current - 1);
-    setLimitBirthday(pageSize);
-  };
-
-  const columnsReExam = [
-    {
-      title: "Mã khách hàng",
-      dataIndex: "_id",
-      align: "center",
-      sorter: (a, b) => a._id.localeCompare(b._id),
-    },
-    {
-      title: "Khách hàng",
-      dataIndex: "name",
-      align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Ngày",
-      dataIndex: "date",
-      align: "center",
-      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
-    },
-    {
-      title: "Phiếu khám",
-      dataIndex: "medicalPaper",
-      align: "center",
-      sorter: (a, b) => a.medicalPaper.localeCompare(b.medicalPaper),
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "phone",
-      align: "center",
-    },
-  ];
-
-  const columnsBirthday = [
-    {
-      title: "Mã khách hàng",
-      dataIndex: "_id",
-      align: "center",
-      sorter: (a, b) => a._id.localeCompare(b._id),
-    },
-    {
-      title: "Tên khách hàng",
-      dataIndex: "name",
-      align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "phone",
-      align: "center",
-    },
-  ];
-
-  const dataBirthday = birthday.map((element) => {
-    return {
-      key: element._id,
-      _id: element._id,
-      name: element.fullname,
-      phone: element.phone,
-    };
-  });
   //data pie chart
   const data = {
     labels: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7","Chủ nhật"],
     datasets: [
       {
         label: "# of Votes",
-        data: [7, 5, 3, 5, 2, 3,14],
+        data: [7, 5, 3, 5, 2, 0,0],
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
           "rgba(54, 162, 235, 0.2)",
@@ -396,7 +327,7 @@ const DashBoard = () => {
                         {
                           id: 1,
                           label: "",
-                          data: [5,2, 8, 4,8,1,9,4,2,7,1,3,4],
+                          data: [0,0, 0, 0,0,0,0,0,0,0,0,9],
                         },
                         
                       ],

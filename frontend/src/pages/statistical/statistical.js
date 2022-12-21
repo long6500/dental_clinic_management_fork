@@ -318,9 +318,8 @@ function Statistical({user}) {
             border: "1px solid #E9ECEF",
           }}
         >
-          <div className="row ">
-            {/* col-sm-6 */}
-            <div className="col-md">
+          <div className="row">
+            <div className="col-md-6 col-sm-12">
               <div className="form-group row">
                 <label className="col-4 col-form-label form-control-label">
                   {" "}
@@ -364,7 +363,7 @@ function Statistical({user}) {
                     <Typeahead
                       id="basic-typeahead-single"
                       labelKey="id"
-                      placeholder="Từ nhân viên"
+                      placeholder="Chọn nhân viên"
                       options={employeeList}
                       onChange={(e) => {
                         if (endEmployee.length === 0) {
@@ -430,7 +429,7 @@ function Statistical({user}) {
                     <Typeahead
                       id="basic-typeahead-single"
                       labelKey="id"
-                      placeholder="Từ khách hàng"
+                      placeholder="Chọn khách hàng"
                       options={customerList}
                       onChange={(e) => {
                         setStartCustomer(e);
@@ -532,7 +531,7 @@ function Statistical({user}) {
                     <Typeahead
                       id="basic-typeahead-single"
                       labelKey="id"
-                      placeholder="Từ thủ thuật"
+                      placeholder="Chọn thủ thuật"
                       onChange={(e) => {
                         setStartService(e);
                       }}
