@@ -28,7 +28,6 @@ import UpdateServiceModal from "./UpdateServiceModal";
 import { Pagination, Table } from "antd";
 
 const Service = ({ user }) => {
- 
   const [temp, setTemp] = useState(false);
   const [tempEye, setTempeye] = useState(false);
   const [temp1, setTemp1] = useState(false);
@@ -141,7 +140,7 @@ const Service = ({ user }) => {
       onFilter: (value, record) => record.status.type.name === value,
     },
     {
-      title: " ",
+      title: "Hành động",
       dataIndex: "action",
       align: "center",
     },
@@ -196,34 +195,34 @@ const Service = ({ user }) => {
 
           {temp === true ? (
             <Form.Check
-            type="switch"
-            checked={med.status}
-            style={{ display: "inline", marginLeft: "10px" }}
-            onChange={async (e) => {
-              // refreshData(e, med, index);
-              let resul;
-              let temp = e.target.checked;
-              // console.log(e.target.checked);
-              await Swal.fire({
-                title: "Bạn có chắc chắn muốn đổi",
-                showDenyButton: true,
-                confirmButtonText: "Đổi",
-                denyButtonText: `Huỷ`,
-              }).then(async (result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                  console.log(temp);
-                  resul = await serviceProcessor.changeStatus(med._id, temp);
-                } else if (result.isDenied) {
-                }
-              });
+              type="switch"
+              checked={med.status}
+              style={{ display: "inline", marginLeft: "10px" }}
+              onChange={async (e) => {
+                // refreshData(e, med, index);
+                let resul;
+                let temp = e.target.checked;
+                // console.log(e.target.checked);
+                await Swal.fire({
+                  title: "Bạn có chắc chắn muốn đổi",
+                  showDenyButton: true,
+                  confirmButtonText: "Đổi",
+                  denyButtonText: `Huỷ`,
+                }).then(async (result) => {
+                  /* Read more about isConfirmed, isDenied below */
+                  if (result.isConfirmed) {
+                    console.log(temp);
+                    resul = await serviceProcessor.changeStatus(med._id, temp);
+                  } else if (result.isDenied) {
+                  }
+                });
 
-              if (resul.success === 1) {
-                showToast(`Cập nhật id: ${med._id} thành công`, true);
-                await loadData();
-              }
-            }}
-          />
+                if (resul.success === 1) {
+                  showToast(`Cập nhật id: ${med._id} thành công`, true);
+                  await loadData();
+                }
+              }}
+            />
           ) : null}
         </>
       ),

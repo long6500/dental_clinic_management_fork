@@ -60,8 +60,12 @@ const ServiceModal = ({ userA, loadData }) => {
       time: Yup.number()
         .required("Bắt buộc")
         .positive("Phải là số dương")
-        .integer("Phải là số tự nhiên"),
-      price: Yup.number().required("Bắt buộc").positive("Phải là số dương"),
+        .integer("Phải là số tự nhiên")
+        .typeError("Nhập số phút"),
+      price: Yup.number()
+        .required("Bắt buộc")
+        .positive("Phải là số dương")
+        .typeError("Nhập số"),
       note: Yup.string(),
       // numberOfUses: Yup.number()
       //   .required("Bắt buộc")

@@ -424,9 +424,9 @@ const DocMedicalPaperModal = ({
     setPK({ ...pk, medicalService: currentItemList });
   };
 
-  const calPayment = (payment) => {
-    setChangeMoney(payment - totalPrice);
-  };
+  // const calPayment = (payment) => {
+  //   setChangeMoney(payment - totalPrice);
+  // };
 
   return (
     <>
@@ -571,7 +571,7 @@ const DocMedicalPaperModal = ({
                       currency: "VND",
                     }).format(cusPayment)}
                     onChange={(e) => {
-                      calPayment(e.target.value);
+                      // calPayment(e.target.value);
                       // setPayment(e.target.value)
                       // console.log(payment.toLocaleString("en-US"));
                     }}
@@ -589,7 +589,6 @@ const DocMedicalPaperModal = ({
                     readOnly
                     id="phone"
                     type="number"
-                    // placeholder={changeMoney.toLocaleString("en-US")}
                     placeholder={
                       totalPrice - cusPayment > 0
                         ? new Intl.NumberFormat("de-DE", {
@@ -615,7 +614,6 @@ const DocMedicalPaperModal = ({
                     readOnly
                     id="phone"
                     type="number"
-                    // placeholder={changeMoney.toLocaleString("en-US")}
                     placeholder={
                       cusPayment - totalPrice <= 0
                         ? new Intl.NumberFormat("de-DE", {
@@ -665,8 +663,8 @@ const DocMedicalPaperModal = ({
                     {/* thay doi bang Payment modal */}
                     <Payment
                       PKID={pk._id}
-                      changeMoney={changeMoney}
-                      setChangeMoney={setChangeMoney}
+                      // changeMoney={changeMoney}
+                      // setChangeMoney={setChangeMoney}
                       setCusPayment={setCusPayment}
                       cusPayment={cusPayment}
                       totalPrice={totalPrice}

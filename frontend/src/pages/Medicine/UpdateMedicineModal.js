@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FaPlusCircle, FaRedoAlt, FaEdit } from "react-icons/fa";
-import MedicineForm from "./MedicineForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { addMed } from "../../apis/medicineProcessor";
 import Form from "react-bootstrap/Form";
@@ -79,15 +78,18 @@ const UpdateMedicineModal = ({
       quantity: Yup.number()
         .required("Bắt buộc")
         .positive("Phải là số dương")
-        .integer("Phải là số tự nhiên"),
+        .integer("Phải là số tự nhiên")
+        .typeError("Nhập số"),
       price: Yup.number()
         .required("Bắt buộc")
         .positive("Phải là số dương")
-        .moreThan(Yup.ref("purchasePrice"), "Giá bán phải lớn hơn giá nhập"),
+        .moreThan(Yup.ref("purchasePrice"), "Giá bán phải lớn hơn giá nhập")
+        .typeError("Nhập số"),
       purchasePrice: Yup.number()
         .required("Bắt buộc")
         .positive("Phải là số dương")
-        .lessThan(Yup.ref("price"), "Giá nhập phải nhỏ hơn giá bán "),
+        .lessThan(Yup.ref("price"), "Giá nhập phải nhỏ hơn giá bán ")
+        .typeError("Nhập số"),
       effect: Yup.string().required("Bắt buộc"),
       usage: Yup.string().required("Bắt buộc"),
       contraindication: Yup.string().required("Bắt buộc"),

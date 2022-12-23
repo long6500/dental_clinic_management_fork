@@ -179,15 +179,17 @@ const UpdateServiceModal = ({
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
-      name: Yup.string()
-        .required("Required")
-        .min(4, "Must be 4 characters or more"),
+      name: Yup.string().required("Bắt buộc").min(4, "Ít nhất 4 kí tự trở lên"),
       imageUrl: Yup.mixed().required("Bắt buộc"),
       time: Yup.number()
-        .required("Required")
+        .required("Bắt buộc")
         .positive("Phải là số dương")
-        .integer("Phải là số tự nhiên"),
-      price: Yup.number().required("Required").positive("Phải là số dương"),
+        .integer("Phải là số tự nhiên")
+        .typeError("Nhập số phút"),
+      price: Yup.number()
+        .required("Bắt buộc")
+        .positive("Phải là số dương")
+        .typeError("Nhập số"),
       note: Yup.string(),
     }),
     onSubmit: async (values) => {

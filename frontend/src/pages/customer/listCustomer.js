@@ -6,7 +6,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { FaRedoAlt, FaEdit, FaEye } from "react-icons/fa";
+import { FaRedoAlt, FaEdit, FaEye, FaReceipt } from "react-icons/fa";
 // import Table from "react-bootstrap/Table";
 import { AiFillDelete } from "react-icons/ai";
 import CustomerModal from "./CustomerModal";
@@ -18,6 +18,7 @@ import customerProcessor from "../../apis/customerProcessor";
 import axios from "../../apis/api";
 import Swal from "sweetalert2";
 import { Pagination, Table } from "antd";
+import HistoryRecord from "../../components/HistoryRecord";
 
 const Customer = ({ user }) => {
   const [customers, setCustomers] = useState([]);
@@ -50,7 +51,9 @@ const Customer = ({ user }) => {
   };
 
   const [cusId, setCusID] = useState();
+  const [cusName, setCusName] = useState();
   const [isShowUpdate, setIsShowUpdate] = useState(false);
+  const [isShowHistory, setIsShowHistory] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -75,9 +78,18 @@ const Customer = ({ user }) => {
     content: "",
   });
 
+  const openHistoryModal = (id, name) => {
+    setCusName(name);
+    setCusID(id);
+    setIsShowHistory(true);
+  };
+
   const openUpdateModal = (id) => {
     setCusID(id);
     setIsShowUpdate(true);
+  };
+  const closeHistoryModal = () => {
+    setIsShowHistory(false);
   };
 
   const closeUpdateModal = () => {
@@ -143,7 +155,7 @@ const Customer = ({ user }) => {
       onFilter: (value, record) => record.status.type.name === value,
     },
     {
-      title: " ",
+      title: "Hành động",
       dataIndex: "action",
       align: "center",
     },
@@ -165,6 +177,14 @@ const Customer = ({ user }) => {
       // "false"
       action: (
         <>
+          <FaReceipt
+            color="#2980b9"
+            cursor={"pointer"}
+            size={25}
+            onClick={() => {
+              openHistoryModal(med._id, med.fullname);
+            }}
+          />
           {tempEye === true ? (
             <FaEdit
               className="mx-2"
@@ -270,6 +290,13 @@ const Customer = ({ user }) => {
 
   return (
     <>
+      <HistoryRecord
+        show={isShowHistory}
+        handleClose={closeHistoryModal}
+        cusId={cusId}
+        cusName={cusName}
+      />
+
       <UpdateCustomerModal
         closeModal={closeUpdateModal}
         isVisible={isShowUpdate}

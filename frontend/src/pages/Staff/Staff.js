@@ -26,7 +26,7 @@ function Staff({ user }) {
   const [temp, setTemp] = useState(false);
   const [tempEye, setTempeye] = useState(false);
   const [temp1, setTemp1] = useState(false);
-  
+
   const loadData = async () => {
     const response = await axios
       .get(
@@ -180,7 +180,7 @@ function Staff({ user }) {
       onFilter: (value, record) => record.status.type.name === value,
     },
     {
-      title: " ",
+      title: "Hành động",
       dataIndex: "action",
       align: "center",
     },
@@ -224,42 +224,42 @@ function Staff({ user }) {
               }}
             />
           )}
-        {temp === true ? (
-          <Form.Check
-            type="switch"
-            checked={med.status}
-            style={{ display: "inline", marginLeft: "10px" }}
-            onChange={async (e) => {
-              let resul;
-              let temp = e.target.checked;
-              await Swal.fire({
-                title: "Bạn có chắc chắn muốn đổi",
-                showDenyButton: true,
-                confirmButtonText: "Đổi",
-                denyButtonText: `Huỷ`,
-              }).then(async (result) => {
-                if (result.isConfirmed) {
-                  resul = await axios({
-                    url: `/api/profile/${med._id}/${temp}`,
-                    method: "put",
-                  });
-                } else if (result.isDenied) {
+          {temp === true ? (
+            <Form.Check
+              type="switch"
+              checked={med.status}
+              style={{ display: "inline", marginLeft: "10px" }}
+              onChange={async (e) => {
+                let resul;
+                let temp = e.target.checked;
+                await Swal.fire({
+                  title: "Bạn có chắc chắn muốn đổi",
+                  showDenyButton: true,
+                  confirmButtonText: "Đổi",
+                  denyButtonText: `Huỷ`,
+                }).then(async (result) => {
+                  if (result.isConfirmed) {
+                    resul = await axios({
+                      url: `/api/profile/${med._id}/${temp}`,
+                      method: "put",
+                    });
+                  } else if (result.isDenied) {
+                  }
+                });
+                if (resul.success === 1) {
+                  showToast(`Cập nhật id: ${med._id} thành công`, true);
+                  await loadData();
                 }
-              });
-              if (resul.success === 1) {
-                showToast(`Cập nhật id: ${med._id} thành công`, true);
-                await loadData();
-              }
-              if (resul.success !== 1) {
-                Swal.fire(
-                  "Thất bại",
-                  `Cập nhật thất bại tại id=${med._id}`,
-                  "failed"
-                );
-              }
-            }}
-          />
-        ) : null}
+                if (resul.success !== 1) {
+                  Swal.fire(
+                    "Thất bại",
+                    `Cập nhật thất bại tại id=${med._id}`,
+                    "failed"
+                  );
+                }
+              }}
+            />
+          ) : null}
         </>
       ),
     };
@@ -306,7 +306,7 @@ function Staff({ user }) {
         }
       })
     );
-    if(tempView===0){
+    if (tempView === 0) {
       window.location.href = "/Page404";
     }
   };

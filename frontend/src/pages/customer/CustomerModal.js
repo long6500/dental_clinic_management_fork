@@ -84,6 +84,7 @@ const CustomerModal = ({
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
+      address: Yup.string().required("Nhập địa chỉ"),
       fullname: Yup.string().required("Nhập tên").min(4, "Tối thiểu 4 kí tự"),
       phone: Yup.string()
         .required("Nhập số điện thoại")
@@ -282,6 +283,9 @@ const CustomerModal = ({
                     onChange={formik.handleChange}
                     placeholder="Nhập địa chỉ"
                   />
+                  {formik.errors.address && (
+                    <p className="errorMsg"> {formik.errors.address} </p>
+                  )}
                 </Col>
               </Row>
 

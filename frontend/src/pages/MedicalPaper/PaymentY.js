@@ -368,7 +368,14 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
           </Modal.Header>
           <Modal.Body>
             <Row className="mb-3" style={{ margin: "5px" }}>
-              <Form.Label column sm={1} style={{ width: "13%", color: "blue" }}>
+              <Form.Label
+                column
+                sm={2}
+                style={{
+                  // width: "13%",
+                  color: "blue",
+                }}
+              >
                 Tổng tiền hoá đơn:
               </Form.Label>
               <Col
@@ -390,12 +397,22 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
               </Col>
               <Form.Label
                 column
-                sm={1}
-                style={{ width: "13%", color: "green" }}
+                sm={2}
+                style={{
+                  // width: "13%",
+                  color: "green",
+                }}
               >
                 <b>Đã thanh toán:</b>
               </Form.Label>
-              <Col sm={2} style={{ padding: "0px" }}>
+              <Col
+                sm={2}
+                style={
+                  {
+                    // padding: "0px"
+                  }
+                }
+              >
                 <InputNumber
                   style={{
                     width: "100%",
@@ -409,11 +426,16 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
                   readOnly
                 />
               </Col>
-
+            </Row>
+            <Row className="mb-3" style={{ margin: "5px" }}>
               <Form.Label
                 column
-                sm={1}
-                style={{ width: "8%", color: "red", display: "inline" }}
+                sm={2}
+                style={{
+                  // width: "8%",
+                  color: "red",
+                  display: "inline",
+                }}
               >
                 Còn nợ:
               </Form.Label>
@@ -430,13 +452,48 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
                           style: "currency",
                           currency: "VND",
                         }).format(totalPrice - cusPayment)
-                      : 0
+                      : new Intl.NumberFormat("de-DE", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(0)
                   }
                   bordered={false}
                   readOnly
                 />
               </Col>
+              <Form.Label
+                column
+                sm={2}
+                style={{
+                  //  width: "8%",
+                  color: "green",
+                  display: "inline",
+                }}
+              >
+                <b>Tiền thừa:</b>
+              </Form.Label>
 
+              <Col sm={2} style={{ display: "inline" }}>
+                <InputNumber
+                  style={{
+                    // width: "100%",
+                    color: "green",
+                  }}
+                  value={
+                    cusPayment - totalPrice > 0
+                      ? new Intl.NumberFormat("de-DE", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(cusPayment - totalPrice)
+                      : new Intl.NumberFormat("de-DE", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(0)
+                  }
+                  bordered={false}
+                  readOnly
+                />
+              </Col>
               <Col sm={1} style={{ display: "inline" }}>
                 <Button
                   variant="success"

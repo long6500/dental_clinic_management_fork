@@ -12,11 +12,18 @@ router.get(
   medicalServiceController.getMedicalPaperWithService
 );
 
+router.get(
+  "/getHistory/:customerId",
+  needAuthenticated,
+  //isRole,
+  medicalServiceController.getHistory
+);
+
 router.put(
-    "/updateStatus/:medicalServiceId/:status",
-    needAuthenticated,
-    //isRole,
-    medicalServiceController.updateStatus
-  );
+  "/updateStatus/:medicalServiceId/:status",
+  needAuthenticated,
+  //isRole,
+  medicalServiceController.updateStatus
+);
 
 module.exports = router;
