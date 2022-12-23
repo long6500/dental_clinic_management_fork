@@ -132,7 +132,7 @@ const Medicine = ({ user }) => {
       onFilter: (value, record) => record.status.type.name === value,
     },
     {
-      title: " ",
+      title: "Hành động",
       dataIndex: "action",
       align: "center",
     },

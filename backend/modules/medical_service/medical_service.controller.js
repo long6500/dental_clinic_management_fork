@@ -27,30 +27,38 @@ const getMedicalPaperWithService = async (req, res) => {
     filter.techStaffId = techStaff._id;
   }
 
-  const [listMedicalService, total] = await Promise.all([MedicalServiceModel
-    .find(filter)
-    .populate({ path: 'customerId', select: 'fullname' })
-    .populate({ path: 'serviceId', select: 'name' })
-    .skip(offsetNumber * limitNumber)
-    .limit(limitNumber),
-    MedicalServiceModel.count(filter)
-  ])
+  const [listMedicalService, total] = await Promise.all([
+    MedicalServiceModel.find(filter)
+      .populate({ path: "customerId", select: "fullname" })
+      .populate({ path: "serviceId", select: "name" })
+      .skip(offsetNumber * limitNumber)
+      .limit(limitNumber),
+    MedicalServiceModel.count(filter),
+  ]);
 
   if (keyword) {
     let listMedicalServiceArray = [];
     let totalListMedicalService = 0;
-    await Promise.all(listMedicalService.map((element) => {
-      if (
-        element.medicalPaperId.toLowerCase().includes(keyword.toLowerCase()) ||
-        element.customerId._id.toLowerCase().includes(keyword.toLowerCase()) ||
-        element.customerId.fullname.toLowerCase().includes(keyword.toLowerCase()) ||
-        element.serviceId._id.toLowerCase().includes(keyword.toLowerCase()) ||
-        element.serviceId.name.toLowerCase().includes(keyword.toLowerCase())
-      ) {
-        listMedicalServiceArray.push({ ...element._doc });
-        totalListMedicalService++;
-      }
-    }))
+    await Promise.all(
+      listMedicalService.map((element) => {
+        if (
+          element.medicalPaperId
+            .toLowerCase()
+            .includes(keyword.toLowerCase()) ||
+          element.customerId._id
+            .toLowerCase()
+            .includes(keyword.toLowerCase()) ||
+          element.customerId.fullname
+            .toLowerCase()
+            .includes(keyword.toLowerCase()) ||
+          element.serviceId._id.toLowerCase().includes(keyword.toLowerCase()) ||
+          element.serviceId.name.toLowerCase().includes(keyword.toLowerCase())
+        ) {
+          listMedicalServiceArray.push({ ...element._doc });
+          totalListMedicalService++;
+        }
+      })
+    );
 
     res.send({
       success: 1,
@@ -62,14 +70,16 @@ const getMedicalPaperWithService = async (req, res) => {
     success: 1,
     data: { data: listMedicalService, total: total },
   });
-}
+};
 
 const updateStatus = async (req, res) => {
   const senderUser = req.user;
   const role = req.role;
   const { medicalServiceId, status } = req.params;
 
-  const existMedicalService = await MedicalServiceModel.findOne({ _id: medicalServiceId });
+  const existMedicalService = await MedicalServiceModel.findOne({
+    _id: medicalServiceId,
+  });
   if (!existMedicalService) {
     throw new HTTPError(400, "Not found medical service");
   }
@@ -80,15 +90,54 @@ const updateStatus = async (req, res) => {
     }
   }
 
-  const newMedicalService = await MedicalServiceModel.findByIdAndUpdate(medicalServiceId, { status: status }, { new: true });
+  const newMedicalService = await MedicalServiceModel.findByIdAndUpdate(
+    medicalServiceId,
+    { status: status },
+    { new: true }
+  );
 
   res.send({
     success: 1,
     data: newMedicalService,
   });
-}
+};
+
+const getHistory = async (req, res) => {
+  const { customerId } = req.params;
+
+  const filter = {};
+  filter.customerId = customerId;
+  filter.createdAt = { $lt: new Date() };
+  const newMedicalService = await MedicalServiceModel.aggregate([
+    {
+      $match: filter,
+    },
+    {
+      $lookup: {
+        from: "services",
+        localField: "serviceId",
+        foreignField: "_id",
+        as: "serviceItem",
+      },
+    },
+    {
+      $lookup: {
+        from: "medicalpapers",
+        localField: "medicalPaperId",
+        foreignField: "_id",
+        as: "medicalPaperItem",
+      },
+    },
+  ]);
+
+  res.send({
+    success: 1,
+    data: newMedicalService,
+  });
+};
 
 module.exports = {
   getMedicalPaperWithService,
   updateStatus,
+  getHistory,
 };

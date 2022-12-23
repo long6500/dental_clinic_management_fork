@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import moment from "moment";
 
 const { TextArea } = Input;
-function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
+function Editstaff({ userAB, empId, isVisible, closeModal, loadData }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState([]);
@@ -148,6 +148,7 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
   };
 
   useEffect(() => {
+    formik.handleReset();
     // console.log(empId);
     if (empId) {
       getRole();
@@ -396,8 +397,6 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
     }
   };
 
-  
-
   function findIndexByProperty(data, key, value) {
     for (var i = 0; i < data.length; i++) {
       if (data[i][key] === value) {
@@ -417,23 +416,25 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
       url: `/api/function`,
       method: "get",
     });
-    const index = findIndexByProperty(functionArray.data, "name", functionName)
+    const index = findIndexByProperty(functionArray.data, "name", functionName);
 
-    await Promise.all(userAB.role.map(async (element) => {
-      const permission = await axios({
-        url: `/api/permission/${element._id}/${functionArray.data[index]._id}`,
-        method: "get",
+    await Promise.all(
+      userAB.role.map(async (element) => {
+        const permission = await axios({
+          url: `/api/permission/${element._id}/${functionArray.data[index]._id}`,
+          method: "get",
+        });
+        if (permission.success === 0 || !permission.data) return;
+        if (permission.data[0].edit === true) {
+          setTemp(true);
+          setDisabledinPut(false);
+          return;
+        }
       })
-      if(permission.success === 0 || !permission.data) return;
-      if(permission.data[0].edit === true ) {
-        setTemp(true);
-        setDisabledinPut(false);
-        return;
-      }
-    }))
+    );
     return;
-  }
-  
+  };
+
   return (
     <>
       <Modal
@@ -441,38 +442,40 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
         open={isVisible}
         onCancel={closeModal}
         width={1000}
-        footer={temp === true ?
-          [
-          <Button
-            key="back"
-            onClick={closeModal}
-            style={{
-              backgroundColor: "#7F7F7F",
-              width: "80px",
-              color: "white,",
-              borderRadius: "5px",
-            }}
-            
-          >
-            Hủy
-          </Button>,
-          
-          <Button
-            key="submit"
-            type="#595959"
-            loading={loading}
-            onClick={handleOk}
-            htmlType="submit"
-            style={{
-              backgroundColor: "#386BC0",
-              width: "120px",
-              borderRadius: "5px",
-              color: "white",
-            }}
-          >
-            Lưu lại
-          </Button>,
-        ]: null}
+        footer={
+          temp === true
+            ? [
+                <Button
+                  key="back"
+                  onClick={closeModal}
+                  style={{
+                    backgroundColor: "#7F7F7F",
+                    width: "80px",
+                    color: "white,",
+                    borderRadius: "5px",
+                  }}
+                >
+                  Hủy
+                </Button>,
+
+                <Button
+                  key="submit"
+                  type="#595959"
+                  loading={loading}
+                  onClick={handleOk}
+                  htmlType="submit"
+                  style={{
+                    backgroundColor: "#386BC0",
+                    width: "120px",
+                    borderRadius: "5px",
+                    color: "white",
+                  }}
+                >
+                  Lưu lại
+                </Button>,
+              ]
+            : null
+        }
         // footer={null}
       >
         <Form onSubmit={formik.handleSubmit}>
@@ -484,15 +487,15 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
               >
                 <label>Mã nhân viên</label>
                 <span
-                    style={{
-                      display: "inline",
-                      marginBottom: "0px",
-                      color: "red",
-                    }}
-                  >
-                    {" "}
-                    *
-                  </span>
+                  style={{
+                    display: "inline",
+                    marginBottom: "0px",
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
                 <Input
                   rows={2}
                   type="text"
@@ -509,15 +512,15 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
               >
                 <label>Tên nhân viên</label>
                 <span
-                    style={{
-                      display: "inline",
-                      marginBottom: "0px",
-                      color: "red",
-                    }}
-                  >
-                    {" "}
-                    *
-                  </span>
+                  style={{
+                    display: "inline",
+                    marginBottom: "0px",
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
                 <Input
                   type="text"
                   id="fullname"
@@ -534,15 +537,15 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
               <div className="col-6 form-group">
                 <label>Điện thoại</label>
                 <span
-                    style={{
-                      display: "inline",
-                      marginBottom: "0px",
-                      color: "red",
-                    }}
-                  >
-                    {" "}
-                    *
-                  </span>
+                  style={{
+                    display: "inline",
+                    marginBottom: "0px",
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
                 <Input
                   type="text"
                   id="phone"
@@ -559,15 +562,15 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
               <div className="col-6 form-group">
                 <label>Chức vụ</label>
                 <span
-                    style={{
-                      display: "inline",
-                      marginBottom: "0px",
-                      color: "red",
-                    }}
-                  >
-                    {" "}
-                    *
-                  </span>
+                  style={{
+                    display: "inline",
+                    marginBottom: "0px",
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
                 <Select
                   mode="multiple"
                   allowClear
@@ -595,15 +598,15 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
               >
                 <label>Email</label>
                 <span
-                    style={{
-                      display: "inline",
-                      marginBottom: "0px",
-                      color: "red",
-                    }}
-                  >
-                    {" "}
-                    *
-                  </span>
+                  style={{
+                    display: "inline",
+                    marginBottom: "0px",
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
                 <Input
                   type="text"
                   id="email"
@@ -632,15 +635,15 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
               <div className="col-6 form-group" style={{ marginTop: "20px" }}>
                 <label>Số ngày công</label>
                 <span
-                    style={{
-                      display: "inline",
-                      marginBottom: "0px",
-                      color: "red",
-                    }}
-                  >
-                    {" "}
-                    *
-                  </span>
+                  style={{
+                    display: "inline",
+                    marginBottom: "0px",
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
                 <Input
                   type="text"
                   readOnly={!temp}
@@ -660,15 +663,15 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
               <div className="col-6 form-group" style={{ marginTop: "20px" }}>
                 <label>Lương</label>
                 <span
-                    style={{
-                      display: "inline",
-                      marginBottom: "0px",
-                      color: "red",
-                    }}
-                  >
-                    {" "}
-                    *
-                  </span>
+                  style={{
+                    display: "inline",
+                    marginBottom: "0px",
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
                 <Input
                   type="text"
                   id="salary"
@@ -708,7 +711,6 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
                 </div>
                 <div className="col-md-2" style={{ textAlign: "end" }}>
                   <Checkbox
-                    
                     onClick={toggleDisablet2}
                     checked={disabled2}
                   ></Checkbox>
@@ -718,7 +720,6 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
                     <TimePicker.RangePicker
                       size="large"
                       TimePicker
-                      
                       id="schedule"
                       name="schedule"
                       value={value2.length < 1 ? [null, null] : value2}
@@ -831,7 +832,7 @@ function Editstaff({ userAB ,empId, isVisible, closeModal, loadData }) {
                 <div className="col-md-2" style={{ textAlign: "end" }}>
                   <Checkbox
                     onClick={toggleDisablet6}
-                    checked={disabled6 }
+                    checked={disabled6}
                   ></Checkbox>
                 </div>
                 <div className="col-md-8" style={{ textAlign: "center" }}>

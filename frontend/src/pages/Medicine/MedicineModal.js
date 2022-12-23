@@ -63,15 +63,18 @@ const MedicineModal = ({ userA, loadData }, prop) => {
       quantity: Yup.number()
         .required("Bắt buộc")
         .positive("Phải là số dương")
-        .integer("Phải là số tự nhiên"),
+        .integer("Phải là số tự nhiên")
+        .typeError("Nhập số"),
       price: Yup.number()
         .required("Bắt buộc")
         .positive("Phải là số dương")
-        .moreThan(Yup.ref("purchasePrice"), "Giá bán phải lớn hơn giá nhập"),
+        .moreThan(Yup.ref("purchasePrice"), "Giá bán phải lớn hơn giá nhập")
+        .typeError("Nhập số"),
       purchasePrice: Yup.number()
         .required("Bắt buộc")
         .positive("Phải là số dương")
-        .lessThan(Yup.ref("price"), "Giá nhập phải nhỏ hơn giá bán "),
+        .lessThan(Yup.ref("price"), "Giá nhập phải nhỏ hơn giá bán ")
+        .typeError("Nhập số"),
       effect: Yup.string().required("Bắt buộc"),
       usage: Yup.string().required("Bắt buộc"),
       contraindication: Yup.string().required("Bắt buộc"),
@@ -111,12 +114,8 @@ const MedicineModal = ({ userA, loadData }, prop) => {
     return -1;
   }
   useEffect(() => {
+    // formik.handleReset();
     getPermission("Quản lý thuốc");
-  }, [show]);
-
-  useEffect(() => {
-    formik.handleReset();
-    // formik.setTouched({}, false);
   }, [show]);
 
   const getPermission = async (functionName) => {

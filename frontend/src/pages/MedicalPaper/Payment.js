@@ -25,8 +25,6 @@ import axios from "../../apis/api";
 import Swal from "sweetalert2";
 const Payment = ({
   PKID,
-  changeMoney,
-  setChangeMoney,
   setCusPayment,
   cusPayment,
   totalPrice,
@@ -37,6 +35,8 @@ const Payment = ({
   // const [cusMon, setCusMon] = useState(customerPayment);
   const [tempL, setTempL] = useState(0);
   const [show, setShow] = useState(false);
+
+  const [changeMoney, setChangeMoney] = useState(totalPrice - cusPayment);
 
   const [paymentList, setPaymentList] = useState([]);
 
@@ -398,8 +398,15 @@ const Payment = ({
           </Modal.Header>
           <Modal.Body>
             <Row className="mb-3" style={{ margin: "5px" }}>
-              <Form.Label column sm={1} style={{ width: "13%", color: "blue" }}>
-                Tổng tiền hoá đơn:
+              <Form.Label
+                column
+                sm={2}
+                style={{
+                  // width: "13%",
+                  color: "blue",
+                }}
+              >
+                <b>Tổng tiền hoá đơn:</b>
               </Form.Label>
               <Col
                 sm={2}
@@ -420,12 +427,22 @@ const Payment = ({
               </Col>
               <Form.Label
                 column
-                sm={1}
-                style={{ width: "13%", color: "green" }}
+                sm={2}
+                style={{
+                  // width: "13%",
+                  color: "green",
+                }}
               >
                 <b>Đã thanh toán:</b>
               </Form.Label>
-              <Col sm={2} style={{ padding: "0px" }}>
+              <Col
+                sm={2}
+                style={
+                  {
+                    //  padding: "0px"
+                  }
+                }
+              >
                 <InputNumber
                   style={{
                     width: "100%",
@@ -439,13 +456,18 @@ const Payment = ({
                   readOnly
                 />
               </Col>
-
+            </Row>
+            <Row className="mb-3" style={{ margin: "5px" }}>
               <Form.Label
                 column
-                sm={1}
-                style={{ width: "8%", color: "red", display: "inline" }}
+                sm={2}
+                style={{
+                  // width: "8%",
+                  color: "red",
+                  display: "inline",
+                }}
               >
-                Còn nợ:
+                <b>Còn nợ:</b>
               </Form.Label>
 
               <Col sm={2} style={{ display: "inline" }}>
@@ -460,13 +482,48 @@ const Payment = ({
                           style: "currency",
                           currency: "VND",
                         }).format(totalPrice - cusPayment)
-                      : 0
+                      : new Intl.NumberFormat("de-DE", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(0)
                   }
                   bordered={false}
                   readOnly
                 />
               </Col>
+              <Form.Label
+                column
+                sm={2}
+                style={{
+                  //  width: "8%",
+                  color: "green",
+                  display: "inline",
+                }}
+              >
+                <b>Tiền thừa:</b>
+              </Form.Label>
 
+              <Col sm={2} style={{ display: "inline" }}>
+                <InputNumber
+                  style={{
+                    // width: "100%",
+                    color: "green",
+                  }}
+                  value={
+                    cusPayment - totalPrice > 0
+                      ? new Intl.NumberFormat("de-DE", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(cusPayment - totalPrice)
+                      : new Intl.NumberFormat("de-DE", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(0)
+                  }
+                  bordered={false}
+                  readOnly
+                />
+              </Col>
               <Col sm={1} style={{ display: "inline" }}>
                 <Button
                   variant="success"
@@ -479,6 +536,7 @@ const Payment = ({
                 </Button>
               </Col>
             </Row>
+
             <TableAntd
               dataSource={dataSource}
               columns={columns}

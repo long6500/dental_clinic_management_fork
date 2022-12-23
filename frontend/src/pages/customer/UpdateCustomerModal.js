@@ -21,8 +21,8 @@ const UpdateCustomerModal = ({
   const [birthDay, setBirthDay] = useState("");
   const [temp, setTemp] = useState(false);
   const getCustomer = async () => {
+    console.log(1);
     const response = await axios.get(`api/customer/${cusId}`);
-    console.log(response.data);
     setCurCustomer(response.data);
     setBirthDay(
       new Date(response.data.dateOfBirth).toISOString().split("T")[0]
@@ -59,6 +59,7 @@ const UpdateCustomerModal = ({
 
   useEffect(() => {
     if (cusId) {
+      formik.handleReset();
       getCustomer();
       loadSystemMed();
       loadDentalMed();
@@ -85,6 +86,7 @@ const UpdateCustomerModal = ({
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
+      address: Yup.string().required("Nhập địa chỉ"),
       fullname: Yup.string().required("Nhập tên").min(4, "Tối thiểu 4 kí tự"),
       phone: Yup.string()
         .required("Nhập số điện thoại")
@@ -277,6 +279,9 @@ const UpdateCustomerModal = ({
                     onChange={formik.handleChange}
                     value={formik.values.address}
                   />
+                  {formik.errors.address && (
+                    <p className="errorMsg"> {formik.errors.address} </p>
+                  )}
                 </Col>
               </Row>
 
