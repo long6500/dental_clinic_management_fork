@@ -24,20 +24,25 @@ import {
   Input,
   Form as FormAntd,
   InputNumber,
+  Typography,
 } from "antd";
 import Swal from "sweetalert2";
 
 // PHẦN này gồm typeahead trong Form.Item
 const ServiceModal = ({ userA, loadData }) => {
+  const { Text, Link } = Typography;
   const [form] = FormAntd.useForm();
   const [temp, setTemp] = useState(false);
   const [consumableUiList, setConsumableUiList] = useState([]);
   // const [numberOfUses, setNumberOfUses] = useState(0);
   const [singleSelections, setSingleSelections] = useState([]);
   const [singleSelectionsPre, setSingleSelectionsPre] = useState([]);
-  const [errorList, setErrorList] = useState({});
+  const [errorList, setErrorList] = useState([]);
+  const [errorListPre, setErrorListPre] = useState([]);
 
   const [validated, setValidated] = useState(false);
+
+  const [numOfUseErr, setNumOfUseErr] = useState();
 
   const formik = useFormik({
     initialValues: {
@@ -53,9 +58,7 @@ const ServiceModal = ({ userA, loadData }) => {
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
-      name: Yup.string()
-        .required("Bắt buộc")
-        .min(4, "Must be 4 characters or more"),
+      name: Yup.string().required("Bắt buộc").min(4, "Nhập 4 kí tự trở lên"),
       imageUrl: Yup.mixed().required("Bắt buộc"),
       time: Yup.number()
         .required("Bắt buộc")
@@ -79,6 +82,48 @@ const ServiceModal = ({ userA, loadData }) => {
       // ),
     }),
     onSubmit: async (values) => {
+      let isValid = true;
+
+      consumableUiList.forEach((parent, parentIndex) => {
+        parent.forEach((item, index) => {
+          switch (index) {
+            case 1:
+              break;
+            case 4:
+              if (Number(item) < 1) {
+                isValid = false;
+              }
+              break;
+            default:
+              break;
+          }
+        });
+      });
+      prescriptionList.forEach((parent, parentIndex) => {
+        parent.forEach((item, index) => {
+          switch (index) {
+            case 1:
+              break;
+            case 4:
+              if (Number(item) < 1) {
+                isValid = false;
+              }
+              break;
+            case 5:
+              if (item === "") {
+                isValid = false;
+              }
+              break;
+            default:
+              break;
+          }
+        });
+      });
+
+      if (!isValid) {
+        return;
+      }
+
       let formData = new FormData();
       formData.append("name", values.name);
       formData.append("imageUrl", values.imageUrl[0]);
@@ -102,6 +147,12 @@ const ServiceModal = ({ userA, loadData }) => {
         };
         formData.append("prescription[]", JSON.stringify(tempOb));
       }
+
+      values.name = "";
+      values.imageUrl = "";
+      values.time = 0;
+      values.price = 0;
+      values.note = "";
 
       setConsumableUiList([]);
       setPrescriptionList([]);
@@ -179,15 +230,8 @@ const ServiceModal = ({ userA, loadData }) => {
     });
   };
 
-  const onChangee = (value) => {
-    console.log(`selected ${value}`);
-  };
-
-  const onSearch = (value) => {
-    console.log(value);
-  };
-
   useEffect(() => {
+    // formik.handleReset();
     getMedicine();
     getPermission("Quản lý dịch vụ");
   }, []);
@@ -196,6 +240,10 @@ const ServiceModal = ({ userA, loadData }) => {
     let temp = consumableUiList;
     temp.splice(rowIndex, 1);
     setConsumableUiList([...temp]);
+
+    let tempError = errorList;
+    tempError.splice(rowIndex, 1);
+    setErrorList([...tempError]);
   };
 
   //prescriptionList
@@ -205,6 +253,10 @@ const ServiceModal = ({ userA, loadData }) => {
     let temp = prescriptionList;
     temp.splice(rowIndex, 1);
     setPrescriptionList([...temp]);
+
+    let tempError = errorListPre;
+    tempError.splice(rowIndex, 1);
+    setErrorListPre([...tempError]);
   };
 
   const [show, setShow] = useState(false);
@@ -217,11 +269,13 @@ const ServiceModal = ({ userA, loadData }) => {
   const addConsumableRow = () => {
     // setIsShowSuggestion([...isShowSuggestion, true]);
     setConsumableUiList([...consumableUiList, ["", [], "", "", 1, ""]]);
+    setErrorList([...errorList, ["", "", "", "", ""]]);
   };
 
   const addPrescriptionRow = () => {
     // setIsShowSuggestion1([...isShowSuggestion1, true]);
     setPrescriptionList([...prescriptionList, ["", [], "", "", "", ""]]);
+    setErrorListPre([...errorListPre, ["", "", "", "", "", ""]]);
   };
   function findIndexByProperty(data, key, value) {
     for (var i = 0; i < data.length; i++) {
@@ -462,16 +516,31 @@ const ServiceModal = ({ userA, loadData }) => {
                           {/* Số lần dùng */}
 
                           <Form.Control
-                            required
+                            // required
                             type="number"
-                            min="1"
+                            // min="1"
                             onChange={(e) => {
                               let temp = consumableUiList;
                               temp[rowIndex][4] = e.target.value;
                               setConsumableUiList([...temp]);
+
+                              let tempError = errorList;
+                              if (Number(e.target.value) < 1) {
+                                tempError[rowIndex][4] = "Nhập số lớn hơn 0";
+                                setErrorList([...tempError]);
+                              } else {
+                                tempError[rowIndex][4] = "";
+                                setErrorList([...tempError]);
+                              }
                             }}
                             value={row[4]}
                           />
+                          {errorList[rowIndex][4] !== "" && (
+                            <Text type="danger">{errorList[rowIndex][4]}</Text>
+                          )}
+                          {/* {formik.errors.name && (
+                  <p className="errorMsg"> {formik.errors.name} </p>
+                )} */}
                           {/* <InputNumber
                             required
                             // name={`numberIn${rowIndex}`}
@@ -546,7 +615,7 @@ const ServiceModal = ({ userA, loadData }) => {
                   <th>Lượng(viên/vỉ - ml,mg/lọ)</th>
                   <th>Công dụng</th>
                   <th>Số Lượng</th>
-                  <th>Cách Dùng</th>
+                  <th>Cách sử dụng</th>
                 </tr>
               </thead>
               {prescriptionList.length > 0 && (
@@ -607,16 +676,30 @@ const ServiceModal = ({ userA, loadData }) => {
                           {/* Số Lượng/SP */}
                           <Form.Control
                             type="number"
-                            required
-                            min={1}
+                            // required
+                            // min={1}
                             onChange={(e) => {
                               // prescriptionList[rowIndex][4] = e.target.value;
                               let temp = prescriptionList;
                               temp[rowIndex][4] = e.target.value;
                               setPrescriptionList([...temp]);
+
+                              let tempError = errorListPre;
+                              if (Number(e.target.value) < 1) {
+                                tempError[rowIndex][4] = "Nhập số lớn hơn 0";
+                                setErrorListPre([...tempError]);
+                              } else {
+                                tempError[rowIndex][4] = "";
+                                setErrorListPre([...tempError]);
+                              }
                             }}
                             value={row[4]}
                           />
+                          {errorListPre[rowIndex][4] !== "" && (
+                            <Text type="danger">
+                              {errorListPre[rowIndex][4]}
+                            </Text>
+                          )}
                         </td>
 
                         <td>
@@ -624,16 +707,44 @@ const ServiceModal = ({ userA, loadData }) => {
 
                           <Form.Control
                             type="text"
-                            required
+                            // required
                             onChange={(e) => {
                               let temp = prescriptionList;
                               temp[rowIndex][5] = e.target.value;
                               setPrescriptionList([...temp]);
+
+                              let tempError = errorListPre;
+                              if (e.target.value === "") {
+                                tempError[rowIndex][5] = "Bắt buộc nhập";
+                                setErrorListPre([...tempError]);
+                              } else {
+                                tempError[rowIndex][5] = "";
+                                setErrorListPre([...tempError]);
+                              }
                             }}
                             value={row[5]}
                           />
+                          {errorListPre[rowIndex][5] !== "" && (
+                            <Text type="danger">
+                              {errorListPre[rowIndex][5]}
+                            </Text>
+                          )}
                         </td>
-                        <td onClick={() => deleteprescriptionList(rowIndex)}>
+                        <td
+                          onClick={() => {
+                            Swal.fire({
+                              title: "Bạn có chắc chắn muốn xoá",
+                              showDenyButton: true,
+                              confirmButtonText: "Xoá",
+                              denyButtonText: `Huỷ`,
+                            }).then((result) => {
+                              if (result.isConfirmed) {
+                                deleteprescriptionList(rowIndex);
+                              } else if (result.isDenied) {
+                              }
+                            });
+                          }}
+                        >
                           <FaTrashAlt
                             cursor="pointer"
                             color="#e74c3c"
@@ -647,7 +758,54 @@ const ServiceModal = ({ userA, loadData }) => {
               )}
             </Table>
 
-            <Button type="submit" variant="primary" style={{ float: "right" }}>
+            <Button
+              onClick={() => {
+                let tempError = errorList;
+                consumableUiList.forEach((parent, parentIndex) => {
+                  parent.forEach((item, index) => {
+                    switch (index) {
+                      case 1:
+                        break;
+                      case 4:
+                        if (Number(item) < 1) {
+                          tempError[parentIndex][index] = "Nhập số lớn hơn 0";
+                          setErrorList([...tempError]);
+                        }
+                        break;
+                      default:
+                        break;
+                    }
+                  });
+                });
+                let tempErrorPre = errorListPre;
+                prescriptionList.forEach((parent, parentIndex) => {
+                  parent.forEach((item, index) => {
+                    switch (index) {
+                      case 1:
+                        break;
+                      case 4:
+                        if (Number(item) < 1) {
+                          tempErrorPre[parentIndex][index] =
+                            "Nhập số lớn hơn 0";
+                          setErrorListPre([...tempErrorPre]);
+                        }
+                        break;
+                      case 5:
+                        if (item === "") {
+                          tempErrorPre[parentIndex][index] = "Bắt buộc nhập";
+                          setErrorListPre([...tempErrorPre]);
+                        }
+                        break;
+                      default:
+                        break;
+                    }
+                  });
+                });
+              }}
+              type="submit"
+              variant="primary"
+              style={{ float: "right" }}
+            >
               Lưu lại
             </Button>
             <Button

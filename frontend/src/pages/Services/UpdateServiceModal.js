@@ -25,7 +25,9 @@ import {
   Form as FormAntd,
   InputNumber,
   message,
+  Typography,
 } from "antd";
+import Swal from "sweetalert2";
 
 const UpdateServiceModal = ({
   userB,
@@ -34,6 +36,8 @@ const UpdateServiceModal = ({
   closeModal,
   loadData,
 }) => {
+  const { Text, Link } = Typography;
+
   const [form] = FormAntd.useForm();
   const [temp, setTemp] = useState(false);
   const [suggestionList, setSuggestionList] = useState([]);
@@ -48,8 +52,8 @@ const UpdateServiceModal = ({
   const [consumableUiList, setConsumableUiList] = useState([]);
   const [prescriptionList, setPrescriptionList] = useState([]);
 
-  const [singleSelections, setSingleSelections] = useState([]);
-  const [singleSelectionsPre, setSingleSelectionsPre] = useState([]);
+  const [errorList, setErrorList] = useState([]);
+  const [errorListPre, setErrorListPre] = useState([]);
 
   const [currService, setCurrService] = useState({});
   // const meds = useSelector((state) => state.med.medicine);
@@ -77,12 +81,6 @@ const UpdateServiceModal = ({
     });
   };
 
-  const addPrescriptionRow = () => {
-    // setIsShowSuggestion1([...isShowSuggestion1, true]);
-
-    setPrescriptionList([...prescriptionList, ["", [], "", "", "", ""]]);
-  };
-
   const getService = async () => {
     // serviceId &&
     if (serviceId) {
@@ -104,6 +102,16 @@ const UpdateServiceModal = ({
             ]),
           ]);
 
+          setErrorList([
+            ...response.data.consumableArray.map((item) => [
+              "",
+              "",
+              "",
+              "",
+              "",
+            ]),
+          ]);
+
           setPrescriptionList([
             ...response.data.prescriptionArray.map((item) => [
               item.medicineId,
@@ -112,6 +120,17 @@ const UpdateServiceModal = ({
               item.medicineUnit,
               item.quantity,
               item.usage,
+            ]),
+          ]);
+
+          setErrorListPre([
+            ...response.data.prescriptionArray.map((item) => [
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
             ]),
           ]);
         })
@@ -193,6 +212,48 @@ const UpdateServiceModal = ({
       note: Yup.string(),
     }),
     onSubmit: async (values) => {
+      let isValid = true;
+
+      consumableUiList.forEach((parent, parentIndex) => {
+        parent.forEach((item, index) => {
+          switch (index) {
+            case 1:
+              break;
+            case 4:
+              if (Number(item) < 1) {
+                isValid = false;
+              }
+              break;
+            default:
+              break;
+          }
+        });
+      });
+      prescriptionList.forEach((parent, parentIndex) => {
+        parent.forEach((item, index) => {
+          switch (index) {
+            case 1:
+              break;
+            case 4:
+              if (Number(item) < 1) {
+                isValid = false;
+              }
+              break;
+            case 5:
+              if (item === "") {
+                isValid = false;
+              }
+              break;
+            default:
+              break;
+          }
+        });
+      });
+
+      if (!isValid) {
+        return;
+      }
+
       let formData = new FormData();
 
       formData.append("name", values.name);
@@ -236,20 +297,34 @@ const UpdateServiceModal = ({
   });
 
   const addConsumableRow = () => {
-    setIsShowSuggestion([...isShowSuggestion, true]);
+    // setIsShowSuggestion([...isShowSuggestion, true]);
     setConsumableUiList([...consumableUiList, ["", [], "", "", ""]]);
+    setErrorList([...errorList, ["", "", "", "", ""]]);
   };
 
   const deleteConsumableUiList = (rowIndex) => {
     let temp = consumableUiList;
     temp.splice(rowIndex, 1);
     setConsumableUiList([...temp]);
+
+    let tempError = errorList;
+    tempError.splice(rowIndex, 1);
+    setErrorList([...tempError]);
+  };
+
+  const addPrescriptionRow = () => {
+    setPrescriptionList([...prescriptionList, ["", [], "", "", "", ""]]);
+    setErrorListPre([...errorListPre, ["", "", "", "", "", ""]]);
   };
 
   const deleteprescriptionList = (rowIndex) => {
     let temp = prescriptionList;
     temp.splice(rowIndex, 1);
     setPrescriptionList([...temp]);
+
+    let tempError = errorListPre;
+    tempError.splice(rowIndex, 1);
+    setErrorListPre([...tempError]);
   };
 
   function findIndexByProperty(data, key, value) {
@@ -500,11 +575,40 @@ const UpdateServiceModal = ({
                               let temp = consumableUiList;
                               temp[rowIndex][4] = e.target.value;
                               setConsumableUiList([...temp]);
+
+                              let tempError = errorList;
+                              if (Number(e.target.value) < 1) {
+                                tempError[rowIndex][4] = "Nhập số lớn hơn 0";
+                                setErrorList([...tempError]);
+                              } else {
+                                tempError[rowIndex][4] = "";
+                                setErrorList([...tempError]);
+                              }
                             }}
                           />
+                          {errorList[rowIndex][4] !== "" && (
+                            <Text type="danger">{errorList[rowIndex][4]}</Text>
+                          )}
                         </td>
                         {temp === true ? (
-                          <td onClick={() => deleteConsumableUiList(rowIndex)}>
+                          <td
+                            onClick={() => {
+                              Swal.fire({
+                                title: "Bạn có chắc chắn muốn xoá",
+                                showDenyButton: true,
+                                // showCancelButton: true,
+                                confirmButtonText: "Xoá",
+                                denyButtonText: `Huỷ`,
+                              }).then((result) => {
+                                /* Read more about isConfirmed, isDenied below */
+                                if (result.isConfirmed) {
+                                  deleteConsumableUiList(rowIndex);
+                                } else if (result.isDenied) {
+                                  // Swal.fire('Changes are not saved', '', 'info')
+                                }
+                              });
+                            }}
+                          >
                             <FaTrashAlt
                               cursor="pointer"
                               color="#e74c3c"
@@ -607,19 +711,30 @@ const UpdateServiceModal = ({
                       <td>
                         <Form.Control
                           value={row[4]}
-                          // defaultValue={row[4]}
                           disabled={!temp}
                           type="number"
-                          min="1"
-                          required
+                          // min="1"
+                          // required
                           onChange={(e) => {
                             let temp = prescriptionList;
                             temp[rowIndex][4] = e.target.value;
                             setPrescriptionList([...temp]);
+
+                            let tempError = errorListPre;
+                            if (Number(e.target.value) < 1) {
+                              tempError[rowIndex][4] = "Nhập số lớn hơn 0";
+                              setErrorListPre([...tempError]);
+                            } else {
+                              tempError[rowIndex][4] = "";
+                              setErrorListPre([...tempError]);
+                            }
                           }}
                         />
+                        {errorListPre[rowIndex][4] !== "" && (
+                          <Text type="danger">{errorListPre[rowIndex][4]}</Text>
+                        )}
                       </td>
-
+                      {/* Cách sử dụng*/}
                       <td>
                         <Form.Control
                           disabled={!temp}
@@ -630,12 +745,38 @@ const UpdateServiceModal = ({
                             let temp = prescriptionList;
                             temp[rowIndex][5] = e.target.value;
                             setPrescriptionList([...temp]);
+
+                            let tempError = errorListPre;
+                            if (e.target.value === "") {
+                              tempError[rowIndex][5] = "Bắt buộc nhập";
+                              setErrorListPre([...tempError]);
+                            } else {
+                              tempError[rowIndex][5] = "";
+                              setErrorListPre([...tempError]);
+                            }
                           }}
                         />
+                        {errorListPre[rowIndex][5] !== "" && (
+                          <Text type="danger">{errorListPre[rowIndex][5]}</Text>
+                        )}
                       </td>
 
                       {temp === true ? (
-                        <td onClick={() => deleteprescriptionList(rowIndex)}>
+                        <td
+                          onClick={() => {
+                            Swal.fire({
+                              title: "Bạn có chắc chắn muốn xoá",
+                              showDenyButton: true,
+                              confirmButtonText: "Xoá",
+                              denyButtonText: `Huỷ`,
+                            }).then((result) => {
+                              if (result.isConfirmed) {
+                                deleteprescriptionList(rowIndex);
+                              } else if (result.isDenied) {
+                              }
+                            });
+                          }}
+                        >
                           <FaTrashAlt
                             cursor="pointer"
                             color="#e74c3c"
@@ -659,6 +800,49 @@ const UpdateServiceModal = ({
             </Table>
             {temp === true ? (
               <Button
+                onClick={() => {
+                  let tempError = errorList;
+                  consumableUiList.forEach((parent, parentIndex) => {
+                    parent.forEach((item, index) => {
+                      switch (index) {
+                        case 1:
+                          break;
+                        case 4:
+                          if (Number(item) < 1) {
+                            tempError[parentIndex][index] = "Nhập số lớn hơn 0";
+                            setErrorList([...tempError]);
+                          }
+                          break;
+                        default:
+                          break;
+                      }
+                    });
+                  });
+                  let tempErrorPre = errorListPre;
+                  prescriptionList.forEach((parent, parentIndex) => {
+                    parent.forEach((item, index) => {
+                      switch (index) {
+                        case 1:
+                          break;
+                        case 4:
+                          if (Number(item) < 1) {
+                            tempErrorPre[parentIndex][index] =
+                              "Nhập số lớn hơn 0";
+                            setErrorListPre([...tempErrorPre]);
+                          }
+                          break;
+                        case 5:
+                          if (item === "") {
+                            tempErrorPre[parentIndex][index] = "Bắt buộc nhập";
+                            setErrorListPre([...tempErrorPre]);
+                          }
+                          break;
+                        default:
+                          break;
+                      }
+                    });
+                  });
+                }}
                 type="submit"
                 variant="primary"
                 style={{ float: "right" }}
