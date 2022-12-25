@@ -108,7 +108,12 @@ function DashBoardTech({ user }) {
       title: "Ngày tạo",
       dataIndex: "dateT",
       align: "center",
-      sorter: (a, b) => moment(a.dateT).unix() - moment(b.dateT).unix(),
+      sorter: (a, b) =>
+        moment(a.dateT, "DD/MM/YYYY").toDate() -
+        moment(b.dateT, "DD/MM/YYYY").toDate(),
+      // sorter: (a, b) => moment(a.dateT).valueOf() - moment(b.dateT).valueOf(),
+      // sorter: (a, b) => console.log(moment(a.dateT).unix()),
+      // sorter: (a, b) => a.dateT.localeCompare(b.dateT),
     },
     {
       title: "Trạng thái",
@@ -117,20 +122,22 @@ function DashBoardTech({ user }) {
       filters: [
         {
           text: "Hoàn thành",
-          value: `2`,
+          value: `Hoàn thành`,
         },
         {
           text: "Đang thực hiện",
-          value: `1`,
+          value: `Đang thực hiện`,
         },
         {
           text: "Chưa thực hiện",
-          value: `0`,
+          value: `Chưa thực hiện`,
         },
       ],
+      onFilter: (value, record) => record.status.props.children === value,
+      // filters: console.log();
     },
     {
-      title: "",
+      title: "Hành động",
       dataIndex: "view",
       align: "center",
     },
@@ -144,6 +151,7 @@ function DashBoardTech({ user }) {
       _idTT: element.serviceId._id,
       nameTT: element.serviceId.name,
       dateT: moment(element.createdAt).format("DD/MM/YYYY"),
+
       status:
         element.status.$numberDecimal === "0" ? (
           <Button

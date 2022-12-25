@@ -56,7 +56,9 @@ const ListMedicalPaper = ({ user }) => {
 
   const [pkID, setPKID] = useState();
 
-  const openUpdateModalY = async (id) => {
+  const [disBtn, setDisBtn] = useState(false);
+  const openUpdateModalY = async (id, dis) => {
+    setDisBtn(dis);
     setPKID(id);
     setIsShowUpdateY(true);
     // openMedPaper();
@@ -178,37 +180,44 @@ const ListMedicalPaper = ({ user }) => {
       title: "Ngày tạo",
       dataIndex: "createdAt",
       align: "center",
-      sorter: (a, b) => a.fullname.length - b.fullname.length,
+      sorter: (a, b) =>
+        moment(a.createdAt, "DD/MM/YYYY").toDate() -
+        moment(b.createdAt, "DD/MM/YYYY").toDate(),
     },
     {
       title: "Khách hàng",
       dataIndex: "customer",
       align: "center",
       width: "180px",
-      sorter: (a, b) => a.phone.localeCompare(b.phone),
+      sorter: (a, b) => a.customer.localeCompare(b.customer),
     },
     {
       title: "Nhân viên",
       dataIndex: "staff",
       align: "center",
       // width: "180px",
-      // sorter: (a, b) => a.price - b.price,
+      sorter: (a, b) => a.staff.localeCompare(b.staff),
     },
     {
       title: "Thanh toán",
       dataIndex: "status",
       align: "center",
-      // filters: [
-      //   {
-      //     text: "Thanh toán",
-      //     value: `Thanh toan`,
-      //   },
-      //   {
-      //     text: "Còn nợ",
-      //     value: `Con no`,
-      //   },
-      // ],
-      // onFilter: (value, record) => record.status.type.name === value,
+      filters: [
+        {
+          text: "Thanh toán",
+          value: `Thanh toán`,
+        },
+        {
+          text: "Còn nợ",
+          value: `Còn nợ`,
+        },
+        {
+          text: "Chưa thanh toán",
+          value: `Chưa thanh toán`,
+        },
+      ],
+      onFilter: (value, record) =>
+        record.status.props.children.props.children === value,
     },
     {
       title: "Hành động",
@@ -232,7 +241,7 @@ const ListMedicalPaper = ({ user }) => {
                 variant="danger"
                 style={{ width: "60%" }}
                 onClick={() => {
-                  openUpdateModalY(p._id);
+                  openUpdateModalY(p._id, false);
                 }}
               >
                 Chưa thanh toán
@@ -242,14 +251,20 @@ const ListMedicalPaper = ({ user }) => {
                 variant="warning"
                 style={{ width: "60%" }}
                 onClick={() => {
-                  openUpdateModalY(p._id);
+                  openUpdateModalY(p._id, false);
                 }}
               >
                 Còn nợ
               </Button>
             ) : (
-              <Button variant="success" style={{ width: "60%" }}>
-                Thanh toan
+              <Button
+                variant="success"
+                style={{ width: "60%" }}
+                onClick={() => {
+                  openUpdateModalY(p._id, true);
+                }}
+              >
+                Thanh toán
               </Button>
             )
           ) : p.status.$numberDecimal === "0" ? (
@@ -262,7 +277,7 @@ const ListMedicalPaper = ({ user }) => {
             </Button>
           ) : (
             <Button variant="success" style={{ width: "60%" }}>
-              Thanh toan
+              Thanh toán
             </Button>
           )}
         </>
@@ -300,6 +315,7 @@ const ListMedicalPaper = ({ user }) => {
         PKID={pkID}
         handleClose={closeUpdateModalY}
         loadDataFilterByDate={loadDataFilterByDate}
+        dis={disBtn}
       />
       {/* Update Modal */}
       <DocMedicalPaperModal

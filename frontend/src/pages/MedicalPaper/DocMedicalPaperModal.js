@@ -73,13 +73,19 @@ const DocMedicalPaperModal = ({
   const [dentalMed, setDentalMed] = useState([]);
   // const [opac, setOpac] = useState(1);
 
+  const [disBtn, setDisBtn] = useState(false);
   const loadCurPK = async () => {
     try {
       const res = await axios({
         url: `/api/medicalPaper/${PKID}`,
         method: "get",
       });
-
+      console.log(res.data);
+      if (res.data.status.$numberDecimal === "2") {
+        setDisBtn(true);
+      } else {
+        setDisBtn(false);
+      }
       setPK(res.data);
       //chuyen danh sach thu thuat
       setTempDate([
@@ -294,10 +300,6 @@ const DocMedicalPaperModal = ({
         `/api/service/activeService?keyword=${searchMeds}&offset=${offset}&limit=${limit}`
       )
       .then((response) => {
-        // setServices(response.data);
-        //get service which status = true;
-        // var temp = response.data.data.filter((item) => item.status === true);
-        // setServices(temp);
         if (response.success === 1) {
           setServices(response.data.data);
           setTotal(response.data.total);
@@ -604,31 +606,6 @@ const DocMedicalPaperModal = ({
                 </Col>
               </Row>
 
-              <Row>
-                <Form.Label column style={{ marginLeft: "5px" }}>
-                  <b>Tiền thừa</b>
-                </Form.Label>
-                <Col>
-                  <Form.Control
-                    plaintext
-                    readOnly
-                    id="phone"
-                    type="number"
-                    placeholder={
-                      cusPayment - totalPrice <= 0
-                        ? new Intl.NumberFormat("de-DE", {
-                            style: "currency",
-                            currency: "VND",
-                          }).format(0)
-                        : new Intl.NumberFormat("de-DE", {
-                            style: "currency",
-                            currency: "VND",
-                          }).format(cusPayment - totalPrice)
-                    }
-                  />
-                </Col>
-              </Row>
-
               <hr style={{ marginTop: "8px", marginBottom: "4px" }} />
               <div
                 style={{
@@ -671,6 +648,7 @@ const DocMedicalPaperModal = ({
                       closeMedPaper={closeMedpaper}
                       openMedPaper={openMedPaper}
                       loadDataFilterByDate={loadData}
+                      dis={disBtn}
                     />
                   </div>
                   <div

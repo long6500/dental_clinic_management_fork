@@ -8,11 +8,13 @@ import Navbar from "react-bootstrap/Navbar";
 import axios from "../../apis/api";
 import { Pagination, Table, DatePicker } from "antd";
 import moment from "moment";
-import { FaEdit } from "react-icons/fa";
-import { FaRedoAlt } from "react-icons/fa";
+import { FaRedoAlt, FaReceipt, FaEdit } from "react-icons/fa";
 import DocMedicalPaperModal from "../MedicalPaper/DocMedicalPaperModal";
+import HistoryRecord from "../../components/HistoryRecord";
 
-function DashBoardDoctor({user}) {
+function DashBoardDoctor({ user }) {
+  const [isShowHistory, setIsShowHistory] = useState(false);
+
   const [offsetReExam, setOffsetReExam] = useState(0);
   const [limitReExam, setLimitReExam] = useState(5);
   const [totalReExam, setTotalReExam] = useState(0);
@@ -49,7 +51,7 @@ function DashBoardDoctor({user}) {
 
   useEffect(() => {
     let temp = 0;
-    user.role.forEach(element => {
+    user.role.forEach((element) => {
       if (element.name === "Bác sĩ" || element.name === "Admin") temp++;
     });
     //if (temp === 0) window.location.href = "/Page404";
@@ -81,7 +83,10 @@ function DashBoardDoctor({user}) {
       title: "Ngày tạo",
       dataIndex: "date",
       align: "center",
-      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
+      // sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
+      sorter: (a, b) =>
+        moment(a.date, "DD/MM/YYYY").toDate() -
+        moment(b.date, "DD/MM/YYYY").toDate(),
     },
     {
       title: "Mã khách hàng",
@@ -96,7 +101,7 @@ function DashBoardDoctor({user}) {
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "",
+      title: "Hành động",
       dataIndex: "action",
       align: "center",
     },
@@ -113,6 +118,18 @@ function DashBoardDoctor({user}) {
   const closeUpdateModal = () => {
     setIsShowUpdate(false);
   };
+  const [cusId, setCusID] = useState();
+  const [cusName, setCusName] = useState();
+
+  const openHistoryModal = (id, name) => {
+    setCusName(name);
+    setCusID(id);
+    setIsShowHistory(true);
+  };
+
+  const closeHistoryModal = () => {
+    setIsShowHistory(false);
+  };
 
   const dataReExam = medicalPaper.map((element) => {
     return {
@@ -122,21 +139,43 @@ function DashBoardDoctor({user}) {
       customerId: element.customerId._id,
       name: element.customerId.fullname,
       action: (
-        <FaEdit
-          className="mx-2"
-          color="#2980b9"
-          cursor={"pointer"}
-          size={25}
-          onClick={() => {
-            openUpdateModal(element._id);
-          }}
-        />
+        <>
+          <FaReceipt
+            color="#2980b9"
+            cursor={"pointer"}
+            size={25}
+            style={{ marginRight: "10px" }}
+            onClick={() => {
+              openHistoryModal(
+                element.customerId._id,
+                element.customerId.fullname
+              );
+            }}
+          />
+
+          <FaEdit
+            className="mx-2"
+            color="#2980b9"
+            cursor={"pointer"}
+            size={25}
+            onClick={() => {
+              openUpdateModal(element._id);
+            }}
+          />
+        </>
       ),
     };
   });
 
   return (
     <>
+      <HistoryRecord
+        show={isShowHistory}
+        handleClose={closeHistoryModal}
+        cusId={cusId}
+        cusName={cusName}
+      />
+
       <DocMedicalPaperModal
         opac={opac}
         closeMedpaper={closeMedpaper}
@@ -146,7 +185,6 @@ function DashBoardDoctor({user}) {
         loadData={loadDataReExam}
         openMedPaper={openMedPaper}
         role={"doctor"}
-
       />
       <div
         style={{

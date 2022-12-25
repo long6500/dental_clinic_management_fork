@@ -6,7 +6,7 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { FaRedoAlt, FaEdit, FaEye, FaReceipt } from "react-icons/fa";
+import { FaRedoAlt, FaEdit, FaReceipt, FaEye } from "react-icons/fa";
 // import Table from "react-bootstrap/Table";
 import { AiFillDelete } from "react-icons/ai";
 import CustomerModal from "./CustomerModal";
@@ -181,6 +181,7 @@ const Customer = ({ user }) => {
             color="#2980b9"
             cursor={"pointer"}
             size={25}
+            style={{ marginRight: "10px" }}
             onClick={() => {
               openHistoryModal(med._id, med.fullname);
             }}
