@@ -75,7 +75,6 @@ const DashBoard = () => {
         setCusTotal(response.data.totalCustomer);
         setCusInMonth(response.data.totalCustomerInMonth);
 
-
         setEmpTotal(response.data.totalEmployee);
         setEmpInMonth(response.data.totalEmployeeInMonth);
 
@@ -126,7 +125,6 @@ const DashBoard = () => {
     loadDataPieChart();
     loadDataLineChart();
   }, []);
-
 
   //data pie chart
   const data = {
@@ -397,10 +395,32 @@ const DashBoard = () => {
                   style={{ textAlign: "-webkit-center", height: "400px" }}
                 >
                   <span style={{ fontWeight: "bold", fontSize: "16px" }}>
-                    Số lượng khách hàng trong tuần
+                    Số lượt khách hàng trong tuần
                   </span>
 
-                  <Pie data={data} />
+                  {/* <Pie data={data} /> */}
+                  <Line
+                    datasetIdKey="id"
+                    data={{
+                      labels: [
+                        "Thứ 2",
+                        "Thứ 3",
+                        "Thứ 4",
+                        "Thứ 5",
+                        "Thứ 6",
+                        "Thứ 7",
+                        "Chủ nhật",
+                      ],
+                      datasets: [
+                        {
+                          id: 1,
+                          label: "",
+
+                          data: [cus2, cus3, cus4, cus5, cus6, cus7, cus8],
+                        },
+                      ],
+                    }}
+                  />
                 </div>
                 <div
                   className=""
@@ -411,7 +431,7 @@ const DashBoard = () => {
                   }}
                 >
                   <span style={{ fontWeight: "bold", fontSize: "16px" }}>
-                    Số lượng khách hàng trong tháng
+                    Số lượt khách hàng trong tháng
                   </span>
                   <Line
                     datasetIdKey="id"
@@ -449,7 +469,6 @@ const DashBoard = () => {
                             cusMon11,
                             cusMon12,
                           ],
-
                         },
                       ],
                     }}

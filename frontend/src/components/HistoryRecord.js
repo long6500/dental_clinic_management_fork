@@ -77,7 +77,7 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       dataIndex: "time",
       key: "time",
       align: "center",
-      sorter: (a, b) => a._id.localeCompare(b._id),
+      // sorter: (a, b) => a._id.localeCompare(b._id),
       render: (value, row, index) => {
         const obj = {
           children: value,
@@ -105,7 +105,7 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       dataIndex: "PKID",
       key: "PKID",
       align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      // sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, row, index) => {
         const obj = {
           children: value,
@@ -134,35 +134,13 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       key: "name",
       align: "center",
 
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      // sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
       title: "Nội dung",
       dataIndex: "note",
       key: "note",
       align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (value, row, index) => {
-        const obj = {
-          children: value,
-          props: {},
-        };
-
-        if (index >= 1 && value === dataSource[index - 1].note) {
-          obj.props.rowSpan = 0;
-        } else {
-          for (
-            let i = 0;
-            index + i !== dataSource.length &&
-            value === dataSource[index + i].note;
-            i += 1
-          ) {
-            obj.props.rowSpan = i + 1;
-          }
-        }
-
-        return obj;
-      },
     },
   ];
 
@@ -189,7 +167,7 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
             }
           }
         >
-          Lịch sử khách hàng
+          Lịch sử khám
         </Modal.Title>
       </Modal.Header>
 
@@ -203,13 +181,13 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
               Tên khách hàng
             </Form.Label>
             <Col sm={4}>
-              <Form.Control id="phone" type="text" disabled value={cusName} />
+              <Form.Control id="phone" type="text" readOnly value={cusName} />
             </Col>
             <Form.Label column sm={2}>
               Mã khách hàng
             </Form.Label>
             <Col sm={4}>
-              <Form.Control id="phone" type="text" disabled value={cusId} />
+              <Form.Control id="phone" type="text" readOnly value={cusId} />
             </Col>
           </Row>
 
@@ -256,7 +234,7 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
               {dentalMed.map((den, index) => {
                 return (
                   <>
-                    <Col>
+                    <Col sm={4}>
                       <Form.Check
                         readOnly
                         inline
@@ -283,6 +261,15 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
 
           <Row className="mb-3" style={{ margin: "5px" }}>
             Ghi chú
+          </Row>
+          <Row className="mb-3" style={{ margin: "5px" }}>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={curCustomer.note}
+              // disabled
+              readOnly
+            />
           </Row>
           <TableAntd
             columns={columns}

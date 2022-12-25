@@ -21,7 +21,6 @@ const UpdateCustomerModal = ({
   const [birthDay, setBirthDay] = useState("");
   const [temp, setTemp] = useState(false);
   const getCustomer = async () => {
-    console.log(1);
     const response = await axios.get(`api/customer/${cusId}`);
     setCurCustomer(response.data);
     setBirthDay(
@@ -392,7 +391,7 @@ const UpdateCustomerModal = ({
               </Row>
               <Row className="mb-3">
                 <Form.Label column sm={2}>
-                  Status
+                  Trạng thái
                 </Form.Label>
 
                 <Col sm={2}>
@@ -400,7 +399,7 @@ const UpdateCustomerModal = ({
                     <Form.Check
                       name="status"
                       type="radio"
-                      label="Active"
+                      label="Hoạt động"
                       id="active"
                       checked={curStatus}
                       onChange={(e) => {
@@ -412,7 +411,7 @@ const UpdateCustomerModal = ({
                     <Form.Check
                       name="status"
                       type="radio"
-                      label="Active"
+                      label="Hoạt động"
                       id="active"
                       checked={curStatus}
                       onChange="return false"
@@ -424,7 +423,7 @@ const UpdateCustomerModal = ({
                     <Form.Check
                       name="status"
                       type="radio"
-                      label="Inactive"
+                      label="Không hoạt động"
                       id="inactive"
                       checked={!curStatus}
                       onChange={(e) => {
@@ -436,7 +435,7 @@ const UpdateCustomerModal = ({
                     <Form.Check
                       name="status"
                       type="radio"
-                      label="Inactive"
+                      label="Không hoạt động"
                       id="inactive"
                       checked={!curStatus}
                       onChange="return false"
@@ -498,7 +497,7 @@ const UpdateCustomerModal = ({
               <Row className="mb-3">
                 {systemMed.map((sys, index) => {
                   return (
-                    <Col>
+                    <Col sm={2}>
                       {temp === true ? (
                         <Form.Check
                           id={sys._id}
@@ -571,6 +570,7 @@ const UpdateCustomerModal = ({
                     <Col>
                       {temp == true ? (
                         <Form.Check
+                          // style={{ width: "10%" }}
                           inline
                           name="dentalMedicalHistory"
                           label={den.name}

@@ -25,18 +25,17 @@ import axios from "../../apis/api";
 import Swal from "sweetalert2";
 const Payment = ({
   PKID,
-  setCusPayment,
-  cusPayment,
   totalPrice,
   closeMedPaper,
   openMedPaper,
   loadDataFilterByDate,
+  dis,
 }) => {
   // const [cusMon, setCusMon] = useState(customerPayment);
   const [tempL, setTempL] = useState(0);
   const [show, setShow] = useState(false);
 
-  const [changeMoney, setChangeMoney] = useState(totalPrice - cusPayment);
+  const [cusPayment, setCusPayment] = useState(0);
 
   const [paymentList, setPaymentList] = useState([]);
 
@@ -44,17 +43,21 @@ const Payment = ({
     await axios
       .get(`/api/bill?medicalPaperId=${PKID}`)
       .then((response) => {
-        console.log(response.data);
+        let temp = 0;
         setPaymentList([
-          ...response.data.map((i) => [
-            i.createdAt,
-            [{ id: i.paymentId, name: i.namePayment }],
-            Number(i.amount.$numberDecimal),
-            [{ id: i.employeeId, name: i.nameEmployee }],
-            i._id,
-          ]),
+          ...response.data.map((i) => {
+            temp += Number(i.amount.$numberDecimal);
+            return [
+              i.createdAt,
+              [{ id: i.paymentId, name: i.namePayment }],
+              Number(i.amount.$numberDecimal),
+              [{ id: i.employeeId, name: i.nameEmployee }],
+              i._id,
+            ];
+          }),
         ]);
 
+        setCusPayment(temp);
         setTempL(response.data.length);
       })
 
@@ -526,6 +529,7 @@ const Payment = ({
               </Col>
               <Col sm={1} style={{ display: "inline" }}>
                 <Button
+                  disabled={dis}
                   variant="success"
                   onClick={addRow}
                   style={{

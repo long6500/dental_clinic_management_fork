@@ -23,7 +23,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { useFetcher } from "react-router-dom";
 import axios from "../../apis/api";
 import Swal from "sweetalert2";
-const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
+const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate, dis }) => {
   // const [cusMon, setCusMon] = useState(customerPayment);
   const [tempL, setTempL] = useState(0);
   //   const [show, setShow] = useState(false);
@@ -40,20 +40,24 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
     });
 
     setTotalPrice(Number(res.data.totalAmount.$numberDecimal));
-    setCusPayment(Number(res.data.customerPayment.$numberDecimal));
 
     await axios
       .get(`/api/bill?medicalPaperId=${PKID}`)
       .then((response) => {
+        let temp = 0;
         setPaymentList([
-          ...response.data.map((i) => [
-            i.createdAt,
-            [{ id: i.paymentId, name: i.namePayment }],
-            Number(i.amount.$numberDecimal),
-            [{ id: i.employeeId, name: i.nameEmployee }],
-            i._id,
-          ]),
+          ...response.data.map((i) => {
+            temp += Number(i.amount.$numberDecimal);
+            return [
+              i.createdAt,
+              [{ id: i.paymentId, name: i.namePayment }],
+              Number(i.amount.$numberDecimal),
+              [{ id: i.employeeId, name: i.nameEmployee }],
+              i._id,
+            ];
+          }),
         ]);
+        setCusPayment(temp);
 
         setTempL(response.data.length);
         if (response.success === 1) {
@@ -75,7 +79,7 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
         url: `/api/payment/`,
         method: "get",
       });
-      console.log(res.data);
+
       setOP([...res.data.map((i) => ({ id: i._id, name: i.name }))]);
     } catch (error) {
       console.log(error);
@@ -97,7 +101,6 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
 
   useEffect(() => {
     if (PKID) {
-      console.log("trong if");
       loadTT();
       loadReceptionist();
       getPaymentData();
@@ -496,6 +499,7 @@ const PaymentY = ({ PKID, show, handleClose, loadDataFilterByDate }) => {
               </Col>
               <Col sm={1} style={{ display: "inline" }}>
                 <Button
+                  disabled={dis}
                   variant="success"
                   onClick={addRow}
                   style={{

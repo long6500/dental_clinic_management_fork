@@ -556,23 +556,7 @@ const MedicalPaperModal = ({ loadData, user }) => {
                   />
                 </Col>
               </Row>
-              <Row>
-                <Form.Label column style={{ marginLeft: "5px" }}>
-                  <b>Tiền thừa</b>
-                </Form.Label>
-                <Col>
-                  <Form.Control
-                    plaintext
-                    readOnly
-                    id="phone"
-                    type="number"
-                    placeholder={new Intl.NumberFormat("de-DE", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(0)}
-                  />
-                </Col>
-              </Row>
+
               <hr style={{ marginTop: "8px", marginBottom: "4px" }} />
               <div
                 style={{
