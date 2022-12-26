@@ -268,7 +268,7 @@ const ServiceModal = ({ userA, loadData }) => {
 
   const addConsumableRow = () => {
     // setIsShowSuggestion([...isShowSuggestion, true]);
-    setConsumableUiList([...consumableUiList, ["", [], "", "", 1, ""]]);
+    setConsumableUiList([...consumableUiList, ["", [], "", "", "", ""]]);
     setErrorList([...errorList, ["", "", "", "", ""]]);
   };
 
@@ -703,7 +703,7 @@ const ServiceModal = ({ userA, loadData }) => {
                         </td>
 
                         <td>
-                          {/* Cachs dung*/}
+                          {/* Cách sử dụng*/}
 
                           <Form.Control
                             type="text"
