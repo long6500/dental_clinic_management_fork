@@ -22,7 +22,7 @@ function Page404() {
 		
 		<p>Thật không may trang bạn.Bạn không có quyền vào trang này.Hãy quay lại trang chính!! </p>
 		
-		<a href="/DashBoard" className="link_404">Trang chính</a>
+		<a href="/" className="link_404">Trang chính</a>
 	</div>
 		</div>
 		</div>

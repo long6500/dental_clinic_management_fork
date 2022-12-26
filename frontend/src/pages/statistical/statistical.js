@@ -29,10 +29,8 @@ function Statistical({ user }) {
   const [selectTK, setSelectTK] = useState("1");
 
   let [startCustomer, setStartCustomer] = useState([]);
-  let [endCustomer, setEndCustomer] = useState([]);
 
   let [startEmployee, setStartEmployee] = useState([]);
-  let [endEmployee, setEndEmployee] = useState([]);
 
   const [startDate, setStartDate] = useState(
     moment(today).format("YYYY-MM-DD")
@@ -40,7 +38,6 @@ function Statistical({ user }) {
   const [endDate, setEndDate] = useState(moment(today).format("YYYY-MM-DD"));
 
   const [startService, setStartService] = useState([]);
-  const [endService, setEndService] = useState([]);
 
   const [customerList, setCustomerList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
@@ -114,7 +111,6 @@ function Statistical({ user }) {
   };
 
   useEffect(() => {
-    console.log(user.role[0]);
     if (user.role[0].name !== "Admin") window.location.href = "/Page404";
     loadCustomer();
     loadEmployee();
@@ -123,29 +119,16 @@ function Statistical({ user }) {
 
   const [tableData, setTableData] = useState();
 
-  // useEffect(() => {
-  //   console.log(tableData);
-  // }, [tableData]);
-
   useEffect(() => {
     setShowTable(false);
-  }, [selectTK]);
+  }, [selectTK, startDate, endDate, startCustomer, startEmployee, startService]);
 
   const onSubmitStatic = async () => {
-    if (endEmployee.length === 0) {
-      endEmployee = startEmployee;
-    }
-    if (startEmployee.length === 0) {
-      startEmployee = endEmployee;
-    }
 
     let tempData = {};
     tempData.startCustomer = startCustomer[0]?.id;
-    // tempData.endCustomer = endCustomer[0]?.id;
     tempData.startEmployee = startEmployee[0]?.id;
-    // tempData.endEmployee = endEmployee[0]?.id;
     tempData.startService = startService[0]?.id;
-    // tempData.endService = endService[0]?.id;
     tempData.startDate = startDate;
     tempData.endDate = endDate;
 
@@ -367,10 +350,6 @@ function Statistical({ user }) {
                       placeholder="Chọn nhân viên"
                       options={employeeList}
                       onChange={(e) => {
-                        if (endEmployee.length === 0) {
-                          setEndEmployee(e);
-                        }
-
                         setStartEmployee(e);
                       }}
                       selected={startEmployee}

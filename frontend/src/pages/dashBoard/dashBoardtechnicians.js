@@ -54,7 +54,7 @@ function DashBoardTech({ user }) {
     user.role.forEach((element) => {
       if (element.name === "Kỹ thuật viên" || element.name === "Admin") temp++;
     });
-    //if (temp === 0) window.location.href = "/Page404";
+    if (temp === 0) window.location.href = "/Page404";
     loadDataReExam();
   }, [offsetReExam, limitReExam, startDate, endDate, keyWord]);
 
@@ -145,7 +145,7 @@ function DashBoardTech({ user }) {
 
   const dataReExam = table.map((element) => {
     return {
-      _idPH: element.medicalPaperId,
+      _idPH: element.medicalPaperId._id,
       _idKH: element.customerId._id,
       nameKH: element.customerId.fullname,
       _idTT: element.serviceId._id,

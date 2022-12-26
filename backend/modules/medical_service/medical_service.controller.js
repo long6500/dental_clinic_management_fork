@@ -31,34 +31,35 @@ const getMedicalPaperWithService = async (req, res) => {
     MedicalServiceModel.find(filter)
       .populate({ path: "customerId", select: "fullname" })
       .populate({ path: "serviceId", select: "name" })
+      .populate({ path: "medicalPaperId", select: "status" })
       .skip(offsetNumber * limitNumber)
       .limit(limitNumber),
     MedicalServiceModel.count(filter),
   ]);
 
+  let tempList = [];
+  let tempTotal = 0;
+  await Promise.all(listMedicalService.map((element) => {
+    if(Number(element.medicalPaperId.status) !== 0){
+      tempList.push({ ...element._doc });
+      tempTotal+=1;
+    }
+  }))
   if (keyword) {
     let listMedicalServiceArray = [];
     let totalListMedicalService = 0;
-    await Promise.all(
-      listMedicalService.map((element) => {
-        if (
-          element.medicalPaperId
-            .toLowerCase()
-            .includes(keyword.toLowerCase()) ||
-          element.customerId._id
-            .toLowerCase()
-            .includes(keyword.toLowerCase()) ||
-          element.customerId.fullname
-            .toLowerCase()
-            .includes(keyword.toLowerCase()) ||
-          element.serviceId._id.toLowerCase().includes(keyword.toLowerCase()) ||
-          element.serviceId.name.toLowerCase().includes(keyword.toLowerCase())
-        ) {
-          listMedicalServiceArray.push({ ...element._doc });
-          totalListMedicalService++;
-        }
-      })
-    );
+    await Promise.all(listMedicalService.map((element) => {
+      if (
+        element.medicalPaperId.toLowerCase().includes(keyword.toLowerCase()) ||
+        element.customerId._id.toLowerCase().includes(keyword.toLowerCase()) ||
+        element.customerId.fullname.toLowerCase().includes(keyword.toLowerCase()) ||
+        element.serviceId._id.toLowerCase().includes(keyword.toLowerCase()) ||
+        element.serviceId.name.toLowerCase().includes(keyword.toLowerCase())
+      ) {
+        listMedicalServiceArray.push({ ...element._doc });
+        totalListMedicalService++;
+      }
+    }))
 
     res.send({
       success: 1,
@@ -68,7 +69,7 @@ const getMedicalPaperWithService = async (req, res) => {
   }
   res.send({
     success: 1,
-    data: { data: listMedicalService, total: total },
+    data: { data: tempList, total: tempTotal },
   });
 };
 

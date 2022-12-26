@@ -27,7 +27,7 @@ import {
   Title,
   registerables,
 } from "chart.js";
-const DashBoard = () => {
+const DashBoard = ({user}) => {
   ChartJS.register(ArcElement, Tooltip, Legend);
   ChartJS.register(CategoryScale);
   ChartJS.register(...registerables);
@@ -121,6 +121,9 @@ const DashBoard = () => {
   };
 
   useEffect(() => {
+    if(user.role[0].name !== "Admin"){
+      window.location.href = "/Page404";
+    }
     loadDataDashBoard();
     loadDataPieChart();
     loadDataLineChart();
@@ -184,16 +187,6 @@ const DashBoard = () => {
             </div>
             <div class="card-body">
               <div class="count"> {cusTotal} </div>
-              <span class="count_bottom">
-                <i class="green">
-                  {" "}
-                  {Math.round(
-                    (cusInMonth / (cusTotal - cusInMonth)) * 100
-                  )}%{" "}
-                </i>{" "}
-                so với tháng trước{" "}
-              </span>
-              <span class="count_bottom"> ({cusInMonth} khách) </span>
             </div>
           </div>
         </div>
@@ -209,18 +202,6 @@ const DashBoard = () => {
             </div>
             <div class="card-body">
               <div class="count"> {empTotal} </div>
-              <span class="count_bottom">
-                <i class="green">
-                  {" "}
-                  {Math.round((empInMonth / (empTotal - empInMonth)) * 100) ===
-                  Infinity
-                    ? 0
-                    : Math.round((empInMonth / (empTotal - empInMonth)) * 100)}
-                  %{" "}
-                </i>{" "}
-                so với tháng trước{" "}
-              </span>
-              <span class="count_bottom"> ({empInMonth} khách) </span>
             </div>
           </div>
         </div>
@@ -236,18 +217,6 @@ const DashBoard = () => {
             </div>
             <div class="card-body">
               <div class="count"> {medTotal} </div>
-              <span class="count_bottom">
-                <i class="green">
-                  {" "}
-                  {Math.round((medInMonth / (medTotal - medInMonth)) * 100) ===
-                  Infinity
-                    ? 0
-                    : Math.round((medInMonth / (medTotal - medInMonth)) * 100)}
-                  %{" "}
-                </i>{" "}
-                so với tháng trước{" "}
-              </span>
-              <span class="count_bottom"> ({medInMonth} khách) </span>
             </div>
           </div>
         </div>
@@ -263,18 +232,6 @@ const DashBoard = () => {
             </div>
             <div class="card-body">
               <div class="count"> {serTotal} </div>
-              <span class="count_bottom">
-                <i class="green">
-                  {" "}
-                  {Math.round((serInMonth / (serTotal - serInMonth)) * 100) ===
-                  Infinity
-                    ? 0
-                    : Math.round((serInMonth / (serTotal - serInMonth)) * 100)}
-                  %{" "}
-                </i>{" "}
-                so với tháng trước{" "}
-              </span>
-              <span class="count_bottom"> ({serInMonth} khách) </span>
             </div>
           </div>
         </div>
@@ -289,14 +246,10 @@ const DashBoard = () => {
               </span>
             </div>
             <div class="card-body">
-              <div class="count" style={{alignItems:"center"}}>
+              <div class="count1" style={{alignItems:"center"}}>
                 {" "}
                 {bestSer} - {bestSerNumber}
               </div>
-              <span class="count_bottom">
-                <i class="green"> {bestSerNumber} </i> lần sử dụng tháng này
-              </span>
-              {/* <span class="count_bottom"> (30 khách) </span> */}
             </div>
           </div>
         </div>

@@ -13,7 +13,12 @@ const getReExamination = async (req, res) => {
 
   let filter = {};
   if (startDate && endDate) {
-    filter.reExamination = { $gte: new Date(startDate), $lt: new Date(endDate) };
+    const fromDate = new Date(startDate);
+    fromDate.setHours(0);
+
+    const toDate = new Date(endDate);
+    toDate.setHours(24);
+    filter.reExamination = { $gte: fromDate, $lt: toDate };
   }
 
   const [medicalPaper, totalMedicalPaper] = await Promise.all([

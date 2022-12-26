@@ -96,7 +96,7 @@ const UpdateCustomerModal = ({
           function (value) {
             return new Promise((resolve, reject) => {
               axios
-                .get(`http://localhost:9000/api/customer/checkPhone/${value}`)
+                .get(`/api/customer/checkPhone/${value}`)
                 .then((res) => {
                   if (res.success === 1 || curPhone === value) {
                     resolve(true);
@@ -120,7 +120,7 @@ const UpdateCustomerModal = ({
           function (value) {
             return new Promise((resolve, reject) => {
               axios
-                .get(`http://localhost:9000/api/customer/checkEmail/${value}`)
+                .get(`/api/customer/checkEmail/${value}`)
                 .then((res) => {
                   if (res.success === 1 || curEmail === value) resolve(true);
                   else resolve(false);

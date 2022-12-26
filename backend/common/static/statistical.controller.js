@@ -550,7 +550,7 @@ const getCustomerMonth = async (req, res) => {
       break;
   }
   if(count !== 12){
-    for (let i = count; i >= 1; i--) {
+    for (let i = count; i >= 0; i--) {
       let fromDate = new Date(today.getFullYear(), month-i, 1);
       fromDate.setHours(0);
   
@@ -560,11 +560,11 @@ const getCustomerMonth = async (req, res) => {
       numberCustomer.push(number);
     }
   }else{
-    for (let i = count; i >= 1; i--) {
-      let fromDate = new Date(today.getFullYear()-1, month-i, 1);
+    for (let i = 1; i <= 12; i++) {
+      let fromDate = new Date(today.getFullYear()-1, i, 1);
       fromDate.setHours(0);
   
-      let toDate = new Date(today.getFullYear()-1, month-i+1, 0);
+      let toDate = new Date(today.getFullYear()-1, i+1, 0);
       toDate.setHours(24);
       const number = await MedicalPaperModel.count({ createdAt: { $gte: fromDate, $lt: toDate } });
       numberCustomer.push(number);

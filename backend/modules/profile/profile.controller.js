@@ -231,7 +231,7 @@ const getProfile = async (req, res, next) => {
   if (keyword) {
     const regex = new RegExp(`${keyword}`, "i");
     const regexCond = { $regex: regex };
-    filter["$or"] = [{ _id: regexCond }, { fullname: regexCond }];
+    filter["$or"] = [{ _id: regexCond }, { fullname: regexCond }, { phone: regexCond }];
   }
 
   let [profile, totalProfile] = await Promise.all([

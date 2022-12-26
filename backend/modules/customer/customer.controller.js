@@ -48,7 +48,7 @@ const getCustomer = async (req, res) => {
     const regex = new RegExp(`${keyword}`, "i");
     const regexCond = { $regex: regex };
 
-    filter["$or"] = [{ _id: regexCond }, { fullname: regexCond }];
+    filter["$or"] = [{ _id: regexCond }, { fullname: regexCond }, { phone: regexCond }];
   }
 
   const [customers, totalCustomers] = await Promise.all([
