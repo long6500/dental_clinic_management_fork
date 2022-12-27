@@ -24,6 +24,7 @@ function DashBoardDoctor({ user }) {
   const dateFormat = "DD/MM/YYYY";
   const [pkID, setPKID] = useState();
   const [opac, setOpac] = useState(1);
+  const [opacHR, setOpacHR] = useState(1);
   const openMedPaper = () => {
     setOpac(1);
   };
@@ -125,10 +126,12 @@ function DashBoardDoctor({ user }) {
     setCusName(name);
     setCusID(id);
     setIsShowHistory(true);
+    setOpacHR(1);
   };
 
   const closeHistoryModal = () => {
     setIsShowHistory(false);
+    setOpacHR(0);
   };
 
   const dataReExam = medicalPaper.map((element) => {
@@ -174,6 +177,8 @@ function DashBoardDoctor({ user }) {
         handleClose={closeHistoryModal}
         cusId={cusId}
         cusName={cusName}
+        setOpac={setOpacHR}
+        opac={opacHR}
       />
 
       <DocMedicalPaperModal

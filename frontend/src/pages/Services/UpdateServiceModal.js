@@ -97,6 +97,7 @@ const UpdateServiceModal = ({
               item.medicineId,
               [item.medicineName],
               item.medicineQuantity,
+              item.unit,
               item.medicineUnit,
               item.numberOfUses,
             ]),
@@ -104,6 +105,7 @@ const UpdateServiceModal = ({
 
           setErrorList([
             ...response.data.consumableArray.map((item) => [
+              "",
               "",
               "",
               "",
@@ -117,6 +119,7 @@ const UpdateServiceModal = ({
               item.medicineId,
               [item.medicineName],
               item.medicineQuantity,
+              item.unit,
               item.medicineUnit,
               item.quantity,
               item.usage,
@@ -125,6 +128,7 @@ const UpdateServiceModal = ({
 
           setErrorListPre([
             ...response.data.prescriptionArray.map((item) => [
+              "",
               "",
               "",
               "",
@@ -159,15 +163,15 @@ const UpdateServiceModal = ({
 
     if (searchResult) {
       consumableUiList[rowIndex][0] = searchResult._id;
-      // consumableUiList[rowIndex][1] = e[0];
       consumableUiList[rowIndex][2] = searchResult.quantity;
-      consumableUiList[rowIndex][3] = searchResult.effect;
+      consumableUiList[rowIndex][3] = searchResult.unit;
+      consumableUiList[rowIndex][4] = searchResult.effect;
       setConsumableUiList(consumableUiList);
     } else {
-      // console.log("4");
       consumableUiList[rowIndex][0] = "";
       consumableUiList[rowIndex][2] = "";
       consumableUiList[rowIndex][3] = "";
+      consumableUiList[rowIndex][4] = "";
     }
   };
 
@@ -177,12 +181,14 @@ const UpdateServiceModal = ({
     if (searchResult) {
       prescriptionList[rowIndex][0] = searchResult._id;
       prescriptionList[rowIndex][2] = searchResult.quantity;
-      prescriptionList[rowIndex][3] = searchResult.effect;
+      prescriptionList[rowIndex][3] = searchResult.unit;
+      prescriptionList[rowIndex][4] = searchResult.effect;
       setPrescriptionList(prescriptionList);
     } else {
       prescriptionList[rowIndex][0] = "";
       prescriptionList[rowIndex][2] = "";
       prescriptionList[rowIndex][3] = "";
+      prescriptionList[rowIndex][4] = "";
     }
   };
 
@@ -266,7 +272,7 @@ const UpdateServiceModal = ({
       for (var i = 0; i < consumableUiList.length; i++) {
         const tempOb = {
           medicineId: consumableUiList[i][0],
-          numberOfUses: consumableUiList[i][4],
+          numberOfUses: consumableUiList[i][5],
         };
         formData.append("consumable[]", JSON.stringify(tempOb));
       }
@@ -274,8 +280,8 @@ const UpdateServiceModal = ({
       for (var i = 0; i < prescriptionList.length; i++) {
         const tempOb = {
           medicineId: prescriptionList[i][0],
-          quantity: prescriptionList[i][4],
-          usage: prescriptionList[i][5],
+          quantity: prescriptionList[i][5],
+          usage: prescriptionList[i][6],
         };
         formData.append("prescription[]", JSON.stringify(tempOb));
       }
@@ -298,8 +304,8 @@ const UpdateServiceModal = ({
 
   const addConsumableRow = () => {
     // setIsShowSuggestion([...isShowSuggestion, true]);
-    setConsumableUiList([...consumableUiList, ["", [], "", "", ""]]);
-    setErrorList([...errorList, ["", "", "", "", ""]]);
+    setConsumableUiList([...consumableUiList, ["", [], "", "", "", ""]]);
+    setErrorList([...errorList, ["", "", "", "", "", ""]]);
   };
 
   const deleteConsumableUiList = (rowIndex) => {
@@ -313,8 +319,8 @@ const UpdateServiceModal = ({
   };
 
   const addPrescriptionRow = () => {
-    setPrescriptionList([...prescriptionList, ["", [], "", "", "", ""]]);
-    setErrorListPre([...errorListPre, ["", "", "", "", "", ""]]);
+    setPrescriptionList([...prescriptionList, ["", [], "", "", "", "", ""]]);
+    setErrorListPre([...errorListPre, ["", "", "", "", "", "", ""]]);
   };
 
   const deleteprescriptionList = (rowIndex) => {
@@ -508,7 +514,8 @@ const UpdateServiceModal = ({
                   <th>STT</th>
                   <th>Mã thuốc</th>
                   <th>Tên thuốc</th>
-                  <th>Lượng</th>
+                  <th>Hàm lượng thuốc</th>
+                  <th>Đơn vị</th>
                   <th>Công dụng</th>
                   <th>Số lần dùng</th>
                 </tr>
@@ -539,6 +546,7 @@ const UpdateServiceModal = ({
                             ]}
                             initialValue={row[1]}
                           >
+                            {/* Ten thuoc */}
                             <Typeahead
                               disabled={!temp}
                               id="basic-typeahead-single"
@@ -556,38 +564,45 @@ const UpdateServiceModal = ({
                           </FormAntd.Item>
                         </td>
                         <td>
+                          {/* Ham luong thuoc */}
                           <Form.Control type="number" value={row[2]} disabled />
                         </td>
                         <td>
+                          {/* Don vi */}
+                          <Form.Control type="text" value={row[3]} disabled />
+                        </td>
+                        <td>
+                          {/* Cong dung */}
                           <Form.Control
                             disabled
-                            value={row[3]}
+                            value={row[4]}
                             // onChange={formik.handleChange}
                           />
                         </td>
                         <td>
+                          {/* So lan dung */}
                           <Form.Control
-                            value={row[4]}
+                            value={row[5]}
                             disabled={!temp}
                             min="1"
                             type="number"
                             onChange={(e) => {
                               let temp = consumableUiList;
-                              temp[rowIndex][4] = e.target.value;
+                              temp[rowIndex][5] = e.target.value;
                               setConsumableUiList([...temp]);
 
                               let tempError = errorList;
                               if (Number(e.target.value) < 1) {
-                                tempError[rowIndex][4] = "Nhập số lớn hơn 0";
+                                tempError[rowIndex][5] = "Nhập số lớn hơn 0";
                                 setErrorList([...tempError]);
                               } else {
-                                tempError[rowIndex][4] = "";
+                                tempError[rowIndex][5] = "";
                                 setErrorList([...tempError]);
                               }
                             }}
                           />
-                          {errorList[rowIndex][4] !== "" && (
-                            <Text type="danger">{errorList[rowIndex][4]}</Text>
+                          {errorList[rowIndex][5] !== "" && (
+                            <Text type="danger">{errorList[rowIndex][5]}</Text>
                           )}
                         </td>
                         {temp === true ? (
@@ -652,7 +667,8 @@ const UpdateServiceModal = ({
                   <th>STT</th>
                   <th>Mã thuốc</th>
                   <th>Tên thuốc</th>
-                  <th>Lượng</th>
+                  <th>Hàm lượng thuốc</th>
+                  <th>Đơn vị</th>
                   <th>Công dụng</th>
                   <th>Số lần dùng</th>
                   <th>Cách sử dụng</th>
@@ -660,142 +676,142 @@ const UpdateServiceModal = ({
                 </tr>
               </thead>
               <tbody>
-                {prescriptionList.map((row, rowIndex) => {
-                  return (
-                    <tr>
-                      <td style={{ width: "80px" }}>
-                        <Form.Control
-                          type="text"
-                          disabled
-                          value={rowIndex + 1}
-                        />
-                      </td>
-                      <td>
-                        <Form.Control disabled value={row[0]} />
-                      </td>
-                      <td>
-                        <FormAntd.Item
-                          name={`selectPreu${rowIndex}`}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Nhập tên thuốc",
-                            },
-                          ]}
-                          initialValue={row[1]}
-                        >
-                          <Typeahead
-                            id="basic-typeahead-single"
-                            disabled={!temp}
-                            onChange={(e) => {
-                              fillDataPre(e, rowIndex);
-
-                              // row[1] = e;
-
-                              let temp = prescriptionList;
-                              temp[rowIndex][1] = e;
-                              setPrescriptionList([...temp]);
-                            }}
-                            options={suggestionList}
-                            selected={row[1]}
-                            placeholder="Chọn tên thuốc..."
-                          />
-                        </FormAntd.Item>
-                      </td>
-                      <td>
-                        <Form.Control type="number" value={row[2]} disabled />
-                      </td>
-                      <td>
-                        <Form.Control disabled value={row[3]} />
-                      </td>
-                      <td>
-                        <Form.Control
-                          value={row[4]}
+                {prescriptionList.map((row, rowIndex) => (
+                  <tr>
+                    <td style={{ width: "80px" }}>
+                      <Form.Control type="text" disabled value={rowIndex + 1} />
+                    </td>
+                    <td>
+                      <Form.Control disabled value={row[0]} />
+                    </td>
+                    <td>
+                      {/* Ten thuoc */}
+                      <FormAntd.Item
+                        name={`selectPreu${rowIndex}`}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Nhập tên thuốc",
+                          },
+                        ]}
+                        initialValue={row[1]}
+                      >
+                        <Typeahead
+                          id="basic-typeahead-single"
                           disabled={!temp}
-                          type="number"
-                          // min="1"
-                          // required
                           onChange={(e) => {
+                            fillDataPre(e, rowIndex);
+
+                            // row[1] = e;
                             let temp = prescriptionList;
-                            temp[rowIndex][4] = e.target.value;
+                            temp[rowIndex][1] = e;
                             setPrescriptionList([...temp]);
-
-                            let tempError = errorListPre;
-                            if (Number(e.target.value) < 1) {
-                              tempError[rowIndex][4] = "Nhập số lớn hơn 0";
-                              setErrorListPre([...tempError]);
-                            } else {
-                              tempError[rowIndex][4] = "";
-                              setErrorListPre([...tempError]);
-                            }
                           }}
+                          options={suggestionList}
+                          selected={row[1]}
+                          placeholder="Chọn tên thuốc..."
                         />
-                        {errorListPre[rowIndex][4] !== "" && (
-                          <Text type="danger">{errorListPre[rowIndex][4]}</Text>
-                        )}
-                      </td>
-                      {/* Cách sử dụng*/}
-                      <td>
-                        <Form.Control
-                          disabled={!temp}
-                          value={row[5]}
-                          // defaultValue={row[5]}
-                          type="text"
-                          onChange={(e) => {
-                            let temp = prescriptionList;
-                            temp[rowIndex][5] = e.target.value;
-                            setPrescriptionList([...temp]);
+                      </FormAntd.Item>
+                    </td>
+                    <td>
+                      {/* Ham luong thuoc */}
+                      <Form.Control type="number" value={row[2]} disabled />
+                    </td>
+                    <td>
+                      {/* Don vi */}
+                      <Form.Control disabled value={row[3]} />
+                    </td>
+                    <td>
+                      {/* Cong dung */}
+                      <Form.Control disabled value={row[4]} />
+                    </td>
+                    <td>
+                      <Form.Control
+                        value={row[5]}
+                        disabled={!temp}
+                        type="number"
+                        // min="1"
+                        // required
+                        onChange={(e) => {
+                          let temp = prescriptionList;
+                          temp[rowIndex][5] = e.target.value;
+                          setPrescriptionList([...temp]);
 
-                            let tempError = errorListPre;
-                            if (e.target.value === "") {
-                              tempError[rowIndex][5] = "Bắt buộc nhập";
-                              setErrorListPre([...tempError]);
-                            } else {
-                              tempError[rowIndex][5] = "";
-                              setErrorListPre([...tempError]);
-                            }
-                          }}
-                        />
-                        {errorListPre[rowIndex][5] !== "" && (
-                          <Text type="danger">{errorListPre[rowIndex][5]}</Text>
-                        )}
-                      </td>
-
-                      {temp === true ? (
-                        <td
-                          onClick={() => {
-                            Swal.fire({
-                              title: "Bạn có chắc chắn muốn xoá",
-                              showDenyButton: true,
-                              confirmButtonText: "Xoá",
-                              denyButtonText: `Huỷ`,
-                            }).then((result) => {
-                              if (result.isConfirmed) {
-                                deleteprescriptionList(rowIndex);
-                              } else if (result.isDenied) {
-                              }
-                            });
-                          }}
-                        >
-                          <FaTrashAlt
-                            cursor="pointer"
-                            color="#e74c3c"
-                            style={{ transform: "translateY(7px)" }}
-                          />
-                        </td>
-                      ) : (
-                        <td onClick={() => deleteprescriptionList(rowIndex)}>
-                          <FaTrashAlt
-                            onClick={"return false"}
-                            cursor="pointer"
-                            color="#e74c3c"
-                            style={{ transform: "translateY(7px)" }}
-                          />
-                        </td>
+                          let tempError = errorListPre;
+                          if (Number(e.target.value) < 1) {
+                            tempError[rowIndex][5] = "Nhập số lớn hơn 0";
+                            setErrorListPre([...tempError]);
+                          } else {
+                            tempError[rowIndex][5] = "";
+                            setErrorListPre([...tempError]);
+                          }
+                        }}
+                      />
+                      {errorListPre[rowIndex][5] !== "" && (
+                        <Text type="danger">{errorListPre[rowIndex][5]}</Text>
                       )}
-                    </tr>
-                  );
-                })}
+                    </td>
+                    {/* Cách sử dụng*/}
+                    <td>
+                      <Form.Control
+                        disabled={!temp}
+                        value={row[6]}
+                        // defaultValue={row[5]}
+                        type="text"
+                        onChange={(e) => {
+                          let temp = prescriptionList;
+                          temp[rowIndex][6] = e.target.value;
+                          setPrescriptionList([...temp]);
+
+                          let tempError = errorListPre;
+                          if (e.target.value === "") {
+                            tempError[rowIndex][6] = "Bắt buộc nhập";
+                            setErrorListPre([...tempError]);
+                          } else {
+                            tempError[rowIndex][6] = "";
+                            setErrorListPre([...tempError]);
+                          }
+                        }}
+                      />
+                      {errorListPre[rowIndex][6] !== "" && (
+                        <Text type="danger">{errorListPre[rowIndex][6]}</Text>
+                      )}
+                    </td>
+
+                    {temp === true ? (
+                      <td
+                        onClick={() => {
+                          Swal.fire({
+                            title: "Bạn có chắc chắn muốn xoá",
+                            showDenyButton: true,
+                            confirmButtonText: "Xoá",
+                            denyButtonText: `Huỷ`,
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              deleteprescriptionList(rowIndex);
+                            } else if (result.isDenied) {
+                            }
+                          });
+                        }}
+                      >
+                        <FaTrashAlt
+                          cursor="pointer"
+                          color="#e74c3c"
+                          style={{ transform: "translateY(7px)" }}
+                        />
+                      </td>
+                    ) : (
+                      <td onClick={() => deleteprescriptionList(rowIndex)}>
+                        <FaTrashAlt
+                          onClick={"return false"}
+                          cursor="pointer"
+                          color="#e74c3c"
+                          style={{ transform: "translateY(7px)" }}
+                        />
+                      </td>
+                    )}
+                  </tr>
+                ))}
               </tbody>
             </Table>
             {temp === true ? (
@@ -807,7 +823,7 @@ const UpdateServiceModal = ({
                       switch (index) {
                         case 1:
                           break;
-                        case 4:
+                        case 5:
                           if (Number(item) < 1) {
                             tempError[parentIndex][index] = "Nhập số lớn hơn 0";
                             setErrorList([...tempError]);
@@ -824,14 +840,14 @@ const UpdateServiceModal = ({
                       switch (index) {
                         case 1:
                           break;
-                        case 4:
+                        case 5:
                           if (Number(item) < 1) {
                             tempErrorPre[parentIndex][index] =
                               "Nhập số lớn hơn 0";
                             setErrorListPre([...tempErrorPre]);
                           }
                           break;
-                        case 5:
+                        case 6:
                           if (item === "") {
                             tempErrorPre[parentIndex][index] = "Bắt buộc nhập";
                             setErrorListPre([...tempErrorPre]);

@@ -13,17 +13,37 @@ import * as Yup from "yup";
 import axios from "../apis/api";
 import Table from "react-bootstrap/Table";
 import ReactPaginate from "react-paginate";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt, FaFileMedical } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { Select, Pagination, Table as TableAntd, Form as FormAntd } from "antd";
-import { AiTwotonePauseCircle } from "react-icons/ai";
+import HisRecMedList from "./HisRecMedList";
 
-const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
+const HistoryRecord = ({
+  show,
+  handleClose,
+  cusId,
+  cusName,
+  setOpac,
+  opac,
+}) => {
+  const [showHRML, setShowHRML] = useState(false);
+  const [pkid, setPkid] = useState("");
   const [systemMed, setSystemMed] = useState([]);
   const [dentalMed, setDentalMed] = useState([]);
 
   const [recordData, setRecordData] = useState([]);
   const [curCustomer, setCurCustomer] = useState({});
+
+  const openHRML = (id) => {
+    console.log(1);
+    setPkid(id);
+    setShowHRML(true);
+    setOpac(0);
+  };
+  const closeHRML = () => {
+    setShowHRML(false);
+    setOpac(1);
+  };
 
   const loadSystemMed = async () => {
     const response = await axios
@@ -59,6 +79,7 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
         PKID: m.medicalPaperId,
         name: m.serviceItem[0].name,
         note: m.medicalPaperItem[0].note,
+        med: m.medicalPaperId,
       })),
     ]);
   };
@@ -77,7 +98,7 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       dataIndex: "time",
       key: "time",
       align: "center",
-      // sorter: (a, b) => a._id.localeCompare(b._id),
+      width: "10%",
       render: (value, row, index) => {
         const obj = {
           children: value,
@@ -105,7 +126,7 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       dataIndex: "PKID",
       key: "PKID",
       align: "center",
-      // sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, row, index) => {
         const obj = {
           children: value,
@@ -133,14 +154,63 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       dataIndex: "name",
       key: "name",
       align: "center",
-
-      // sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
       title: "Nội dung",
       dataIndex: "note",
       key: "note",
       align: "center",
+      render: (value, row, index) => {
+        const obj = {
+          children: value,
+          props: {},
+        };
+
+        if (index >= 1 && value === dataSource[index - 1].note) {
+          obj.props.rowSpan = 0;
+        } else {
+          for (
+            let i = 0;
+            index + i !== dataSource.length &&
+            value === dataSource[index + i].note;
+            i += 1
+          ) {
+            obj.props.rowSpan = i + 1;
+          }
+        }
+
+        return obj;
+      },
+    },
+    {
+      title: "Đơn thuốc",
+      dataIndex: "med",
+      key: "med",
+      align: "center",
+      render: (value, row, index) => {
+        const obj = {
+          children: value,
+          props: {},
+        };
+        if (
+          index >= 1 &&
+          value.props.className === dataSource[index - 1].med.props.className
+        ) {
+          obj.props.rowSpan = 0;
+        } else {
+          console.log(2);
+          for (
+            let i = 0;
+            index + i !== dataSource.length &&
+            value.props.className === dataSource[index + i].med.props.className;
+            i += 1
+          ) {
+            obj.props.rowSpan = i + 1;
+          }
+        }
+
+        return obj;
+      },
     },
   ];
 
@@ -150,6 +220,16 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       name: i.name,
       time: i.time,
       note: i.note,
+      med: (
+        <FaFileMedical
+          size={25}
+          color="#3498db"
+          className={i.med}
+          onClick={() => {
+            openHRML(i.PKID);
+          }}
+        />
+      ),
     };
   });
   return (
@@ -157,7 +237,7 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       id="historyRecord"
       show={show}
       onHide={handleClose}
-      //   style={{ opacity: `${opac}` }}
+      style={{ opacity: `${opac}` }}
     >
       <Modal.Header closeButton>
         <Modal.Title
@@ -172,6 +252,9 @@ const HistoryRecord = ({ show, handleClose, cusId, cusName }) => {
       </Modal.Header>
 
       <Modal.Body>
+        {/* HisRecMedList */}
+        <HisRecMedList showHRML={showHRML} closeHRML={closeHRML} pkid={pkid} />
+
         <FormAntd
           name="basic"
           //    onFinish={addPk}

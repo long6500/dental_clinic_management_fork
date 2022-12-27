@@ -29,6 +29,7 @@ const MedicineModal = ({ userA, loadData }, prop) => {
       name: "",
       imageUrl: null,
       quantity: 0,
+      unit: "Viên",
       price: 0,
       purchasePrice: 0,
       effect: "",
@@ -84,6 +85,7 @@ const MedicineModal = ({ userA, loadData }, prop) => {
       formData.append("name", values.name);
       formData.append("imageUrl", values.imageUrl[0]);
       formData.append("quantity", values.quantity);
+      formData.append("unit", values.unit);
       formData.append("price", values.price);
       formData.append("purchasePrice", values.purchasePrice);
       formData.append("effect", values.effect);
@@ -95,6 +97,7 @@ const MedicineModal = ({ userA, loadData }, prop) => {
       values.name = "";
       values.imageUrl = "";
       values.quantity = 0;
+      values.unit = "Viên";
       values.price = 0;
       values.purchasePrice = 0;
       values.effect = "";
@@ -218,9 +221,9 @@ const MedicineModal = ({ userA, loadData }, prop) => {
                 </Form.Group>
               </Row>
               <Row className="mb-3">
-                <Form.Group className="mb-3" as={Col}>
-                  <Form.Label column sm={12}>
-                    Lượng(viên/vỉ - ml,mg/lọ){" "}
+                <Form.Group className="mb-3" as={Col} sm={3}>
+                  <Form.Label column>
+                    Hàm lượng thuốc{" "}
                     <span
                       style={{
                         display: "inline",
@@ -241,6 +244,40 @@ const MedicineModal = ({ userA, loadData }, prop) => {
                   {formik.errors.quantity && (
                     <p className="errorMsg"> {formik.errors.quantity} </p>
                   )}
+                </Form.Group>
+
+                <Form.Group className="mb-3" as={Col} sm={3}>
+                  <Form.Label column sm={6}>
+                    Đơn vị{" "}
+                    <span
+                      style={{
+                        display: "inline",
+                        marginBottom: "0px",
+                        color: "red",
+                      }}
+                    >
+                      {" "}
+                      *
+                    </span>
+                  </Form.Label>
+                  <Form.Select
+                    // size="lg"
+                    id="unit"
+                    style={{ height: "36px" }}
+                    onChange={(e) => {
+                      formik.handleChange(e);
+                    }}
+                  >
+                    <option value="Viên">Viên</option>
+                    <option value="Chai">Lọ/Chai</option>
+                    <option value="Tuýp">Tuýp</option>
+                    <option value="Ống">Ống</option>
+                  </Form.Select>
+                  {/* {formik.errors.quantity && formik.errors.price && ( */}
+                  <p hidden className="errorMsg">
+                    asdasasadssad
+                  </p>
+                  {/* )} */}
                 </Form.Group>
 
                 <Form.Group className="mb-3" as={Col}>

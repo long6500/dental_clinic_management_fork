@@ -61,7 +61,6 @@ const ListMedicalPaper = ({ user }) => {
     setDisBtn(dis);
     setPKID(id);
     setIsShowUpdateY(true);
-    // openMedPaper();
   };
 
   const closeUpdateModalY = () => {

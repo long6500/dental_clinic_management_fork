@@ -21,6 +21,8 @@ import { Pagination, Table } from "antd";
 import HistoryRecord from "../../components/HistoryRecord";
 
 const Customer = ({ user }) => {
+  const [opac, setOpac] = useState(1);
+
   const [customers, setCustomers] = useState([]);
 
   const [offset, setOffset] = useState(0);
@@ -82,6 +84,7 @@ const Customer = ({ user }) => {
     setCusName(name);
     setCusID(id);
     setIsShowHistory(true);
+    setOpac(1);
   };
 
   const openUpdateModal = (id) => {
@@ -90,6 +93,7 @@ const Customer = ({ user }) => {
   };
   const closeHistoryModal = () => {
     setIsShowHistory(false);
+    setOpac(0);
   };
 
   const closeUpdateModal = () => {
@@ -296,6 +300,8 @@ const Customer = ({ user }) => {
         handleClose={closeHistoryModal}
         cusId={cusId}
         cusName={cusName}
+        setOpac={setOpac}
+        opac={opac}
       />
 
       <UpdateCustomerModal
