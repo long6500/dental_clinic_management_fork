@@ -8,6 +8,7 @@ const medicineSlice = createSlice({
       name: "",
       imageUrl: "",
       quantity: -1,
+      unit: "Viên",
       price: -1,
       purchasePrice: -1,
       effect: "",
@@ -28,7 +29,7 @@ const medicineSlice = createSlice({
       state.medicine = action.payload;
     },
     getMedDetailSuccess: (state, action) => {
-      return {...state, medDetail: { ...state.medDetail, ...action.payload }}
+      return { ...state, medDetail: { ...state.medDetail, ...action.payload } };
     },
     updateMedicine: (state, action) => {
       // state.medicine.map((med) => {

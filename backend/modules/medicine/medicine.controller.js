@@ -33,7 +33,7 @@ const getActiveMedicine = async (req, res) => {
 const checkName = async (req, res) => {
   const { name } = req.params;
   const medicine = await MedicineModel.findOne({ name: name });
-  if (medicine != null) res.send({ success: 0, data: medicine })
+  if (medicine != null) res.send({ success: 0, data: medicine });
   res.send({ success: 1, data: medicine });
 };
 
@@ -49,9 +49,10 @@ const createMedicine = async (req, res) => {
     effect,
     usage,
     contraindication,
+    unit,
   } = req.body;
 
-  const existMedicine = await MedicineModel.findOne({ 'name': name });
+  const existMedicine = await MedicineModel.findOne({ name: name });
   if (existMedicine) {
     throw new HTTPError(400, "Medicine had exist");
   }
@@ -67,6 +68,7 @@ const createMedicine = async (req, res) => {
     effect,
     usage,
     contraindication,
+    unit,
     createBy: senderUser._id,
   });
   res.send({ success: 1, data: newMedicine });
@@ -84,6 +86,7 @@ const updateMedicine = async (req, res) => {
     effect,
     usage,
     contraindication,
+    unit,
     status,
   } = req.body;
 
@@ -106,6 +109,7 @@ const updateMedicine = async (req, res) => {
         usage,
         contraindication,
         status,
+        unit,
         modifyBy: senderUser._id,
       },
       { new: true }
@@ -124,6 +128,7 @@ const updateMedicine = async (req, res) => {
         usage,
         contraindication,
         status,
+        unit,
         modifyBy: senderUser._id,
       },
       { new: true }

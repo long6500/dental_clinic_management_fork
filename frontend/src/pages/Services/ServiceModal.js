@@ -133,7 +133,7 @@ const ServiceModal = ({ userA, loadData }) => {
       for (var i = 0; i < consumableUiList.length; i++) {
         const tempOb = {
           medicineId: consumableUiList[i][0],
-          numberOfUses: consumableUiList[i][4],
+          numberOfUses: consumableUiList[i][5],
           // numberOfUses: values.numberOfUses,
         };
         formData.append("consumable[]", JSON.stringify(tempOb));
@@ -142,8 +142,8 @@ const ServiceModal = ({ userA, loadData }) => {
       for (var i = 0; i < prescriptionList.length; i++) {
         const tempOb = {
           medicineId: prescriptionList[i][0],
-          quantity: prescriptionList[i][4],
-          usage: prescriptionList[i][5],
+          quantity: prescriptionList[i][5],
+          usage: prescriptionList[i][6],
         };
         formData.append("prescription[]", JSON.stringify(tempOb));
       }
@@ -181,16 +181,16 @@ const ServiceModal = ({ userA, loadData }) => {
     console.log(searchResult);
     if (searchResult) {
       consumableUiList[rowIndex][0] = searchResult._id;
-      // consumableUiList[rowIndex][1] = e[0];
       consumableUiList[rowIndex][2] = searchResult.quantity;
-      consumableUiList[rowIndex][3] = searchResult.effect;
-      // consumableUiList[rowIndex][4] = numberOfUses;
+      consumableUiList[rowIndex][3] = searchResult.unit;
+      consumableUiList[rowIndex][4] = searchResult.effect;
 
       setConsumableUiList(consumableUiList);
     } else {
       consumableUiList[rowIndex][0] = "";
       consumableUiList[rowIndex][2] = "";
       consumableUiList[rowIndex][3] = "";
+      consumableUiList[rowIndex][4] = "";
       // setNumberOfUses(0);
     }
     // setConsumableUiList([...tempList]);
@@ -203,12 +203,14 @@ const ServiceModal = ({ userA, loadData }) => {
     if (searchResult) {
       prescriptionList[rowIndex][0] = searchResult._id;
       prescriptionList[rowIndex][2] = searchResult.quantity;
-      prescriptionList[rowIndex][3] = searchResult.effect;
+      prescriptionList[rowIndex][3] = searchResult.unit;
+      prescriptionList[rowIndex][4] = searchResult.effect;
       setPrescriptionList(prescriptionList);
     } else {
       prescriptionList[rowIndex][0] = "";
       prescriptionList[rowIndex][2] = "";
       prescriptionList[rowIndex][3] = "";
+      prescriptionList[rowIndex][4] = "";
     }
 
     console.log(prescriptionList[rowIndex]);
@@ -268,14 +270,14 @@ const ServiceModal = ({ userA, loadData }) => {
 
   const addConsumableRow = () => {
     // setIsShowSuggestion([...isShowSuggestion, true]);
-    setConsumableUiList([...consumableUiList, ["", [], "", "", "", ""]]);
-    setErrorList([...errorList, ["", "", "", "", ""]]);
+    setConsumableUiList([...consumableUiList, ["", [], "", "", "", "", ""]]);
+    setErrorList([...errorList, ["", "", "", "", "", ""]]);
   };
 
   const addPrescriptionRow = () => {
     // setIsShowSuggestion1([...isShowSuggestion1, true]);
-    setPrescriptionList([...prescriptionList, ["", [], "", "", "", ""]]);
-    setErrorListPre([...errorListPre, ["", "", "", "", "", ""]]);
+    setPrescriptionList([...prescriptionList, ["", [], "", "", "", "", ""]]);
+    setErrorListPre([...errorListPre, ["", "", "", "", "", "", ""]]);
   };
   function findIndexByProperty(data, key, value) {
     for (var i = 0; i < data.length; i++) {
@@ -462,7 +464,8 @@ const ServiceModal = ({ userA, loadData }) => {
                   <th>STT</th>
                   <th>Mã thuốc</th>
                   <th>Tên thuốc</th>
-                  <th>Lượng(viên/vỉ - ml,mg/lọ)</th>
+                  <th>Hàm lượng thuốc</th>
+                  <th>Đơn vị</th>
                   <th>Công dụng</th>
                   <th>Số lần dùng</th>
                 </tr>
@@ -505,12 +508,16 @@ const ServiceModal = ({ userA, loadData }) => {
                           </FormAntd.Item>
                         </td>
                         <td>
-                          {/* Lượng */}
+                          {/* Hàm Lượng thuốc */}
                           <Form.Control type="number" value={row[2]} disabled />
                         </td>
                         <td>
                           {/* Đơn vị */}
-                          <Form.Control disabled value={row[3]} />
+                          <Form.Control type="text" value={row[3]} disabled />
+                        </td>
+                        <td>
+                          {/* Cong dung */}
+                          <Form.Control disabled value={row[4]} />
                         </td>
                         <td>
                           {/* Số lần dùng */}
@@ -521,38 +528,23 @@ const ServiceModal = ({ userA, loadData }) => {
                             // min="1"
                             onChange={(e) => {
                               let temp = consumableUiList;
-                              temp[rowIndex][4] = e.target.value;
+                              temp[rowIndex][5] = e.target.value;
                               setConsumableUiList([...temp]);
 
                               let tempError = errorList;
                               if (Number(e.target.value) < 1) {
-                                tempError[rowIndex][4] = "Nhập số lớn hơn 0";
+                                tempError[rowIndex][5] = "Nhập số lớn hơn 0";
                                 setErrorList([...tempError]);
                               } else {
-                                tempError[rowIndex][4] = "";
+                                tempError[rowIndex][5] = "";
                                 setErrorList([...tempError]);
                               }
                             }}
-                            value={row[4]}
+                            value={row[5]}
                           />
-                          {errorList[rowIndex][4] !== "" && (
-                            <Text type="danger">{errorList[rowIndex][4]}</Text>
+                          {errorList[rowIndex][5] !== "" && (
+                            <Text type="danger">{errorList[rowIndex][5]}</Text>
                           )}
-                          {/* {formik.errors.name && (
-                  <p className="errorMsg"> {formik.errors.name} </p>
-                )} */}
-                          {/* <InputNumber
-                            required
-                            // name={`numberIn${rowIndex}`}
-                            min={1}
-                            value={row[4]}
-                            // defaultValue={row[4]}
-                            onChange={(e) => {
-                              let temp = consumableUiList;
-                              temp[rowIndex][4] = e;
-                              setConsumableUiList([...temp]);
-                            }}
-                          /> */}
                         </td>
 
                         <td
@@ -612,7 +604,8 @@ const ServiceModal = ({ userA, loadData }) => {
                   <th>STT</th>
                   <th>Mã thuốc</th>
                   <th>Tên thuốc</th>
-                  <th>Lượng(viên/vỉ - ml,mg/lọ)</th>
+                  <th>Hàm lượng thuốc</th>
+                  <th>Đơn vị</th>
                   <th>Công dụng</th>
                   <th>Số Lượng</th>
                   <th>Cách sử dụng</th>
@@ -673,6 +666,14 @@ const ServiceModal = ({ userA, loadData }) => {
                           />
                         </td>
                         <td>
+                          {/* Công dụng */}
+                          <Form.Control
+                            disabled
+                            value={row[4]}
+                            onChange={formik.handleChange}
+                          />
+                        </td>
+                        <td>
                           {/* Số Lượng/SP */}
                           <Form.Control
                             type="number"
@@ -681,23 +682,23 @@ const ServiceModal = ({ userA, loadData }) => {
                             onChange={(e) => {
                               // prescriptionList[rowIndex][4] = e.target.value;
                               let temp = prescriptionList;
-                              temp[rowIndex][4] = e.target.value;
+                              temp[rowIndex][5] = e.target.value;
                               setPrescriptionList([...temp]);
 
                               let tempError = errorListPre;
                               if (Number(e.target.value) < 1) {
-                                tempError[rowIndex][4] = "Nhập số lớn hơn 0";
+                                tempError[rowIndex][5] = "Nhập số lớn hơn 0";
                                 setErrorListPre([...tempError]);
                               } else {
-                                tempError[rowIndex][4] = "";
+                                tempError[rowIndex][5] = "";
                                 setErrorListPre([...tempError]);
                               }
                             }}
-                            value={row[4]}
+                            value={row[5]}
                           />
-                          {errorListPre[rowIndex][4] !== "" && (
+                          {errorListPre[rowIndex][5] !== "" && (
                             <Text type="danger">
-                              {errorListPre[rowIndex][4]}
+                              {errorListPre[rowIndex][5]}
                             </Text>
                           )}
                         </td>
@@ -710,23 +711,23 @@ const ServiceModal = ({ userA, loadData }) => {
                             // required
                             onChange={(e) => {
                               let temp = prescriptionList;
-                              temp[rowIndex][5] = e.target.value;
+                              temp[rowIndex][6] = e.target.value;
                               setPrescriptionList([...temp]);
 
                               let tempError = errorListPre;
                               if (e.target.value === "") {
-                                tempError[rowIndex][5] = "Bắt buộc nhập";
+                                tempError[rowIndex][6] = "Bắt buộc nhập";
                                 setErrorListPre([...tempError]);
                               } else {
-                                tempError[rowIndex][5] = "";
+                                tempError[rowIndex][6] = "";
                                 setErrorListPre([...tempError]);
                               }
                             }}
-                            value={row[5]}
+                            value={row[6]}
                           />
-                          {errorListPre[rowIndex][5] !== "" && (
+                          {errorListPre[rowIndex][6] !== "" && (
                             <Text type="danger">
-                              {errorListPre[rowIndex][5]}
+                              {errorListPre[rowIndex][6]}
                             </Text>
                           )}
                         </td>
@@ -766,7 +767,7 @@ const ServiceModal = ({ userA, loadData }) => {
                     switch (index) {
                       case 1:
                         break;
-                      case 4:
+                      case 5:
                         if (Number(item) < 1) {
                           tempError[parentIndex][index] = "Nhập số lớn hơn 0";
                           setErrorList([...tempError]);
@@ -783,14 +784,14 @@ const ServiceModal = ({ userA, loadData }) => {
                     switch (index) {
                       case 1:
                         break;
-                      case 4:
+                      case 5:
                         if (Number(item) < 1) {
                           tempErrorPre[parentIndex][index] =
                             "Nhập số lớn hơn 0";
                           setErrorListPre([...tempErrorPre]);
                         }
                         break;
-                      case 5:
+                      case 6:
                         if (item === "") {
                           tempErrorPre[parentIndex][index] = "Bắt buộc nhập";
                           setErrorListPre([...tempErrorPre]);

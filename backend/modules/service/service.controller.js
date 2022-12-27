@@ -223,6 +223,7 @@ const getServiceById = async (req, res) => {
           medicineName: medicine.name,
           medicineQuantity: medicine.quantity,
           medicineUnit: medicine.effect,
+          unit: medicine.unit,
         };
       })
     );
@@ -238,6 +239,7 @@ const getServiceById = async (req, res) => {
           medicineName: medicine.name,
           medicineQuantity: medicine.quantity,
           medicineUnit: medicine.effect,
+          unit: medicine.unit,
         };
       })
     );

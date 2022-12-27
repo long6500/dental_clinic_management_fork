@@ -7,8 +7,9 @@ const medicineSchema = Joi.object({
   price: Joi.number().required(),
   purchasePrice: Joi.number().required(),
   effect: Joi.string().required(),
-  usage: Joi.string().allow(null, ''),
+  usage: Joi.string().allow(null, ""),
   contraindication: Joi.string().required(),
+  unit: Joi.string().required(),
   status: Joi.boolean(),
 });
 
