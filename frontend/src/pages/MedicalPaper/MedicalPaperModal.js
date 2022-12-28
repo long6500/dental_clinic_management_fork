@@ -120,7 +120,6 @@ const MedicalPaperModal = ({ loadData, user }) => {
           doctorId: pk.doctorId,
           customerId: pk.customerId,
           reExamination: pk.reExamination,
-          medicalService: pk.medicalService,
           note: pk.note,
           totalAmount: totalPrice,
         },

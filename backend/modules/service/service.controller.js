@@ -311,7 +311,8 @@ const getMedicineByService = async (req, res) => {
       medicine.push({
         ...element._doc,
         name: temp.name,
-        unit: temp.quantity,
+        quantityMedicine: temp.quantity,
+        unit: temp.unit,
       });
     })
   );

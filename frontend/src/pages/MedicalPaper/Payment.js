@@ -97,7 +97,6 @@ const Payment = ({
         url: `/api/profile/getReceptionist/`,
         method: "get",
       });
-      console.log(res.data);
       setReceptionList([
         ...res.data.map((i) => ({ id: i._id, name: i.fullname })),
       ]);

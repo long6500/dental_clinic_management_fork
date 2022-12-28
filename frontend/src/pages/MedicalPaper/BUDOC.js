@@ -47,10 +47,8 @@ const DocMedicalPaperModal = ({
 
   const [showKTV, setShowKTV] = useState(false);
   const [ktvList, setKtvList] = useState([]);
-  const [rowKTV, setRowKTV] = useState(0);
-  const [serID, setSerID] = useState("");
-  const openKTV = (serviceId) => {
-    setSerID(serviceId);
+
+  const openKTV = () => {
     setShowKTV(true);
     closeMedpaper();
   };
@@ -96,32 +94,9 @@ const DocMedicalPaperModal = ({
 
   const [systemMed, setSystemMed] = useState([]);
   const [dentalMed, setDentalMed] = useState([]);
+  // const [opac, setOpac] = useState(1);
 
   const [disBtn, setDisBtn] = useState(false);
-
-  const loadCurrentItemList = async () => {
-    try {
-      const res = await axios({
-        url: `/api/medicalPaper/${PKID}`,
-        method: "get",
-      });
-      setCurrentItemList([
-        ...res.data.medicalService.map((i) => [
-          new Date(i.createdAt).toLocaleDateString("en-GB"),
-          i.serviceName,
-          i.servicePrice.$numberDecimal,
-          i.techStaff,
-          [{ id: 0, label: "Chưa thực hiện" }],
-          i._id,
-        ]),
-      ]);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const [pkTemp, setPkTemp] = useState({});
-
   const loadCurPK = async () => {
     try {
       const res = await axios({
@@ -134,22 +109,20 @@ const DocMedicalPaperModal = ({
         setDisBtn(false);
       }
       setPK(res.data);
-      setPkTemp(res.data);
       //chuyen danh sach thu thuat
       setTempDate([
         ...res.data.medicalService.map((i) => [
           new Date(i.createdAt).toLocaleDateString("en-GB"),
         ]),
       ]);
-      console.log(res.data);
       setCurrentItemList([
         ...res.data.medicalService.map((i) => [
           new Date(i.createdAt).toLocaleDateString("en-GB"),
           i.serviceName,
           i.servicePrice.$numberDecimal,
-          i.techStaff,
+          [{ name: i.techStaff, id: i.techStaffId }],
           [{ id: 0, label: "Chưa thực hiện" }],
-          i._id,
+          i.serviceId,
         ]),
       ]);
 
@@ -168,46 +141,29 @@ const DocMedicalPaperModal = ({
   };
 
   const addPk = async () => {
-    // let isValid = true;
+    console.log(1);
+    let isValid = true;
 
-    // currentItemList.forEach((parent, parentIndex) => {
-    //   parent.forEach((item, index) => {
-    //     switch (index) {
-    //       // case 1:
-    //       //   break;
-    //       case 3:
-    //         if (item === "") {
-    //           isValid = false;
-    //         }
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   });
-    // });
-
-    // if (!isValid) {
-    //   return;
-    // }
-
-    let temp = currentItemList;
-    let tempTotal = totalPrice;
-    temp.map(async (i, index) => {
-      if (i[3] === "") {
-        console.log(i[2]);
-        tempTotal = totalPrice - i[2];
-        console.log(tempTotal);
-        try {
-          await axios({
-            url: `api/medicalService/deleteService/${i[5]}`,
-            method: "delete",
-          });
-        } catch (error) {
-          console.log(error);
+    currentItemList.forEach((parent, parentIndex) => {
+      parent.forEach((item, index) => {
+        switch (index) {
+          // case 1:
+          //   break;
+          case 3:
+            if (item === "") {
+              isValid = false;
+            }
+            break;
+          default:
+            break;
         }
-      }
+      });
     });
-    setCurrentItemList([...temp]);
+
+    if (!isValid) {
+      return;
+    }
+    console.log(2);
 
     try {
       const res = await axios({
@@ -226,24 +182,38 @@ const DocMedicalPaperModal = ({
           doctorId: pk.doctorId,
           customerId: pk.customerId,
           reExamination: pk.reExamination,
+          medicalService: pk.medicalService,
           note: pk.note,
-          totalAmount: tempTotal,
+          totalAmount: totalPrice,
         },
       });
     } catch (error) {
       console.log(error);
     }
 
-    // handleClose();
-    closeModal();
-    closeMedpaper();
-
+    handleClose();
     loadData();
     //reset data after submit
     setCurrentItemList([]);
     setSingleSelectionsDoc([]);
     setSingleSelections([]);
     setBirthDay(null);
+  };
+
+  const loadTechStaffData = () => {
+    axios
+      .get("/api/profile/getTechStaffToday")
+      .then((response) => {
+        setTechStaff([
+          ...response.data.map((item) => ({
+            name: item.fullname,
+            id: item._id,
+          })),
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const loadDocData = () => {
@@ -278,54 +248,9 @@ const DocMedicalPaperModal = ({
       });
   };
 
-  const handleClose = async () => {
-    let temp = currentItemList;
-    let tempTotal = totalPrice;
-
-    temp.map(async (i, index) => {
-      if (i[3] === "") {
-        try {
-          tempTotal = totalPrice - i[2];
-          await axios({
-            url: `api/medicalService/deleteService/${i[5]}`,
-            method: "delete",
-          });
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    });
-    setCurrentItemList([...temp]);
-
-    try {
-      const res = await axios({
-        url: "/api/customer/updateCustomerWithMedical",
-        method: "put",
-        data: {
-          customerId: pkTemp.customerId,
-          dentalMedicalHistory: pkTemp.dentalMedicalHistory,
-          systemicMedicalHistory: pkTemp.systemicMedicalHistory,
-        },
-      });
-      const ress = await axios({
-        url: `/api/medicalPaper/${pk._id}`,
-        method: "put",
-        data: {
-          doctorId: pkTemp.doctorId,
-          customerId: pkTemp.customerId,
-          reExamination: pkTemp.reExamination,
-          note: pkTemp.note,
-          totalAmount: tempTotal,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
+  const handleClose = () => {
     closeModal();
     closeMedpaper();
-
-    //khi tat những thủ thuật được chọn mà k có ktv thì xóa
   };
 
   const [services, setServices] = useState([]);
@@ -367,7 +292,14 @@ const DocMedicalPaperModal = ({
 
   useEffect(() => {
     if (PKID) {
+      // loadCurPK();
       loadServiceTable();
+      // loadSystemMed();
+      // loadDentalMed();
+      // loadCustomerData();
+      // loadDocData();
+      // loadTechStaffData();
+      // getSerListIDFT();
     }
   }, [offset, searchMeds, PKID]);
 
@@ -379,20 +311,12 @@ const DocMedicalPaperModal = ({
       loadDentalMed();
       loadCustomerData();
       loadDocData();
+      loadTechStaffData();
     }
   }, [isVisible]);
 
-  useEffect(() => {
-    if (PKID) {
-      loadCurrentItemList();
-    }
-  }, [opac]);
-
-  useEffect(() => {
-    console.log(errorList);
-  }, [errorList]);
-
   const onChangePage = (current, pageSize) => {
+    // console.log(current, pageSize);
     setOffset(current - 1);
     setLimit(pageSize);
   };
@@ -491,58 +415,48 @@ const DocMedicalPaperModal = ({
 
   const [curDate, setCurDate] = useState(new Date());
 
-  const addCurrentItems = async (id, name, price) => {
-    let tempMedical = {};
-    try {
-      tempMedical = await axios({
-        url: `api/medicalService/addService/${pk._id}/${id}/${pk.customerId}`,
-        method: "post",
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
+  const addCurrentItems = (id, name, price) => {
+    console.log(serListID);
     let curDate = new Date().toLocaleDateString("en-GB");
     setTotalPrice(totalPrice + Number(price));
     setCurrentItemList([
       ...currentItemList,
-      [curDate, name, price, "", op.slice(0, 1), tempMedical.data._id],
+      [curDate, name, price, [], op.slice(0, 1), id],
     ]);
 
-    setErrorList([...errorList, ["", "", "", "", "", ""]]);
+    // setErrorList([...errorList, ["", "", "", "", ""]]);
 
     let temp = [];
     serListID.map((i) => {
       temp.push(i.serID);
     });
+    // console.log(temp);
+
+    //get id of service when add service to list - can lay serID cua ca chuoi so sanh
+    // if () {
     if (!temp.includes(id)) {
+      //add moi
       setSerListID([...serListID, { serID: id, count: 1 }]);
     } else {
+      //neu co roi thi count+1
       let t = serListID.find((obj) => {
         return obj.serID === id;
       });
       t.count += 1;
     }
+
+    console.log(serListID);
   };
 
-  const deleteCurrentItems = async (rowIndex, price, id) => {
-    try {
-      await axios({
-        url: `api/medicalService/deleteService/${id}`,
-        method: "delete",
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
+  const deleteCurrentItems = (rowIndex, price, id) => {
     let temp = currentItemList;
     temp.splice(rowIndex, 1);
     setCurrentItemList([...temp]);
     setTotalPrice(totalPrice - price);
 
-    let tempErr = errorList;
-    tempErr.splice(rowIndex, 1);
-    setErrorList([...tempErr]);
+    // let tempErr = errorList;
+    // tempErr.splice(rowIndex, 1);
+    // setErrorList([...tempErr]);
 
     //xoa id khoi serListID
     let tID = [];
@@ -588,12 +502,6 @@ const DocMedicalPaperModal = ({
         closeKTV={closeKTV}
         ktvList={ktvList}
         setKtvList={setKtvList}
-        setErrorList={setErrorList}
-        errorList={errorList}
-        rowIndex={rowKTV}
-        serID={serID}
-        PKID={pk._id}
-        customerId={pk.customerId}
       />
 
       <Modal
@@ -601,7 +509,6 @@ const DocMedicalPaperModal = ({
         show={isVisible}
         onHide={handleClose}
         style={{ opacity: `${opac}` }}
-        backdrop="static"
       >
         <Modal.Header closeButton>
           <Modal.Title style={{ marginRight: "30px" }}>
@@ -779,7 +686,7 @@ const DocMedicalPaperModal = ({
                   //         // case 1:
                   //         //   break;
                   //         case 3:
-                  //           if (item === "") {
+                  //           if (ktvList.length < 0) {
                   //             tempError[parentIndex][index] =
                   //               "Nhập kĩ thuật viên";
                   //             setErrorList([...tempError]);
@@ -1044,28 +951,74 @@ const DocMedicalPaperModal = ({
                           <td>{row[1]}</td>
                           <td>{row[2]}</td>
                           <td style={{ textAlign: "center" }}>
+                            {/* <FormAntd.Item
+                              name={`KTV${rowIndex}`}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Nhập kĩ thuật viên",
+                                },
+                              ]}
+                              initialValue={row[3]}
+                            > */}
+                            {/* <Typeahead
+                              // disabled={role ? false : true}
+                              disabled
+                              style={{ width: "100%", margin: "auto" }}
+                              id="basic-typeahead-single"
+                              labelKey="name"
+                              onChange={(e) => {
+                                row[3] = e;
+
+                                setPK({
+                                  ...pk,
+                                  medicalService: [
+                                    ...currentItemList.map((item, index) => {
+                                      return {
+                                        serviceId: item[5],
+                                        ktvId:
+                                          item[3] && item[3][0]
+                                            ? item[3][0].id
+                                            : "",
+                                        status:
+                                          item[4] && item[4][0]
+                                            ? item[4][0].id
+                                            : "",
+                                      };
+                                    }),
+                                  ],
+                                });
+                              }}
+                              options={techStaff}
+                              placeholder="Chọn kĩ thuật viên"
+                              selected={row[3]}
+                              renderMenuItemChildren={(option) => (
+                                <div>
+                                  {option.name}
+                                  <div>
+                                    <small>ID: {option.id}</small>
+                                  </div>
+                                </div>
+                              )}
+                            /> */}
+                            {/* </FormAntd.Item> */}
+
                             <Form.Control
                               id="KTV"
                               type="text"
                               required
-                              readOnly
+                              // disabled
+                              // readOnly
                               onClick={() => {
                                 //mở 1 modal danh sách ktv
-                                setRowKTV(rowIndex);
-                                openKTV(row[5]);
+                                openKTV();
                               }}
-                              value={row[3] ? row[3] : ""}
-                              // value={
-                              //   ktvList.length > rowIndex
-                              //     ? ktvList[rowIndex][1][0].name
-                              //     : ""
-                              // }
+                              value={
+                                ktvList.length > 0
+                                  ? ktvList[ktvList.length - 1][1][0]?.name
+                                  : ""
+                              }
                             />
-                            {/* {errorList[rowIndex][3] !== "" && (
-                              <Text type="danger">
-                                {errorList[rowIndex][3]}
-                              </Text>
-                            )} */}
                           </td>
                           <td>
                             <FormAntd.Item

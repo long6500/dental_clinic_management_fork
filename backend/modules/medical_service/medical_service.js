@@ -7,11 +7,6 @@ const MedicalServiceSchema = new mongoose.Schema(
       require: true,
       ref: "Service",
     },
-    techStaffId: {
-      type: String,
-      require: true,
-      ref: "Profile",
-    },
     medicalPaperId: {
       type: String,
       require: true,
@@ -20,7 +15,7 @@ const MedicalServiceSchema = new mongoose.Schema(
     customerId: {
       type: String,
       require: true,
-      ref: "Customer"
+      ref: "Customer",
     },
     status: {
       type: mongoose.Types.Decimal128,

@@ -4,6 +4,7 @@ const ProfileModel = require("../profile/profile");
 const MedicalServiceModel = require("../medical_service/medical_service");
 const CustomerModel = require("../customer/customer");
 const ServiceModel = require("../service/service");
+const MedicalTechModel = require("../medical_tech/medical_tech");
 
 const getReExamination = async (req, res) => {
   const { offset, limit, startDate, endDate } = req.query;
@@ -29,10 +30,16 @@ const getReExamination = async (req, res) => {
   ]);
 
   let fullMedicalPaper = [];
-  await Promise.all(medicalPaper.map(async (element) => {
-    const customer = await CustomerModel.findById(element.customerId);
-    fullMedicalPaper.push({ ...element._doc, customerName: customer.fullname, phone: customer.phone })
-  }))
+  await Promise.all(
+    medicalPaper.map(async (element) => {
+      const customer = await CustomerModel.findById(element.customerId);
+      fullMedicalPaper.push({
+        ...element._doc,
+        customerName: customer.fullname,
+        phone: customer.phone,
+      });
+    })
+  );
   res.send({
     success: 1,
     data: { data: fullMedicalPaper, total: totalMedicalPaper },
@@ -138,21 +145,21 @@ const createMedicalPaper = async (req, res) => {
   } = req.body;
   const medicalId = await getNext();
 
-  let medicalServiceArray;
-  if (medicalService != null) {
-    medicalServiceArray = JSON.parse(JSON.stringify(medicalService));
+  // let medicalServiceArray;
+  // if (medicalService != null) {
+  //   medicalServiceArray = JSON.parse(JSON.stringify(medicalService));
 
-    medicalServiceArray.forEach(async (element) => {
-      await MedicalServiceModel.create({
-        serviceId: element.serviceId,
-        techStaffId: element.ktvId,
-        customerId: customerId,
-        status: element.status,
-        medicalPaperId: medicalId,
-        createBy: senderUser._id,
-      });
-    });
-  }
+  //   medicalServiceArray.forEach(async (element) => {
+  //     await MedicalServiceModel.create({
+  //       serviceId: element.serviceId,
+  //       techStaffId: element.ktvId,
+  //       customerId: customerId,
+  //       status: element.status,
+  //       medicalPaperId: medicalId,
+  //       createBy: senderUser._id,
+  //     });
+  //   });
+  // }
 
   const newMedicalPaper = await MedicalPaperModel.create({
     _id: medicalId,
@@ -182,32 +189,10 @@ const updateMedicalPaper = async (req, res) => {
     throw new HTTPError(400, "Not found medical Paper");
   }
 
-  const {
-    customerId,
-    doctorId,
-    reExamination,
-    status,
-    note,
-    medicalService,
-    totalAmount,
-  } = req.body;
+  const { customerId, doctorId, reExamination, status, note, totalAmount } =
+    req.body;
 
-  await MedicalServiceModel.deleteMany({ medicalPaperId: medicalPaperId });
-  let medicalServiceArray;
-  if (medicalService != null) {
-    medicalServiceArray = JSON.parse(JSON.stringify(medicalService));
-
-    medicalServiceArray.forEach(async (element) => {
-      await MedicalServiceModel.create({
-        serviceId: element.serviceId,
-        techStaffId: element.ktvId,
-        customerId: customerId,
-        status: element.status,
-        medicalPaperId: medicalPaperId,
-        createBy: senderUser._id,
-      });
-    });
-  }
+  console.log(req.body);
   const newMedicalPaper = await MedicalPaperModel.findByIdAndUpdate(
     medicalPaperId,
     {
@@ -233,10 +218,14 @@ const getMedicalPaperById = async (req, res) => {
   });
 
   let medicalServiceArray = [];
+  console.log(medicalService);
   if (medicalService.length > 0) {
     await Promise.all(
       medicalService.map(async (element) => {
-        const techStaff = await ProfileModel.findById(element.techStaffId);
+        const medical_tech = await MedicalTechModel.find({
+          medicalService: element._id,
+        }).sort({ dateDoing: -1 });
+        const techStaff = await ProfileModel.findById(medical_tech[0].techId);
         const service = await ServiceModel.findById(element.serviceId);
         medicalServiceArray.push({
           ...element._doc,
@@ -290,25 +279,32 @@ const getMedicalPaperForDoctor = async (req, res) => {
   }
 
   filter.status = 0;
-  const [listMedicalPaper, total] = await Promise.all([MedicalPaperModel
-    .find(filter)
-    .populate({ path: 'customerId', select: 'fullname' })
-    .skip(offsetNumber * limitNumber)
-    .limit(limitNumber),
-  MedicalPaperModel.count(filter)]);
+  const [listMedicalPaper, total] = await Promise.all([
+    MedicalPaperModel.find(filter)
+      .populate({ path: "customerId", select: "fullname" })
+      .skip(offsetNumber * limitNumber)
+      .limit(limitNumber),
+    MedicalPaperModel.count(filter),
+  ]);
   if (keyword) {
     let listMedicalPaperArray = [];
     let totalListMedicalPaper = 0;
-    await Promise.all(listMedicalPaper.map((element) => {
-      if (
-        element._id.toLowerCase().includes(keyword.toLowerCase()) ||
-        element.customerId._id.toLowerCase().includes(keyword.toLowerCase()) ||
-        element.customerId.fullname.toLowerCase().includes(keyword.toLowerCase())
-      ) {
-        listMedicalPaperArray.push({ ...element._doc });
-        totalListMedicalPaper++;
-      }
-    }))
+    await Promise.all(
+      listMedicalPaper.map((element) => {
+        if (
+          element._id.toLowerCase().includes(keyword.toLowerCase()) ||
+          element.customerId._id
+            .toLowerCase()
+            .includes(keyword.toLowerCase()) ||
+          element.customerId.fullname
+            .toLowerCase()
+            .includes(keyword.toLowerCase())
+        ) {
+          listMedicalPaperArray.push({ ...element._doc });
+          totalListMedicalPaper++;
+        }
+      })
+    );
 
     res.send({
       success: 1,
@@ -321,7 +317,7 @@ const getMedicalPaperForDoctor = async (req, res) => {
     success: 1,
     data: { data: listMedicalPaper, total: total },
   });
-}
+};
 
 const getNext = async () => {
   const count = await MedicalPaperModel.find().count();
@@ -346,5 +342,5 @@ module.exports = {
   createMedicalPaper,
   getReExamination,
   updateMedicalPaper,
-  getMedicalPaperForDoctor
+  getMedicalPaperForDoctor,
 };

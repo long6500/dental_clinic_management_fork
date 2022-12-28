@@ -19,17 +19,47 @@ import { Select, Pagination, Table as TableAntd, Form as FormAntd } from "antd";
 
 const HisRecMedList = ({ showHRML, closeHRML, pkid }) => {
   const [medListA, setMedListA] = useState([]);
+  // const [pre, setPre] = useState({});
+
+  const getCurMed = async () => {
+    await axios
+      .get(`/api/medicinePrescribe?medicalPaper=${pkid}`)
+      .then((response) => {
+        setMedListA([
+          ...response.data.map((i) => [
+            i.name,
+            i.quantity,
+            i.unit,
+            i.quantityMedicine,
+            i.usage,
+            i.medicineId,
+          ]),
+        ]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    // console.log(pre);
+    if (pkid) {
+      getCurMed();
+    }
+    // setPre({ serListId: pkid });
+  }, [showHRML]);
+
   return (
     <>
       <Modal
-        // id="MedListPaper"
+        id="HRML"
         size="lg"
         show={showHRML}
         onHide={closeHRML}
         // backdrop="static"
       >
         <Modal.Header>
-          <Modal.Title>Lịch sử thuốc khách hàng</Modal.Title>
+          <Modal.Title>Đơn thuốc - {pkid}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Table bordered>
@@ -39,8 +69,8 @@ const HisRecMedList = ({ showHRML, closeHRML, pkid }) => {
                 <th>Tên thuốc</th>
                 <th>Số lượng</th>
                 <th>Đơn vị</th>
+                <th>Hàm lượng thuốc</th>
                 <th>Cách dùng</th>
-                <th></th>
               </tr>
             </thead>
             {/* {medListA.length > 0 && ( */}
@@ -67,22 +97,15 @@ const HisRecMedList = ({ showHRML, closeHRML, pkid }) => {
                           // disabled
                           readOnly
                           plaintext
-                          value={rowIndex + 1}
+                          value={row[0]}
                         />
                       </td>
                       {/* So Luong */}
                       <td style={{ width: "12%" }}>
-                        {/* <FormAntd.Item
-                            name={`SL${rowIndex}`}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Nhập số lượng",
-                              },
-                            ]}
-                            initialValue={row[1]}
-                          > */}
                         <Form.Control
+                          style={{ textAlign: "center" }}
+                          readOnly
+                          plaintext
                           required
                           type="number"
                           min="1"
@@ -97,19 +120,38 @@ const HisRecMedList = ({ showHRML, closeHRML, pkid }) => {
                       </td>
                       {/* Don vi */}
                       <td style={{ width: "12%" }}>
-                        <Form.Control disabled value={row[2]} />
+                        <Form.Control
+                          style={{ textAlign: "center" }}
+                          disabled
+                          value={row[2]}
+                          readOnly
+                          plaintext
+                        />
+                      </td>
+                      {/* Ham luong thuoc */}
+
+                      <td style={{ width: "12%" }}>
+                        <Form.Control
+                          style={{ textAlign: "center" }}
+                          disabled
+                          value={row[3]}
+                          readOnly
+                          plaintext
+                        />
                       </td>
                       {/* Cach dung */}
                       <td style={{ width: "30%" }}>
                         <Form.Control
+                          readOnly
+                          plaintext
                           required
                           type="text"
                           onChange={(e) => {
                             let temp = medListA;
-                            temp[rowIndex][3] = e.target.value;
+                            temp[rowIndex][4] = e.target.value;
                             setMedListA([...temp]);
                           }}
-                          value={row[3]}
+                          value={row[4]}
                         />
                       </td>
                     </tr>

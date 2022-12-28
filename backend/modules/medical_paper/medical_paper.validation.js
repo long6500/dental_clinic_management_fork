@@ -5,7 +5,6 @@ const MedicalPaperSchema = Joi.object({
   doctorId: Joi.string().required(),
   reExamination: Joi.date().allow(null, ""),
   status: Joi.number().integer(),
-  medicalService: Joi.array().items(Joi.object()).required(),
   note: Joi.string().allow(null, ""),
   totalAmount: Joi.number(),
   customerPayment: Joi.number(),

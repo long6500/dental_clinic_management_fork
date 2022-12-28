@@ -91,9 +91,8 @@ const MedicineModal = ({ userA, loadData }, prop) => {
       formData.append("effect", values.effect);
       formData.append("usage", values.usage);
       formData.append("contraindication", values.contraindication);
-      // setTimeout(() => {
 
-      // }, 100);
+      await addMed(formData);
       values.name = "";
       values.imageUrl = "";
       values.quantity = 0;
@@ -104,7 +103,7 @@ const MedicineModal = ({ userA, loadData }, prop) => {
       values.usage = "";
       values.contraindication = "";
       handleClose();
-      await addMed(formData);
+
       loadData();
     },
   });

@@ -63,28 +63,14 @@ const MedListPaper = ({
   };
 
   const checkClose = async (e) => {
-    //chay khi length = 0 || length > 1 va dien du lieu
-    //dk laf medListA.length > 1 && chua dien du lieu
-    // let tem = isnotFormValidd();
-    // if ((medListA.length >= 1 && !tem.includes(true)) || medListA.length < 1) {
-    //   openMedPaper();
-    //   setShow(false);
-    // }
-    // await axios
-    //   .post(`/api/service/prescription`, pre)
-    //   .then((response) => {})
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
-
     let mePrescribe = [];
     medListA.map((e) => {
       mePrescribe.push({
         doctorId: singleSelectionsDoc[0]?.id,
         medicalPaperId: PKID,
-        medicineId: e[4],
+        medicineId: e[5],
         quantity: e[1],
-        usage: e[3],
+        usage: e[4],
       });
     });
 
@@ -108,6 +94,7 @@ const MedListPaper = ({
             [i.name],
             i.quantity,
             i.unit,
+            i.quantityMedicine,
             i.usage,
             i.medicineId,
           ]),
@@ -125,7 +112,7 @@ const MedListPaper = ({
   };
 
   const addMedListA = () => {
-    setMedListA([...medListA, [[], "", "", "", ""]]);
+    setMedListA([...medListA, [[], "", "", "", "", ""]]);
   };
 
   const deleteMedListA = (rowIndex) => {
@@ -135,15 +122,15 @@ const MedListPaper = ({
   };
 
   const fillMedListA = (e, rowIndex) => {
-    if (e[0]?.quantity) {
+    if (e[0]?.quantity || e[0]?.quantity) {
       // medListA[rowIndex][0] = e[0].name;
-      medListA[rowIndex][2] = e[0].quantity;
+      medListA[rowIndex][2] = e[0].unit;
+      medListA[rowIndex][3] = e[0].quantity;
       setMedListA(medListA);
-
-      //fill medicalPrescribe
     } else {
       // medListA[rowIndex][0] = "";
       medListA[rowIndex][2] = "";
+      medListA[rowIndex][3] = "";
     }
   };
 
@@ -151,10 +138,6 @@ const MedListPaper = ({
     await axios
       .get("/api/medicine/activeMedicine")
       .then((response) => {
-        // setMedNamelist([
-        //   ...response.data.map((u) => ({ id: u._id, name: u.name })),
-        // ]);
-
         setMedNamelist(response.data);
       })
       .catch((error) => {
@@ -177,6 +160,7 @@ const MedListPaper = ({
             [i.name],
             i.quantity,
             i.unit,
+            i.quantityMedicine,
             i.usage,
             i.medicineId,
           ]),
@@ -321,11 +305,12 @@ const MedListPaper = ({
             <Table bordered>
               <thead>
                 <tr style={{ textAlign: "center" }}>
-                  <th>STT</th>
-                  <th>Tên thuốc</th>
-                  <th>Số lượng</th>
-                  <th>Đơn vị</th>
-                  <th>Cách dùng</th>
+                  <th style={{ width: "1%" }}>STT</th>
+                  <th style={{ width: "20%" }}>Tên thuốc</th>
+                  <th style={{ width: "12%" }}>Số lượng</th>
+                  <th style={{ width: "12%" }}>Đơn vị</th>
+                  <th style={{ width: "12%" }}>Hàm lượng thuốc</th>
+                  <th style={{ width: "40%" }}>Cách dùng</th>
                   <th></th>
                 </tr>
               </thead>
@@ -346,7 +331,7 @@ const MedListPaper = ({
                           />
                         </td>
                         {/* Ten thuoc */}
-                        <td style={{ width: "30%" }}>
+                        <td style={{ width: "20%" }}>
                           <FormAntd.Item
                             name={`TK${rowIndex}`}
                             rules={[
@@ -366,7 +351,7 @@ const MedListPaper = ({
 
                                 let temp = medListA;
                                 temp[rowIndex][0] = e;
-                                temp[rowIndex][4] = e[0]?._id;
+                                temp[rowIndex][5] = e[0]?._id;
                                 setMedListA([...temp]);
                               }}
                               options={medNamelist}
@@ -378,16 +363,6 @@ const MedListPaper = ({
                         </td>
                         {/* So Luong */}
                         <td style={{ width: "12%" }}>
-                          {/* <FormAntd.Item
-                            name={`SL${rowIndex}`}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Nhập số lượng",
-                              },
-                            ]}
-                            initialValue={row[1]}
-                          > */}
                           <Form.Control
                             required
                             type="number"
@@ -405,17 +380,21 @@ const MedListPaper = ({
                         <td style={{ width: "12%" }}>
                           <Form.Control disabled value={row[2]} />
                         </td>
+                        {/* Ham luong thuoc */}
+                        <td style={{ width: "12%" }}>
+                          <Form.Control disabled value={row[3]} />
+                        </td>
                         {/* Cach dung */}
-                        <td style={{ width: "30%" }}>
+                        <td style={{ width: "40%" }}>
                           <Form.Control
                             required
                             type="text"
                             onChange={(e) => {
                               let temp = medListA;
-                              temp[rowIndex][3] = e.target.value;
+                              temp[rowIndex][4] = e.target.value;
                               setMedListA([...temp]);
                             }}
-                            value={row[3]}
+                            value={row[4]}
                           />
                         </td>
                         {/* Btn Delete */}

@@ -35,7 +35,6 @@ const HistoryRecord = ({
   const [curCustomer, setCurCustomer] = useState({});
 
   const openHRML = (id) => {
-    console.log(1);
     setPkid(id);
     setShowHRML(true);
     setOpac(0);
@@ -126,7 +125,8 @@ const HistoryRecord = ({
       dataIndex: "PKID",
       key: "PKID",
       align: "center",
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      width: "10%",
+      // sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, row, index) => {
         const obj = {
           children: value,
@@ -160,6 +160,7 @@ const HistoryRecord = ({
       dataIndex: "note",
       key: "note",
       align: "center",
+      width: "50%",
       render: (value, row, index) => {
         const obj = {
           children: value,
@@ -198,7 +199,6 @@ const HistoryRecord = ({
         ) {
           obj.props.rowSpan = 0;
         } else {
-          console.log(2);
           for (
             let i = 0;
             index + i !== dataSource.length &&
