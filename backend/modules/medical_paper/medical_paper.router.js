@@ -3,7 +3,10 @@ const router = express.Router();
 const medicalPaperController = require("./medical_paper.controller");
 const needAuthenticated = require("../../middlewares/needAuthenticated");
 const isRole = require("../../middlewares/isRole");
-const medicalPaperSchema = require("./medical_paper.validation");
+const {
+  MedicalPaperSchema,
+  UpdateMedicalPaperSchema,
+} = require("./medical_paper.validation");
 const validateInput = require("../../middlewares/validateInput");
 
 router.get(
@@ -31,7 +34,7 @@ router.post(
   "/",
   needAuthenticated,
   //isRole,
-  validateInput(medicalPaperSchema, "body"),
+  validateInput(MedicalPaperSchema, "body"),
   medicalPaperController.createMedicalPaper
 );
 
@@ -39,7 +42,7 @@ router.put(
   "/:medicalPaperId",
   needAuthenticated,
   //isRole,
-  validateInput(medicalPaperSchema, "body"),
+  validateInput(UpdateMedicalPaperSchema, "body"),
   medicalPaperController.updateMedicalPaper
 );
 
@@ -49,6 +52,5 @@ router.get(
   //isRole,
   medicalPaperController.getMedicalPaperById
 );
-
 
 module.exports = router;

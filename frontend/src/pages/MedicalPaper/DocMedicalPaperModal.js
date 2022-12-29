@@ -45,6 +45,8 @@ const DocMedicalPaperModal = ({
 }) => {
   const { Text, Link } = Typography;
 
+  const [err, setErr] = useState("");
+
   const [showKTV, setShowKTV] = useState(false);
   const [ktvList, setKtvList] = useState([]);
   const [rowKTV, setRowKTV] = useState(0);
@@ -168,7 +170,7 @@ const DocMedicalPaperModal = ({
   };
 
   const addPk = async () => {
-    // let isValid = true;
+    let isValid = true;
 
     // currentItemList.forEach((parent, parentIndex) => {
     //   parent.forEach((item, index) => {
@@ -185,10 +187,13 @@ const DocMedicalPaperModal = ({
     //     }
     //   });
     // });
+    if (pk.predic === "" || pk.predic === undefined) {
+      isValid = false;
+    }
 
-    // if (!isValid) {
-    //   return;
-    // }
+    if (!isValid) {
+      return;
+    }
 
     let temp = currentItemList;
     let tempTotal = totalPrice;
@@ -226,6 +231,7 @@ const DocMedicalPaperModal = ({
           doctorId: pk.doctorId,
           customerId: pk.customerId,
           reExamination: pk.reExamination,
+          predic: pk.predic,
           note: pk.note,
           totalAmount: tempTotal,
         },
@@ -771,26 +777,11 @@ const DocMedicalPaperModal = ({
                 <Button
                   type="submit"
                   variant="primary"
-                  // onClick={() => {
-                  //   let tempError = errorList;
-                  //   currentItemList.forEach((parent, parentIndex) => {
-                  //     parent.forEach((item, index) => {
-                  //       switch (index) {
-                  //         // case 1:
-                  //         //   break;
-                  //         case 3:
-                  //           if (item === "") {
-                  //             tempError[parentIndex][index] =
-                  //               "Nhập kĩ thuật viên";
-                  //             setErrorList([...tempError]);
-                  //           }
-                  //           break;
-                  //         default:
-                  //           break;
-                  //       }
-                  //     });
-                  //   });
-                  // }}
+                  onClick={() => {
+                    if (pk.predic === "" || pk.predic === undefined) {
+                      setErr("Bắt buộc nhập");
+                    }
+                  }}
                   style={{
                     width: "50%",
                     marginBottom: "8px",
@@ -1262,6 +1253,36 @@ const DocMedicalPaperModal = ({
                     </>
                   );
                 })}
+              </Row>
+              <Row
+                className="mb-3"
+                style={{
+                  margin: "5px",
+                }}
+              >
+                <Form.Label column sm={2}>
+                  <b>Chẩn đoán của bác sỹ</b>
+                </Form.Label>
+                <Col sm={10}>
+                  <Form.Control
+                    // required
+                    disabled={role ? false : true}
+                    value={pk.predic}
+                    id="gc"
+                    type="text"
+                    as="textarea"
+                    rows={3}
+                    onChange={(e) => {
+                      if (e.target.value !== "") {
+                        setErr("");
+                      } else {
+                        setErr("Bắt buộc nhập");
+                      }
+                      setPK({ ...pk, predic: e.target.value });
+                    }}
+                  />
+                  {err !== "" && <Text type="danger">{err}</Text>}
+                </Col>
               </Row>
               <Row
                 className="mb-3"

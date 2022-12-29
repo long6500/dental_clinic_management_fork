@@ -58,7 +58,7 @@ const HisRecMedList = ({ showHRML, closeHRML, pkid }) => {
         onHide={closeHRML}
         // backdrop="static"
       >
-        <Modal.Header>
+        <Modal.Header closeButton>
           <Modal.Title>Đơn thuốc - {pkid}</Modal.Title>
         </Modal.Header>
         <Modal.Body>

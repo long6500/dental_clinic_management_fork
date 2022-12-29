@@ -203,7 +203,6 @@ const AdCusSearch = ({
                   id="basic-typeahead-single"
                   labelKey="name"
                   onChange={(e) => {
-                    // fillCusDataByName(e);
                     // console.log(e);
                     findCusByName(e);
                     setSingleCusName(e);
@@ -220,7 +219,6 @@ const AdCusSearch = ({
                   id="basic-typeahead-single"
                   labelKey="name"
                   onChange={(e) => {
-                    // fillCusDataByName(e);
                     // console.log(e);
                     findCusByPhone(e);
                     setSingleCusPhone(e);
@@ -245,7 +243,7 @@ const AdCusSearch = ({
                     id="basic-typeahead-single"
                     labelKey="name"
                     onChange={(e) => {
-                      // fillCusDataByName(e);
+                     
                       // console.log(e);
                       setSingleCusEmail(e);
                     }}
