@@ -30,6 +30,9 @@ const UpdateCustomerModal = ({
     setCurStatus(response.data.status);
     setCurPhone(response.data.phone);
     setCurEmail(response.data.email);
+
+    setTotal(response.data.totalAmount);
+    setPayment(response.data.payment);
   };
 
   const loadSystemMed = async () => {
@@ -66,6 +69,9 @@ const UpdateCustomerModal = ({
     }
   }, [cusId, isVisible]);
 
+  const [total, setTotal] = useState(0);
+  const [payment, setPayment] = useState(0);
+
   const formik = useFormik({
     initialValues: {
       fullname: curCustomer.fullname,
@@ -80,6 +86,9 @@ const UpdateCustomerModal = ({
       systemicMedicalHistory: curCustomer.systemicMedicalHistory,
       dentalMedicalHistory: curCustomer.dentalMedicalHistory,
       status: curStatus,
+      // totalAmount: new Intl.NumberFormat("de-DE").format(
+      //   curCustomer.totalAmount
+      // ),
       // expiredDay: new Date().toLocaleDateString("en-US"),
       // expiredDay: new Date(),
     },
@@ -381,16 +390,18 @@ const UpdateCustomerModal = ({
                 <Col sm={4}>
                   <Form.Control
                     disabled
-                    id="usage"
+                    id="totalAmount"
                     value={new Intl.NumberFormat("de-DE", {
                       style: "currency",
                       currency: "VND",
-                    }).format(curCustomer.totalAmount)}
+                    }).format(total)}
+
+                    // value={formik.values.totalAmount}
                   />
                 </Col>
               </Row>
               <Row className="mb-3">
-                <Form.Label column sm={2}>
+                {/* <Form.Label column sm={2}>
                   Trạng thái
                 </Form.Label>
 
@@ -417,8 +428,8 @@ const UpdateCustomerModal = ({
                       onChange="return false"
                     />
                   )}
-                </Col>
-                <Col sm={2}>
+                </Col> */}
+                {/* <Col sm={2}>
                   {temp === true ? (
                     <Form.Check
                       name="status"
@@ -441,7 +452,8 @@ const UpdateCustomerModal = ({
                       onChange="return false"
                     />
                   )}
-                </Col>
+                </Col> */}
+                <Col sm={6}></Col>
                 <Form.Label column sm={2}>
                   Đã thanh toán
                 </Form.Label>
@@ -452,7 +464,7 @@ const UpdateCustomerModal = ({
                     value={new Intl.NumberFormat("de-DE", {
                       style: "currency",
                       currency: "VND",
-                    }).format(curCustomer.payment)}
+                    }).format(payment)}
                   />
                 </Col>
               </Row>
@@ -478,10 +490,7 @@ const UpdateCustomerModal = ({
                         : new Intl.NumberFormat("de-DE", {
                             style: "currency",
                             currency: "VND",
-                          }).format(
-                            Number(curCustomer.totalAmount) -
-                              Number(curCustomer.payment)
-                          )
+                          }).format(Number(total) - Number(payment))
                     }
                   />
                 </Col>

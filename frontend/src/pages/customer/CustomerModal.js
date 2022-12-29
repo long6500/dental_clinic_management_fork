@@ -20,6 +20,8 @@ const CustomerModal = ({
   closeMedPaper,
   openMedPaper,
   userA,
+  setSingleSelections,
+  fillCusDataByName,
 }) => {
   const [show, setShow] = useState(false);
   const [temp, setTemp] = useState(false);
@@ -133,7 +135,12 @@ const CustomerModal = ({
         ),
     }),
     onSubmit: async (values) => {
-      await customerProcessor.addCustomer(values);
+      await customerProcessor.addCustomer(
+        values,
+        setSingleSelections,
+        fillCusDataByName
+      );
+
       values.fullname = "";
       values.job = "";
       values.phone = "";
@@ -145,6 +152,7 @@ const CustomerModal = ({
       values.note = "";
       values.systemicMedicalHistory = [];
       values.dentalMedicalHistory = [];
+
       loadData();
       handleClose();
     },
@@ -181,7 +189,7 @@ const CustomerModal = ({
           url: `/api/permission/${element._id}/${functionArray.data[index]._id}`,
           method: "get",
         });
-        console.log(permission);
+
         if (permission.success === 0 || !permission.data) return;
         if (permission.data[0].add === true) {
           setTemp(true);

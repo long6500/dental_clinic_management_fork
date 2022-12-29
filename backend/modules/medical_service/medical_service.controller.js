@@ -157,12 +157,6 @@ const updateStatus = async (req, res) => {
   if (!existMedicalService) {
     throw new HTTPError(400, "Not found medical service");
   }
-  if (role[0].name !== "Admin") {
-    const profile = await ProfileModel.findOne({ userId: senderUser._id });
-    if (profile._id !== existMedicalService.techStaffId) {
-      throw new HTTPError(500, "Not Auth");
-    }
-  }
 
   const newMedicalService = await MedicalServiceModel.findByIdAndUpdate(
     medicalServiceId,

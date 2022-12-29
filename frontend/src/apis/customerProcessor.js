@@ -12,12 +12,21 @@ customerProcessor.getAllCustomer = async () => {
   return response.data;
 };
 
-customerProcessor.addCustomer = async (cus) => {
+customerProcessor.addCustomer = async (
+  cus,
+  setSingleSelections,
+  fillCusDataByName
+) => {
+  console.log(setSingleSelections);
   const res = await axios.post("/api/customer/", cus).catch((error) => {
     console.log(error);
   });
   if (res.success) {
     Swal.fire("Thành Công", `Thêm thành công`, "success");
+    if (setSingleSelections !== undefined && fillCusDataByName !== undefined) {
+      setSingleSelections([{ id: res.data._id, name: res.data.fullname }]);
+      fillCusDataByName([{ id: res.data._id, name: res.data.fullname }]);
+    }
   }
 };
 

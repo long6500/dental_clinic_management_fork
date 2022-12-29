@@ -189,10 +189,16 @@ const updateMedicalPaper = async (req, res) => {
     throw new HTTPError(400, "Not found medical Paper");
   }
 
-  const { customerId, doctorId, reExamination, status, note, totalAmount } =
-    req.body;
+  const {
+    customerId,
+    doctorId,
+    reExamination,
+    status,
+    note,
+    predic,
+    totalAmount,
+  } = req.body;
 
-  console.log(req.body);
   const newMedicalPaper = await MedicalPaperModel.findByIdAndUpdate(
     medicalPaperId,
     {
@@ -200,6 +206,7 @@ const updateMedicalPaper = async (req, res) => {
       doctorId,
       reExamination,
       note,
+      predic,
       status,
       modifyBy: senderUser._id,
       totalAmount,

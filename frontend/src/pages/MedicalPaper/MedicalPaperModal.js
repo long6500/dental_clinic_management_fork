@@ -124,6 +124,9 @@ const MedicalPaperModal = ({ loadData, user }) => {
           totalAmount: totalPrice,
         },
       });
+      if (ress.success === 1) {
+        Swal.fire("Thành Công", `Thêm phiếu khám thành công`, "success");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -802,10 +805,12 @@ const MedicalPaperModal = ({ loadData, user }) => {
                   <CustomerModal
                     userA={user}
                     lbl={"Thêm KH"}
-                    // loadData={loadData}
+                    loadData={loadCustomerData}
                     widthh="200px"
                     closeMedPaper={closeMedpaper}
                     openMedPaper={openMedPaper}
+                    setSingleSelections={setSingleSelections}
+                    fillCusDataByName={fillCusDataByName}
                   />
                 </Col>
                 <Col sm={4}>
@@ -1101,6 +1106,7 @@ const MedicalPaperModal = ({ loadData, user }) => {
                   );
                 })}
               </Row>
+
               <Row
                 className="mb-3"
                 style={{

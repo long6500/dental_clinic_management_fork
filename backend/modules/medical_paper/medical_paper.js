@@ -22,6 +22,10 @@ const MedicalPaperSchema = new mongoose.Schema(
     note: {
       type: String,
     },
+    predic: {
+      type: String,
+      require: true,
+    },
     status: {
       type: mongoose.Types.Decimal128,
       default: 0,

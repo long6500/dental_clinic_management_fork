@@ -77,7 +77,7 @@ const HistoryRecord = ({
         ),
         PKID: m.medicalPaperId,
         name: m.serviceItem[0].name,
-        note: m.medicalPaperItem[0].note,
+        predic: m.medicalPaperItem[0].predic,
         med: m.medicalPaperId,
       })),
     ]);
@@ -156,9 +156,9 @@ const HistoryRecord = ({
       align: "center",
     },
     {
-      title: "Nội dung",
-      dataIndex: "note",
-      key: "note",
+      title: "Chẩn đoán",
+      dataIndex: "predic",
+      key: "predic",
       align: "center",
       width: "50%",
       render: (value, row, index) => {
@@ -167,13 +167,13 @@ const HistoryRecord = ({
           props: {},
         };
 
-        if (index >= 1 && value === dataSource[index - 1].note) {
+        if (index >= 1 && value === dataSource[index - 1].predic) {
           obj.props.rowSpan = 0;
         } else {
           for (
             let i = 0;
             index + i !== dataSource.length &&
-            value === dataSource[index + i].note;
+            value === dataSource[index + i].predic;
             i += 1
           ) {
             obj.props.rowSpan = i + 1;
@@ -219,7 +219,7 @@ const HistoryRecord = ({
       PKID: i.PKID,
       name: i.name,
       time: i.time,
-      note: i.note,
+      predic: i.predic,
       med: (
         <FaFileMedical
           size={25}
