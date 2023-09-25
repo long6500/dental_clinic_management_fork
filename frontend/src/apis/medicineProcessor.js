@@ -21,6 +21,8 @@ export const addMed = async (medicine) => {
       .post("/api/medicine/", medicine)
       .then((response) => {
         store.dispatch(addMedicine(response.data.data));
+        console.log("add thanh cong");
+        console.log(response);
         if (response.success === 1) {
           Swal.fire("Thành công", `Thêm thành công`, "success");
         }

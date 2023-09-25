@@ -10,7 +10,7 @@ import { Pagination, Table, Typography } from "antd";
 import moment from "moment";
 import { FaRedoAlt } from "react-icons/fa";
 
-import CSV from "../components/ExportCSV";
+import CSV from "./ExportCSV";
 
 export const Customers123 = ({ customers }) => {
   const { Text } = Typography;

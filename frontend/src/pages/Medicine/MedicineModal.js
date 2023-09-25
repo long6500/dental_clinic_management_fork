@@ -91,7 +91,7 @@ const MedicineModal = ({ userA, loadData }, prop) => {
       formData.append("effect", values.effect);
       formData.append("usage", values.usage);
       formData.append("contraindication", values.contraindication);
-
+      // console.log(values.imageUrl[0]);
       await addMed(formData);
       values.name = "";
       values.imageUrl = "";

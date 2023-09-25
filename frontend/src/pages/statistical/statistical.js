@@ -12,7 +12,7 @@ import "./statistical.css";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { Select, Pagination, Table as TableAntd, Form as FormAntd } from "antd";
 import customerProcessor from "../../apis/customerProcessor";
-import TableCustomer from "../../components/tableCustomer";
+import TableCustomer from "../../components/CustomTable";
 import TableDate from "../../components/tableDate";
 import TablePayment from "../../components/tablePayment";
 import TableStaff from "../../components/tableStaff";
@@ -121,10 +121,16 @@ function Statistical({ user }) {
 
   useEffect(() => {
     setShowTable(false);
-  }, [selectTK, startDate, endDate, startCustomer, startEmployee, startService]);
+  }, [
+    selectTK,
+    startDate,
+    endDate,
+    startCustomer,
+    startEmployee,
+    startService,
+  ]);
 
   const onSubmitStatic = async () => {
-
     let tempData = {};
     tempData.startCustomer = startCustomer[0]?.id;
     tempData.startEmployee = startEmployee[0]?.id;
